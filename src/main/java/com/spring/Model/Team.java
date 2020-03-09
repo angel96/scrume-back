@@ -15,7 +15,7 @@ public class Team extends BaseEntity{
 
 	@NotBlank
 	@NotNull
-	@Column(name = "nombre", nullable = false)
-    private String nombre;
+	@Column(name = "name", nullable = false)
+    private String name;
  
 }
