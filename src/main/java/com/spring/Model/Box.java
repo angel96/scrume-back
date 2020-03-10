@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -16,6 +17,7 @@ public class Box extends BaseEntity{
 	
 	@NotBlank
 	@NotNull
+	@Pattern(regexp = "BASIC|STANDARD|PRO")
 	@Column(name = "name", nullable = false)
     private String name;
  

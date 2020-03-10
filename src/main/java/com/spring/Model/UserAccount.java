@@ -51,7 +51,6 @@ public class UserAccount extends BaseEntity implements UserDetails {
 	private String username;
 	
 	@JsonIgnore
-	@Pattern(regexp = "^.*(?=.{8,})(?=..*[0-9])(?=.*[a-z])(?=.*[A-Z]).*$")
 	private String password;
 
 	@CreatedDate
