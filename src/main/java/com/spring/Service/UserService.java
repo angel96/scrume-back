@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.spring.Model.User;
+import com.spring.Model.UserAccount;
 import com.spring.Repository.UserRepository;
 import com.spring.Security.UserAccountService;
 
@@ -17,6 +18,12 @@ public class UserService extends AbstractService {
 	private UserRepository userRepository;
 
 	public User getUserByPrincipal() {
-		return userRepository.findByUserAccount(UserAccountService.getPrincipal());
+		UserAccount userAccount = UserAccountService.getPrincipal();
+		User user =  this.userRepository.findByUserAccount(userAccount.getUsername()).orElse(null);
+		return user;
+	}
+	
+	public User findOne(int userId) {
+		return this.userRepository.getOne(userId);
 	}
 }

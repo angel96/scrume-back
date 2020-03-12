@@ -17,6 +17,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Entity
+
 public class Invitation extends BaseEntity{
 
 	@NotBlank
@@ -29,8 +30,7 @@ public class Invitation extends BaseEntity{
 	@Column(name = "validDate", nullable = false)
     private Date validDate;
 	
-	@NotNull
-	@Column(name = "isAccepted", nullable = false)
+	@Column(name = "isAccepted", nullable = true)
     private Boolean isAccepted;
 	
 	@ManyToOne

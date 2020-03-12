@@ -28,7 +28,7 @@ public class TeamService extends AbstractService{
 	public TeamDto save(TeamDto team) throws Exception {
 		
 		try {
-			User principal = userService.getUserByPrincipal();
+			User principal = this.userService.getUserByPrincipal();
 			Team teamEntity = new Team();
 			teamEntity.setName(team.getName());
 			Team teamDB = this.teamRepository.save(teamEntity);
@@ -36,11 +36,15 @@ public class TeamService extends AbstractService{
 			userRol.setAdmin(true);
 			userRol.setTeam(teamDB);
 			userRol.setUser(principal);
-			userRolService.save(userRol);
+			this.userRolService.save(userRol);
 			return new ModelMapper().map(teamDB, TeamDto.class);
 		}catch(Exception e) {
 			throw new Exception("Error when saving the team");
 		}
+	}
+	
+	public Team findOne(int teamId) {
+		return this.teamRepository.getOne(teamId);
 	}
 	
 }
