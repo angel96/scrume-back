@@ -30,7 +30,7 @@ public class UserRolService extends AbstractService {
 		return this.userRolRepository.existsByUserAndTeam(principal, team);
 	}
 
-	public boolean isAdminOnTeam(User principal) {
-		return this.userRolRepository.existsByUserAndAdmin(principal, true);
+	public boolean isAdminOnTeam(User principal, Team team) {
+		return this.userRolRepository.existsByUserAndAdminAndTeam(principal, true, team);
 	}
 }

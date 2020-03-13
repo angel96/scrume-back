@@ -94,7 +94,7 @@ public class InvitationService extends AbstractService {
 	
 	private void validateUserPrincipal(User principal) throws Exception{
 		if(principal == null) {
-			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "The user must be logged in");
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
 		}
 	}
 	
@@ -113,7 +113,7 @@ public class InvitationService extends AbstractService {
 	private void validateSender(User sender, Team team) throws Exception{
 		if(!this.userRolService.isUserOnTeam(sender, team)) {
 			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The sender must belong to the team");
-		}if(!this.userRolService.isAdminOnTeam(sender)) {
+		}if(!this.userRolService.isAdminOnTeam(sender, team)) {
 			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The sender must be an administrator of the team");
 		}
 	}

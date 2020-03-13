@@ -47,7 +47,7 @@ public class TeamService extends AbstractService {
 
 	private void validateUserPrincipal(User principal) throws Exception{
 		if(principal == null) {
-			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "The user must be logged in");
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
 		}
 	}
 }

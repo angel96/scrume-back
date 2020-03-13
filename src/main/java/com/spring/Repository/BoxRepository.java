@@ -1,12 +1,11 @@
 package com.spring.Repository;
 
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import com.spring.Model.Box;
 
 @Repository
-public interface BoxRepository extends JpaRepository<Box, Integer> {
+public interface BoxRepository extends AbstractRepository<Box> {
 
 	Box save(Box box);
 
