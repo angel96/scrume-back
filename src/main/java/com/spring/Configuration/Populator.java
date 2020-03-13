@@ -2,6 +2,9 @@ package com.spring.Configuration;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 
 import org.jboss.logging.Logger;
@@ -10,10 +13,14 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
 import com.spring.Model.Administrator;
+import com.spring.Model.Box;
 import com.spring.Model.Profile;
+import com.spring.Model.User;
 import com.spring.Model.UserAccount;
 import com.spring.Repository.AdministratorRepository;
+import com.spring.Repository.BoxRepository;
 import com.spring.Repository.ProfileRepository;
+import com.spring.Repository.UserRepository;
 import com.spring.Security.Role;
 import com.spring.Security.UserAccountRepository;
 import com.spring.Utiles.Utiles;
@@ -25,10 +32,10 @@ import com.spring.Utiles.Utiles;
  *
  */
 
-//@Component
-public class InitialPopulator implements CommandLineRunner {
+@Component
+public class Populator implements CommandLineRunner {
 
-	protected final Logger logger = Logger.getLogger(InitialPopulator.class);
+	protected final Logger logger = Logger.getLogger(Populator.class);
 
 	@Autowired
 	private UserAccountRepository repositoryAccount;
@@ -38,20 +45,57 @@ public class InitialPopulator implements CommandLineRunner {
 
 	@Autowired
 	private ProfileRepository repositoryProfile;
+	
+	@Autowired
+	private BoxRepository boxRepository;
+	
+	@Autowired
+	private UserRepository userRepository;
 
 	@Override
 	public void run(String... args) throws Exception {
 
+		userRepository.deleteAll();
+		boxRepository.deleteAll();
 		repositoryProfile.deleteAll();
 		repositoryAdmin.deleteAll();
 		repositoryAccount.deleteAll();
 
-		UserAccount account = repositoryAccount.save(new UserAccount("angdellun", Utiles.encryptedPassword("123456"),
+		UserAccount account = repositoryAccount.save(new UserAccount("angdellun@gmail.com", Utiles.encryptedPassword("123456"),
 				LocalDateTime.now(), LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_ADMIN))));
 
-		UserAccount account2 = repositoryAccount.save(new UserAccount("angdellun2", Utiles.encryptedPassword("1234562"),
+		UserAccount account2 = repositoryAccount.save(new UserAccount("angdellun2@gmail.com", Utiles.encryptedPassword("1234562"),
 				LocalDateTime.now(), LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_ADMIN))));
 
+		UserAccount userAccount = repositoryAccount.save(new UserAccount("testuser@gmail.com", Utiles.encryptedPassword("123456"),
+				LocalDateTime.now(), LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_ADMIN))));
+		
+		Box basicBox = new Box();
+		basicBox.setName("BASIC");
+		basicBox.setPrice(0.0);
+		boxRepository.save(basicBox);
+		
+		Box standardBox = new Box();
+		standardBox.setName("STANDARD");
+		standardBox.setPrice(1.0);
+		boxRepository.save(standardBox);
+		
+		Box proBox = new Box();
+		proBox.setName("PRO");
+		proBox.setPrice(2.0);
+		boxRepository.save(proBox);
+		
+		User user = new User();
+		user.setBox(proBox);
+		Date date = new GregorianCalendar(2020, Calendar.DECEMBER, 30).getTime();
+		
+		user.setEndingBoxDate(date);
+		user.setName("Name");
+		user.setNick("nick");
+		user.setSurnames("surnames");
+		user.setUserAccount(userAccount);
+		userRepository.save(user);
+		
 		Administrator actor = new Administrator();
 		actor.setUserAccount(account);
 		Administrator actor_saved_1 = repositoryAdmin.save(actor);
