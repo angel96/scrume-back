@@ -74,11 +74,12 @@ public class InvitationService extends AbstractService {
 		return this.invitationRepository.existsActiveInvitation(recipient, team) != 0;
 	}
 
+	//TODO Añadir validaciones a este metodo
 	public InvitationRecipientDto answerInvitation(InvitationRecipientDto invitationRecipientDto) throws Exception {
 
 		Assert.notNull(invitationRecipientDto.getIsAccepted(), "The invitation must be accepted or rejected");
 
-		Invitation invitationEntity = this.invitationRepository.getOne(invitationRecipientDto.getId());
+		Invitation invitationEntity = this.invitationRepository.findById(invitationRecipientDto.getId()).orElse(null);
 		invitationEntity.setIsAccepted(invitationRecipientDto.getIsAccepted());
 		Invitation invitationDB = this.invitationRepository.save(invitationEntity);
 		if (invitationDB.getIsAccepted()) {

@@ -38,7 +38,7 @@ public class TeamService extends AbstractService {
 		userRol.setTeam(teamDB);
 		userRol.setUser(principal);
 		this.userRolService.save(userRol);
-		return new ModelMapper().map(teamDB, TeamDto.class);
+		return modelMapper.map(teamDB, TeamDto.class);
 	}
 
 	public Team findOne(int teamId) {
