@@ -34,7 +34,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.GET, "/api/profile/get/**").hasRole("ADMIN")
 				.antMatchers(HttpMethod.POST, "/api/profile/save").hasRole("ADMIN")
 				.antMatchers(HttpMethod.GET, "/api/profile/delete/**").hasRole("ADMIN")
-				.antMatchers(HttpMethod.GET, "/api/login/roles").hasRole("ADMIN");
+				.antMatchers(HttpMethod.GET, "/api/login/roles").hasRole("ADMIN")
+				.antMatchers(HttpMethod.GET, "/api/project/list/**").hasRole("ADMIN");
 		http.logout().logoutUrl("/api/login/logout").clearAuthentication(true).deleteCookies("JSESSIONID");
 	}
 
