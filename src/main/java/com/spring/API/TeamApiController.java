@@ -1,6 +1,8 @@
 package com.spring.API;
 
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +15,7 @@ import com.spring.Service.InvitationService;
 import com.spring.Service.TeamService;
 
 @RestController
-@RequestMapping("/team")
+@RequestMapping("/api/team")
 public class TeamApiController {
 
 	@Autowired

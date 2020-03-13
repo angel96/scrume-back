@@ -7,8 +7,10 @@ import javax.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.web.client.HttpClientErrorException;
 
 import com.spring.CustomObject.InvitationRecipientDto;
 import com.spring.CustomObject.InvitationSenderDto;
@@ -35,27 +37,25 @@ public class InvitationService extends AbstractService {
 	private TeamService teamService;
 
 	public InvitationSenderDto save(InvitationSenderDto invitationSenderDto) throws Exception {
+		ModelMapper modelMapper = new ModelMapper();
 		User principal = this.userService.getUserByPrincipal();
-		Assert.notNull(principal, "The user must be logged in");
+		this.validateUserPrincipal(principal);
 		
 		Integer recipientId = invitationSenderDto.getRecipient().getId();
-		Assert.notNull(recipientId, "The id of the recipient cannot be null");
-		User recipient = this.userService.findOne(recipientId);
+		this.validateRecipientId(recipientId);
 		
 		Integer teamId = invitationSenderDto.getTeam().getId();
-		Assert.notNull(teamId, "The id of the team cannot be null");
+		this.validateTeamId(recipientId);
+		
+		User recipient = this.userService.findOne(recipientId);
+
 		Team team = this.teamService.findOne(teamId);
 		
-		Assert.isTrue(this.userRolService.isUserOnTeam(principal, team), "The sender must belong to the team");
-		
-		Assert.isTrue(this.userRolService.isAdminOnTeam(principal), "The sender must be an administrator of the team");
+		this.validateSender(principal, team);
 
-		Assert.isTrue(!this.userRolService.isUserOnTeam(recipient, team), "The recipient must not belong to the team");
-
-		Assert.isTrue(!this.existsActiveInvitation(recipient, team), "The recipient cannot have active invitations to the team");
+		this.validateRecipient(recipient, team);
 		
-		Invitation invitationEntity = new Invitation();
-		invitationEntity.setMessage(invitationSenderDto.getMessage());
+		Invitation invitationEntity = modelMapper.map(invitationSenderDto, Invitation.class);
 		invitationEntity.setRecipient(recipient);
 		invitationEntity.setTeam(team);
 		
@@ -67,7 +67,7 @@ public class InvitationService extends AbstractService {
 		invitationEntity.setSender(principal);
 		
 		Invitation invitationDB = this.invitationRepository.save(invitationEntity);
-		return new ModelMapper().map(invitationDB, InvitationSenderDto.class);
+		return modelMapper.map(invitationDB, InvitationSenderDto.class);
 	}
 
 	private boolean existsActiveInvitation(User recipient, Team team) {
@@ -89,6 +89,40 @@ public class InvitationService extends AbstractService {
 			this.userRolService.save(userRol);
 		}
 		return new ModelMapper().map(invitationDB, InvitationRecipientDto.class);
+	}
+	
+	private void validateUserPrincipal(User principal) throws Exception{
+		if(principal == null) {
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "The user must be logged in");
+		}
+	}
+	
+	private void validateRecipientId(Integer recipientId) throws Exception{
+		if(recipientId == null) {
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "The id of the recipient cannot be null");
+		}
+	}
+	
+	private void validateTeamId(Integer teamId) throws Exception{
+		if(teamId == null) {
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "The id of the team cannot be null");
+		}
+	}
+	
+	private void validateSender(User sender, Team team) throws Exception{
+		if(!this.userRolService.isUserOnTeam(sender, team)) {
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The sender must belong to the team");
+		}if(!this.userRolService.isAdminOnTeam(sender)) {
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The sender must be an administrator of the team");
+		}
+	}
+	
+	private void validateRecipient(User recipient, Team team) throws Exception{
+		if(this.userRolService.isUserOnTeam(recipient, team)) {
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "The recipient must not belong to the team");
+		}if(this.existsActiveInvitation(recipient, team)) {
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "The recipient cannot have active invitations to the team");
+		}
 	}
 
 }
