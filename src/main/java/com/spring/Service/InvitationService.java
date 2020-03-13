@@ -74,11 +74,12 @@ public class InvitationService extends AbstractService {
 		return this.invitationRepository.existsActiveInvitation(recipient, team) != 0;
 	}
 
+	//TODO Añadir validaciones a este metodo
 	public InvitationRecipientDto answerInvitation(InvitationRecipientDto invitationRecipientDto) throws Exception {
 
 		Assert.notNull(invitationRecipientDto.getIsAccepted(), "The invitation must be accepted or rejected");
 
-		Invitation invitationEntity = this.invitationRepository.getOne(invitationRecipientDto.getId());
+		Invitation invitationEntity = this.invitationRepository.findById(invitationRecipientDto.getId()).orElse(null);
 		invitationEntity.setIsAccepted(invitationRecipientDto.getIsAccepted());
 		Invitation invitationDB = this.invitationRepository.save(invitationEntity);
 		if (invitationDB.getIsAccepted()) {
@@ -93,7 +94,7 @@ public class InvitationService extends AbstractService {
 	
 	private void validateUserPrincipal(User principal) throws Exception{
 		if(principal == null) {
-			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "The user must be logged in");
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
 		}
 	}
 	
@@ -112,7 +113,7 @@ public class InvitationService extends AbstractService {
 	private void validateSender(User sender, Team team) throws Exception{
 		if(!this.userRolService.isUserOnTeam(sender, team)) {
 			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The sender must belong to the team");
-		}if(!this.userRolService.isAdminOnTeam(sender)) {
+		}if(!this.userRolService.isAdminOnTeam(sender, team)) {
 			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The sender must be an administrator of the team");
 		}
 	}
