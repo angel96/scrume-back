@@ -3,7 +3,9 @@ package com.spring.Service;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import com.spring.Model.User;
 import com.spring.Model.UserAccount;
@@ -19,11 +21,11 @@ public class UserService extends AbstractService {
 
 	public User getUserByPrincipal() {
 		UserAccount userAccount = UserAccountService.getPrincipal();
-		User user =  this.userRepository.findByUserAccount(userAccount.getUsername()).orElse(null);
-		return user;
+		return this.userRepository.findByUserAccount(userAccount.getUsername()).orElse(null);
 	}
 	
 	public User findOne(int userId) {
-		return this.userRepository.getOne(userId);
+		return this.userRepository.findById(userId).orElse(null);
 	}
+	
 }

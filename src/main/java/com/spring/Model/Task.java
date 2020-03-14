@@ -14,37 +14,31 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
-@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public class Task extends BaseEntity {
 
 	@JsonProperty
 	@NotBlank
 	private String title;
-
 	@JsonProperty
 	@NotBlank
 	private String description;
-
 	@JsonProperty
 	@Min(value = 0)
 	private Integer points;
-
 	@ManyToOne
 	@JsonProperty
 	private Project project;
-
 	@ManyToMany
 	@JsonProperty
 	private List<User> users;
-
-//	@ManyToOne
-//	@JsonProperty
-//	private Column column;
-
+	@ManyToOne
+	@JsonProperty
+	private Column column;
 }
