@@ -30,15 +30,17 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-		//TODO: Probar si al cierre de sesion, sigue disponible la API
+		// TODO: Probar si al cierre de sesion, sigue disponible la API
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-		
+
 		http.httpBasic().authenticationEntryPoint(customBasicAuthenticationEntryPoint).and().authorizeRequests()
 				.antMatchers(HttpMethod.GET, "/api/profile/list").hasRole("ADMIN")
 				.antMatchers(HttpMethod.GET, "/api/profile/get/**").hasRole("ADMIN")
 				.antMatchers(HttpMethod.POST, "/api/profile/save").hasRole("ADMIN")
 				.antMatchers(HttpMethod.GET, "/api/profile/delete/**").hasRole("ADMIN")
-				.antMatchers(HttpMethod.GET, "/api/login/roles").hasRole("ADMIN");
+				.antMatchers(HttpMethod.GET, "/api/login/roles").hasRole("ADMIN")
+				.antMatchers("/api/workspace/**")
+				.authenticated().antMatchers("/api/history-task/**").authenticated();
 		http.logout().logoutUrl("/api/login/logout").clearAuthentication(true).deleteCookies("JSESSIONID");
 	}
 

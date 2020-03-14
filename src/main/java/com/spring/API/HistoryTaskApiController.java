@@ -16,7 +16,7 @@ import com.spring.Model.HistoryTask;
 import com.spring.Service.HistoryTaskService;
 
 @RestController
-@RequestMapping("/api/workspace")
+@RequestMapping("/api/history-task")
 public class HistoryTaskApiController extends AbstractApiController {
 
 	@Autowired
