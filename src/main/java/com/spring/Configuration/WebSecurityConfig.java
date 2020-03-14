@@ -38,10 +38,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.GET, "/api/profile/get/**").hasRole("ADMIN")
 				.antMatchers(HttpMethod.POST, "/api/profile/save").hasRole("ADMIN")
 				.antMatchers(HttpMethod.GET, "/api/profile/delete/**").hasRole("ADMIN")
-				.antMatchers(HttpMethod.GET, "/api/login/roles").hasRole("ADMIN")
-				.antMatchers("/api/workspace/**")
-				.authenticated().antMatchers("/api/history-task/**").authenticated();
-		http.logout().logoutUrl("/api/login/logout").clearAuthentication(true).deleteCookies("JSESSIONID");
+				.antMatchers("/team/*").authenticated()
+                .antMatchers("/sprint/*").authenticated()
+				.antMatchers("/api/login/roles").authenticated()
+				.antMatchers("/api/project/**").authenticated()
+				.antMatchers("/api/workspace/**").authenticated()
+				.antMatchers("/api/history-task/**").authenticated();
+                
+		        http.logout().logoutUrl("/api/login/logout").clearAuthentication(true).deleteCookies("JSESSIONID").and().csrf().disable();
 	}
 
 	@Bean

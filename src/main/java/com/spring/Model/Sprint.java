@@ -18,24 +18,27 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@NoArgsConstructor
-@AllArgsConstructor
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class Sprint extends BaseEntity {
 
+public class Sprint extends BaseEntity {
+	
 	@NotNull
 	@JsonProperty
 	@Column(name = "startDate")
 	private Date startDate;
-
+	
 	@NotNull
 	@JsonProperty
 	@Column(name = "endDate")
 	private Date endDate;
-
+	
 	@JsonProperty
 	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "project")
 	private Project project;
+	
+
 }

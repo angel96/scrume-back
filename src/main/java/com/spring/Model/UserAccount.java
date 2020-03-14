@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -13,6 +14,10 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.OneToOne;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.security.core.GrantedAuthority;
@@ -40,9 +45,11 @@ public class UserAccount extends BaseEntity implements UserDetails {
 	 */
 	private static final long serialVersionUID = 1698966886576610743L;
 
-	@Column(unique = true)
+	@Email
+	@NotNull
+	@Column(unique = true, nullable = false)
 	private String username;
-
+	
 	@JsonIgnore
 	private String password;
 

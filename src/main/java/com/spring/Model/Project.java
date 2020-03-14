@@ -15,10 +15,11 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-public class Project extends BaseEntity{
+public class Project extends BaseEntity {
+	
 	@NotBlank
 	@NotNull
 	@JsonProperty
@@ -32,4 +33,7 @@ public class Project extends BaseEntity{
 	@JsonProperty
 	@ManyToOne
 	private Team team;
+	
+	
+
 }
