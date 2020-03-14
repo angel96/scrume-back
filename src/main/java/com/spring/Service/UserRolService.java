@@ -55,7 +55,7 @@ public class UserRolService extends AbstractService {
 		}
 		this.userRolRepository.delete(this.findByUserAndTeam(principal, team));
 		if(this.getNumberOfUsersOfTeam(team)==0) {
-			this.teamService.delete(team.getId());
+			this.teamService.deleteVoid(team.getId());
 		}
 	}
 	
