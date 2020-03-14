@@ -11,7 +11,6 @@ public class CustomUrlsValidatorClass implements ConstraintValidator<CustomUrlsV
 
 	@Override
 	public boolean isValid(Collection<String> urls, ConstraintValidatorContext context) {
-		// TODO Auto-generated method stub
 		return urls.size() > 0 ? urls.stream().allMatch(x -> x.startsWith("http://") || x.startsWith("https://"))
 				: true;
 	}

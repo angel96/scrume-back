@@ -20,12 +20,12 @@ import com.spring.Utiles.Utiles;
 
 /**
  * 
- * Uncomment this annotation if you want to repopulate database. 
- * Please, take into account you will have to include entities in order.
+ * Uncomment this annotation if you want to repopulate database. Please, take
+ * into account you will have to include entities in order.
  *
  */
 
-//@Component
+@Component
 public class PopulatorDatabase implements CommandLineRunner {
 
 	protected final Logger logger = Logger.getLogger(PopulatorDatabase.class);
