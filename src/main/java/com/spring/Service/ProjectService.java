@@ -47,8 +47,30 @@ public class ProjectService extends AbstractService{
 		return repository.findById(id).orElse(null);
 	}
 	
-	public Project save(Project p) {
-		return repository.save(p);
+	public ProjectDto update(ProjectDto projectDto, Integer idProject) {
+		ModelMapper mapper = new ModelMapper();
+		Project projectEntity = mapper.map(projectDto, Project.class);
+		Project projectDB = this.repository.getOne(idProject);
+		Integer idTeam = projectEntity.getTeam().getId();
+		Team team = teamService.findOne(idTeam);
+		projectDB.setTeam(team);
+		projectDB.setName(projectEntity.getName());
+		projectDB.setDescription(projectEntity.getDescription());
+		repository.save(projectDB);
+		return mapper.map(projectDB, ProjectDto.class);
+	}
+	
+	public ProjectDto save(ProjectDto projectDto) {
+		ModelMapper mapper = new ModelMapper();
+		Project projectEntity = mapper.map(projectDto, Project.class);
+		Project projectDB = new Project();
+		Integer idTeam = projectEntity.getTeam().getId();
+		Team team = teamService.findOne(idTeam);
+		projectDB.setTeam(team);
+		projectDB.setName(projectEntity.getName());
+		projectDB.setDescription(projectEntity.getDescription());
+		repository.save(projectDB);
+		return mapper.map(projectDB, ProjectDto.class);
 	}
 	
 	public boolean delete(Integer id) {

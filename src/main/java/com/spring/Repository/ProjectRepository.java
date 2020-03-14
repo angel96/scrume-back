@@ -11,6 +11,4 @@ import com.spring.Model.Team;
 public interface ProjectRepository extends AbstractRepository<Project>{
 
 	List<Project> findByTeam(Team team);
-	
-	//Para queries nativas se pone nativeQuery=true
 }
