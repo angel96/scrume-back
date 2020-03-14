@@ -52,9 +52,6 @@ public class SprintService extends AbstractService {
 		User principal = this.userService.getUserByPrincipal();
 		Sprint sprintEntity = this.sprintRepository.findById(sprintEditDto.getId()).orElse(null);
 		this.validateSprint(sprintEntity);
-		System.out.println(principal);
-		System.out.println(sprintEntity);
-		System.out.println(sprintEntity.getProject().getTeam());
 		this.validateUserPrincipal(principal, sprintEntity.getProject());
 		sprintEntity.setStartDate(sprintEditDto.getStartDate());
 		sprintEntity.setEndDate(sprintEditDto.getEndDate());
@@ -72,7 +69,7 @@ public class SprintService extends AbstractService {
 		return this.sprintRepository.getPreviousSprintUpdate(sprint);
 	}
 	
-	private void validateUserPrincipal(User principal, Project project) throws Exception{
+	private void validateUserPrincipal(User principal, Project project){
 		if(principal == null) {
 			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
 		}
@@ -86,19 +83,19 @@ public class SprintService extends AbstractService {
 		
 	}
 	
-	private void validateProject(Project project) throws Exception{
+	private void validateProject(Project project){
 		if(project == null) {
-			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "The project cannot be null");
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "The project is not in the database");
 		}
 	}
 	
-	private void validateSprint(Sprint sprint) throws Exception{
+	private void validateSprint(Sprint sprint){
 		if(sprint == null) {
-			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "The sprint cannot be null");
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "The sprint is not in the database");
 		}
 	}
 	
-	private void validateDates(Sprint sprint) throws Exception{
+	private void validateDates(Sprint sprint){
 		if(sprint.getStartDate() == null) {
 			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "the start date cannot be null");
 		}
@@ -110,21 +107,18 @@ public class SprintService extends AbstractService {
 		}
 	}
 	
-	private void validatePreviousSprintCreate(Sprint sprint) throws Exception{
+	private void validatePreviousSprintCreate(Sprint sprint){
 		Sprint previousSprint = this.getPreviousSprintCreate(sprint.getProject());
-		if(previousSprint != null) {
-			if(previousSprint.getEndDate().after(new Date())) {
+		if(previousSprint != null && previousSprint.getEndDate().after(new Date())) {
 				throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Cannot start a sprint if the previous one has not finished");
-			}
 		}
 	}
 	
-	private void validatePreviousSprintUpdate(Sprint sprint) throws Exception{
+	private void validatePreviousSprintUpdate(Sprint sprint){
 		Sprint previousSprint = this.getPreviousSprintUpdate(sprint);
-		if(previousSprint != null) {
-			if(previousSprint.getEndDate().after(new Date())) {
+		if(previousSprint != null && previousSprint.getEndDate().after(new Date())) {
 				throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Cannot start a sprint if the previous one has not finished");
-			}
 		}
+		
 	}
 }
