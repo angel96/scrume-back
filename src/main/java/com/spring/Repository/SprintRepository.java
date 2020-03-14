@@ -1,18 +1,21 @@
 package com.spring.Repository;
 
+import java.util.Date;
+import java.util.List;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.spring.CustomObject.SprintDto;
 import com.spring.Model.Project;
 import com.spring.Model.Sprint;
 
 @Repository
 public interface SprintRepository extends AbstractRepository<Sprint> {
 
-	@Query(value = "select * from Sprint s where s.project = ?1 order by s.end_date DESC limit 1", nativeQuery = true)
-	Sprint getPreviousSprintCreate(Project project);
-	
-	@Query(value = "select * from Sprint s where s.project = (select sp.project from Sprint sp where sp.id = ?1) and s.id != ?1 order by s.end_date DESC limit 1", nativeQuery = true)
-	Sprint getPreviousSprintUpdate(Sprint sprint);
+	@Query("select s from Sprint s where s.project = ?1 order by s.startDate asc")
+	List<Sprint> findBySprintsOrdered(Project idProject);
 
+	@Query("select count(s) from Sprint s where s.project = ?3 and s.endDate > CURRENT_DATE and ((s.startDate < ?1 and s.endDate < ?1) or (s.startDate > ?2 and s.endDate > ?2))")
+	Integer areValidDates(Date startDate, Date endDate, Project project);
 }
