@@ -49,9 +49,27 @@ public class TeamService extends AbstractService {
 		this.validateTeam(teamEntity);
 		this.validateEditPermission(principal, teamEntity);
 		this.validateUserPrincipal(principal);
+		teamEntity.setName(teamEditDto.getName());
 		Team teamDB = this.teamRepository.save(teamEntity);
 		return modelMapper.map(teamDB, TeamEditDto.class);
 	}
+
+	public void delete(Integer idTeam) {
+		User principal = this.userService.getUserByPrincipal();
+		Team team = this.teamRepository.findById(idTeam).orElse(null);
+		this.validateUserPrincipal(principal);
+		this.validateTeam(team);
+		this.validateEditPermission(principal, team);
+		this.validateDeletePermission(team);
+		UserRol userRol = this.userRolService.findByUserAndTeam(principal, team);
+		this.userRolService.delete(userRol);
+		this.teamRepository.delete(team);
+	}
+	
+	public void deleteVoid(Integer idTeam) {
+		this.teamRepository.deleteById(idTeam);
+	}
+	
 
 	public Team findOne(int teamId) {
 		return this.teamRepository.findById(teamId).orElse(null);
@@ -75,6 +93,12 @@ public class TeamService extends AbstractService {
 	private void validateUserPrincipal(User principal){
 		if(principal == null) {
 			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
+		}
+	}
+
+	private void validateDeletePermission(Team team) {
+		if(this.userRolService.getNumberOfUsersOfTeam(team) != 1) {
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "To delete a team, the only member must be the administrator");
 		}
 	}
 

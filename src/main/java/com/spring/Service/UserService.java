@@ -24,7 +24,7 @@ public class UserService extends AbstractService {
 		return this.userRepository.findByUserAccount(userAccount.getUsername()).orElse(null);
 	}
 	
-	public User findOne(int userId) throws Exception {
+	public User findOne(int userId) {
 		return this.userRepository.findById(userId).orElse(null);
 	}
 	
