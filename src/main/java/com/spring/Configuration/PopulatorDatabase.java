@@ -62,6 +62,8 @@ public class PopulatorDatabase implements CommandLineRunner {
 
 		Profile profile1 = repositoryProfile.save(new Profile("Perfil 1", actor));
 		Profile profile2 = repositoryProfile.save(new Profile("Perfil 2", actor2));
+		
+		
 
 	}
 
