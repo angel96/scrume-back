@@ -21,12 +21,11 @@ public class UserService extends AbstractService {
 
 	public User getUserByPrincipal() {
 		UserAccount userAccount = UserAccountService.getPrincipal();
-		User user =  this.userRepository.findByUserAccount(userAccount.getUsername()).orElse(null);
-		return user;
+		return this.userRepository.findByUserAccount(userAccount.getUsername()).orElse(null);
 	}
 	
-	public User findOne(int userId) throws Exception {
-		return this.userRepository.getOne(userId);
+	public User findOne(int userId) {
+		return this.userRepository.findById(userId).orElse(null);
 	}
 	
 }

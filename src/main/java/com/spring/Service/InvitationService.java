@@ -9,7 +9,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 import org.springframework.web.client.HttpClientErrorException;
 
 import com.spring.CustomObject.InvitationRecipientDto;
@@ -41,15 +40,10 @@ public class InvitationService extends AbstractService {
 		User principal = this.userService.getUserByPrincipal();
 		this.validateUserPrincipal(principal);
 		
-		Integer recipientId = invitationSenderDto.getRecipient().getId();
-		this.validateRecipientId(recipientId);
-		
-		Integer teamId = invitationSenderDto.getTeam().getId();
-		this.validateTeamId(recipientId);
-		
-		User recipient = this.userService.findOne(recipientId);
+		User recipient = this.userService.findOne(invitationSenderDto.getRecipient().getId());
 
-		Team team = this.teamService.findOne(teamId);
+		Team team = this.teamService.findOne(invitationSenderDto.getTeam().getId());
+		this.validateTeam(team);
 		
 		this.validateSender(principal, team);
 
@@ -74,15 +68,14 @@ public class InvitationService extends AbstractService {
 		return this.invitationRepository.existsActiveInvitation(recipient, team) != 0;
 	}
 
-	//TODO Añadir validaciones a este metodo
 	public InvitationRecipientDto answerInvitation(InvitationRecipientDto invitationRecipientDto) throws Exception {
 
-		Assert.notNull(invitationRecipientDto.getIsAccepted(), "The invitation must be accepted or rejected");
-
+		this.validateIsAcceptedStatus(invitationRecipientDto.getIsAccepted());
 		Invitation invitationEntity = this.invitationRepository.findById(invitationRecipientDto.getId()).orElse(null);
+		this.validateInvitationEntityAnswer(invitationEntity);
 		invitationEntity.setIsAccepted(invitationRecipientDto.getIsAccepted());
 		Invitation invitationDB = this.invitationRepository.save(invitationEntity);
-		if (invitationDB.getIsAccepted()) {
+		if (invitationDB.getIsAccepted() != null && invitationDB.getIsAccepted()) {
 			UserRol userRol = new UserRol();
 			userRol.setAdmin(false);
 			userRol.setTeam(invitationDB.getTeam());
@@ -92,36 +85,48 @@ public class InvitationService extends AbstractService {
 		return new ModelMapper().map(invitationDB, InvitationRecipientDto.class);
 	}
 	
-	private void validateUserPrincipal(User principal) throws Exception{
+	private void validateInvitationEntityAnswer(Invitation invitationEntity) {
+		if(invitationEntity == null) {
+			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "The invitation is not in the database");
+		}
+	}
+
+	private void validateIsAcceptedStatus(Boolean isAccepted) {
+		if(isAccepted == null) {
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "The invitation must be accepted or rejected");
+		}
+	}
+
+	private void validateUserPrincipal(User principal){
 		if(principal == null) {
 			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
 		}
 	}
+
 	
-	private void validateRecipientId(Integer recipientId) throws Exception{
-		if(recipientId == null) {
-			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "The id of the recipient cannot be null");
+	private void validateTeam(Team team){
+		if(team == null) {
+			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "The team is not in the database");
 		}
 	}
 	
-	private void validateTeamId(Integer teamId) throws Exception{
-		if(teamId == null) {
-			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "The id of the team cannot be null");
-		}
-	}
-	
-	private void validateSender(User sender, Team team) throws Exception{
+	private void validateSender(User sender, Team team){
 		if(!this.userRolService.isUserOnTeam(sender, team)) {
 			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The sender must belong to the team");
-		}if(!this.userRolService.isAdminOnTeam(sender, team)) {
+		}
+		if(!this.userRolService.isAdminOnTeam(sender, team)) {
 			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The sender must be an administrator of the team");
 		}
 	}
 	
-	private void validateRecipient(User recipient, Team team) throws Exception{
+	private void validateRecipient(User recipient, Team team){
+		if(recipient == null) {
+			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "The recipient is not in the database");
+		}
 		if(this.userRolService.isUserOnTeam(recipient, team)) {
 			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "The recipient must not belong to the team");
-		}if(this.existsActiveInvitation(recipient, team)) {
+		}
+		if(this.existsActiveInvitation(recipient, team)) {
 			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "The recipient cannot have active invitations to the team");
 		}
 	}
