@@ -1,16 +1,21 @@
 package com.spring.Service;
 
+import java.lang.reflect.Type;
 import java.util.Date;
+import java.util.List;
 
 import javax.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import com.spring.CustomObject.SprintCreateDto;
+import com.spring.CustomObject.SprintDatesDto;
+import com.spring.CustomObject.SprintDto;
 import com.spring.CustomObject.SprintEditDto;
 import com.spring.Model.Project;
 import com.spring.Model.Sprint;
@@ -41,7 +46,6 @@ public class SprintService extends AbstractService {
 		this.validateProject(project);
 		sprintEntity.setProject(project);
 		this.validateDates(sprintEntity);
-		this.validatePreviousSprintCreate(sprintEntity);
 		this.validateUserPrincipal(principal, sprintEntity.getProject());
 		Sprint sprintDB = this.sprintRepository.save(sprintEntity);
 		return modelMapper.map(sprintDB, SprintCreateDto.class);
@@ -56,19 +60,31 @@ public class SprintService extends AbstractService {
 		sprintEntity.setStartDate(sprintEditDto.getStartDate());
 		sprintEntity.setEndDate(sprintEditDto.getEndDate());
 		this.validateDates(sprintEntity);
-		this.validatePreviousSprintUpdate(sprintEntity);
 		Sprint sprintDB = this.sprintRepository.save(sprintEntity);
 		return modelMapper.map(sprintDB, SprintEditDto.class);
 	}
+	
+	public List<SprintDto> listByProject(Integer idProject) {
+		ModelMapper modelMapper = new ModelMapper();
+		User principal = this.userService.getUserByPrincipal();
+		Project project = this.projectService.findOne(idProject);
+		this.validateProject(project);
+		this.validateUserToList(principal, project);
+		List<Sprint> sprints = this.sprintRepository.findBySprintsOrdered(project);
+		Type listType = new TypeToken<List<SprintDto>>(){}.getType();
+		return modelMapper.map(sprints,listType);
+	}
+	
+	private void validateUserToList(User principal, Project project) {
+		if(principal == null) {
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
+		}
 
-	public Sprint getPreviousSprintCreate(Project project) {
-		return this.sprintRepository.getPreviousSprintCreate(project);
+		if(!this.userRolService.isUserOnTeam(principal, project.getTeam())) {
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must belong to the team of the project");
+		}
 	}
-	
-	public Sprint getPreviousSprintUpdate(Sprint sprint) {
-		return this.sprintRepository.getPreviousSprintUpdate(sprint);
-	}
-	
+
 	private void validateUserPrincipal(User principal, Project project){
 		if(principal == null) {
 			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
@@ -85,13 +101,13 @@ public class SprintService extends AbstractService {
 	
 	private void validateProject(Project project){
 		if(project == null) {
-			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "The project is not in the database");
+			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "The project is not in the database");
 		}
 	}
 	
 	private void validateSprint(Sprint sprint){
 		if(sprint == null) {
-			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "The sprint is not in the database");
+			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "The sprint is not in the database");
 		}
 	}
 	
@@ -105,20 +121,27 @@ public class SprintService extends AbstractService {
 		if(sprint.getEndDate().before(sprint.getStartDate())) {
 			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "The end date of the sprint must be later than the start date");
 		}
-	}
-	
-	private void validatePreviousSprintCreate(Sprint sprint){
-		Sprint previousSprint = this.getPreviousSprintCreate(sprint.getProject());
-		if(previousSprint != null && previousSprint.getEndDate().after(new Date())) {
-				throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Cannot start a sprint if the previous one has not finished");
-		}
-	}
-	
-	private void validatePreviousSprintUpdate(Sprint sprint){
-		Sprint previousSprint = this.getPreviousSprintUpdate(sprint);
-		if(previousSprint != null && previousSprint.getEndDate().after(new Date())) {
-				throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Cannot start a sprint if the previous one has not finished");
+		if(this.areValidDates(sprint.getStartDate(), sprint.getEndDate(), sprint.getProject())) {
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Sprint dates overlap with an existing sprint");
 		}
 		
 	}
+
+	public boolean areValidDates(Date startDate, Date endDate, Project project) {
+		boolean res;
+		if(this.sprintRepository.areValidDates(startDate, endDate, project) == 0) {
+			res = true;
+		}else {
+			res = false;
+		}
+		return res;
+	}
+
+	public boolean areValidDates(SprintDatesDto sprintDatesDto) {
+		Date startDate = sprintDatesDto.getStartDate();
+		Date endDate = sprintDatesDto.getEndDate();
+		Project project = this.projectService.findOne(sprintDatesDto.getIdProject());
+		return areValidDates(startDate, endDate, project);
+	}
+
 }
