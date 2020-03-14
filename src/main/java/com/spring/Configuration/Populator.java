@@ -51,7 +51,13 @@ public class Populator implements CommandLineRunner {
 	
 	@Autowired
 	private UserRepository userRepository;
-
+    
+	@Autowired
+	private ProjectRepository repositoryProject;
+    
+    @Autowired
+    private TeamRepository repositoryTeam;
+	
 	@Override
 	public void run(String... args) throws Exception {
 
@@ -60,6 +66,7 @@ public class Populator implements CommandLineRunner {
 		repositoryProfile.deleteAll();
 		repositoryAdmin.deleteAll();
 		repositoryAccount.deleteAll();
+        repositoryProject.deleteAll();
 
 		UserAccount account = repositoryAccount.save(new UserAccount("angdellun@gmail.com", Utiles.encryptedPassword("123456"),
 				LocalDateTime.now(), LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_ADMIN))));
@@ -106,7 +113,15 @@ public class Populator implements CommandLineRunner {
 
 		Profile profile1 = repositoryProfile.save(new Profile("Perfil 1", actor));
 		Profile profile2 = repositoryProfile.save(new Profile("Perfil 2", actor2));
+        
+        Team team1 = repositoryTeam.save(new Team("Equipo 1"));
+		Team team2 = repositoryTeam.save(new Team("Equipo 2"));
+		Project project1 = repositoryProject.save(new Project("Proyecto 1", "", team1));
+		Project project2 = repositoryProject.save(new Project("Proyecto 2", "", team1));
+		Project project3 = repositoryProject.save(new Project("Proyecto 3", "", team2));
+		Project project4 = repositoryProject.save(new Project("Proyecto 4", "", team2));
+		Project project5 = repositoryProject.save(new Project("Proyecto 5", "", team2));
 
 	}
 
-}
+}	

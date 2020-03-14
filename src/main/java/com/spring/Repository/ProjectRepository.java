@@ -12,4 +12,8 @@ public interface ProjectRepository extends AbstractRepository<Project>{
 
 	@Query("select p from Project p where p.team.id = ?1")
 	Collection<Project> findProjectsByTeamId(Integer id);
+    
+    List<Project> findByTeam(Team team);
 }
+
+	
