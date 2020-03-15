@@ -22,7 +22,7 @@ import com.spring.Service.UserRolService;
 
 @RestController
 @RequestMapping("/api/team")
-public class TeamApiController {
+public class TeamApiController extends AbstractApiController{
 
 	@Autowired
 	private TeamService teamService;

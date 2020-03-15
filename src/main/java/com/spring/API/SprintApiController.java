@@ -19,7 +19,7 @@ import com.spring.Service.SprintService;
 
 @RestController
 @RequestMapping("/api/sprint")
-public class SprintApiController {
+public class SprintApiController extends AbstractApiController{
 
 	@Autowired
 	private SprintService sprintService;
