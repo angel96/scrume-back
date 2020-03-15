@@ -35,16 +35,12 @@ public class Task extends BaseEntity {
 	@ManyToOne
 	@JsonProperty
 	private Project project;
+
 	@ManyToMany
 	@JsonProperty
 	private List<User> users;
-    
-    @ManyToMany
-	@JsonProperty
-	private List<UserAccount> users;
-    
+
 	@ManyToOne
 	@JsonProperty
 	private Column column;
 }
-	
