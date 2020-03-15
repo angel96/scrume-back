@@ -7,15 +7,16 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class SprintEditDto {
-	
-	private Integer id;
+@NoArgsConstructor
+public class WorkspaceSprintEditDto {
+
+	private String name;
 	
 	private Date startDate;
 	
 	private Date endDate;
-	
+
+	private Integer project;
 	
 }

@@ -12,6 +12,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -21,6 +22,7 @@ import com.spring.Security.UserAccountService;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { ScrumeApplication.class, H2Testing.class })
 @ActiveProfiles("test")
+@TestPropertySource(locations = "classpath:application-test.properties")
 @Transactional
 @AutoConfigureMockMvc
 public abstract class AbstractTest {
