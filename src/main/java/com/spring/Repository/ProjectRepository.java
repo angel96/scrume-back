@@ -1,12 +1,13 @@
 package com.spring.Repository;
 
 import java.util.Collection;
-import java.util.Optional;
+import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.spring.Model.Project;
+import com.spring.Model.Team;
 
 @Repository
 public interface ProjectRepository extends AbstractRepository<Project>{

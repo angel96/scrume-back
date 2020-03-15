@@ -17,6 +17,7 @@ import org.modelmapper.TypeToken;
 import com.spring.CustomObject.ProjectDto;
 import com.spring.Model.Project;
 import com.spring.Model.Team;
+import com.spring.Model.User;
 import com.spring.Repository.ProjectRepository;
 
 @Service
@@ -29,12 +30,19 @@ public class ProjectService extends AbstractService{
 	@Autowired
 	private TeamService teamService;
 	
+	@Autowired
+	private UserService userService;
+	
+	@Autowired
+	private UserRolService userRolService;
+	
 	public List<Project> findAll() {
 		return repository.findAll();
 	}
 	
 	public List<ProjectDto> findProjectByTeamId(Integer id) {
 		Team team = teamService.findOne(id);
+		validateSeeProject(team);
 		List<Project> lista = repository.findByTeam(team);
 		
 		ModelMapper mapper = new ModelMapper();
@@ -63,21 +71,57 @@ public class ProjectService extends AbstractService{
 	public ProjectDto save(ProjectDto projectDto) {
 		ModelMapper mapper = new ModelMapper();
 		Project projectEntity = mapper.map(projectDto, Project.class);
+		validateEditPermission(projectEntity);
 		Project projectDB = new Project();
 		Integer idTeam = projectEntity.getTeam().getId();
 		Team team = teamService.findOne(idTeam);
+		validateTeam(team);
 		projectDB.setTeam(team);
 		projectDB.setName(projectEntity.getName());
 		projectDB.setDescription(projectEntity.getDescription());
+		validateProject(projectDB);
 		repository.save(projectDB);
 		return mapper.map(projectDB, ProjectDto.class);
 	}
 	
 	public boolean delete(Integer id) {
 		boolean checkIfExists = this.repository.existsById(id);
+		Project projectDB = this.repository.getOne(id);
+		validateEditPermission(projectDB);
 		if (checkIfExists) {
 			repository.deleteById(id);
 		}
 		return checkIfExists;
+	}
+	
+	private void validateProject(Project project) {
+		if(project == null) {
+			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "the project is not in the database");
+		}
+	}
+	
+	private void validateTeam(Team team) {
+		if(team == null) {
+			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "the team is not in the database");
+		}
+	}
+	
+	private void validateSeeProject(Team team) {
+		User principal = this.userService.getUserByPrincipal();
+		if(!this.userRolService.isUserOnTeam(principal, team)) {
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must belong to the team to see the project");
+			
+		}
+	}
+	
+	private void validateEditPermission(Project project) {
+		User principal = this.userService.getUserByPrincipal();
+		Team team = project.getTeam();
+		if(!this.userRolService.isUserOnTeam(principal, team)) {
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must belong to the team to edit the project");
+		}	
+		if(!this.userRolService.isAdminOnTeam(principal, team)) {
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be an admin of the team to edit the project");
+		}
 	}
 }
