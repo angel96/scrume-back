@@ -25,7 +25,7 @@ public class SprintApiController {
 	private SprintService sprintService;
 	
 	@GetMapping("/list")
-	public List<SprintDto> save(@RequestParam(value="idProject") Integer idProject) throws Exception{
+	public List<SprintDto> list(@RequestParam(value="idProject") Integer idProject) throws Exception{
 		return this.sprintService.listByProject(idProject);
 	}
 	
