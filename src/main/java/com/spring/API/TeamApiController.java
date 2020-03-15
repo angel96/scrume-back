@@ -1,6 +1,10 @@
 package com.spring.API;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -45,14 +49,19 @@ public class TeamApiController {
 		this.userRolService.teamOut(idTeam);
 	}
 	
-	@PostMapping("/delete")
+	@DeleteMapping("/delete")
 	public void delete(@RequestParam(value="idTeam") Integer idTeam) throws Exception{
 		this.teamService.delete(idTeam);
 	}
 	
-	@PostMapping("/remove-from-team")
+	@GetMapping("/remove-from-team")
 	public void removeFromTeam(@RequestParam(value="idUser") Integer idUser, @RequestParam(value="idTeam") Integer idTeam) throws Exception{
 		this.userRolService.removeFromTeam(idUser, idTeam);
+	}
+	
+	@GetMapping("/list")
+	public List<TeamEditDto> list(@RequestParam(value="idUser") Integer idUser) throws Exception{
+		return this.userRolService.listAllTeamsOfAnUser(idUser);
 	}
 	
 	@PostMapping("/change-rol")
