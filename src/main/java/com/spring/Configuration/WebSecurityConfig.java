@@ -44,8 +44,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers(HttpMethod.GET, "/api/profile/delete/**").hasRole("ADMIN").antMatchers("/team/*")
 				.authenticated().antMatchers("/sprint/*").authenticated().antMatchers("/api/login/roles")
 				.authenticated().antMatchers("/api/project/**").authenticated().antMatchers("/api/workspace/**")
-				.authenticated().antMatchers("/api/history-task/**").authenticated();
-
+				.authenticated().antMatchers("/api/history-task/**").authenticated()
+				.antMatchers("/api/task/**").authenticated();
 	}
 
 	@Bean
