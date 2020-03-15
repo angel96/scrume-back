@@ -5,12 +5,18 @@ import java.util.Collection;
 
 import javax.transaction.Transactional;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
+import com.spring.CustomObject.SprintCreateDto;
 import com.spring.CustomObject.WorkspaceDto;
+import com.spring.CustomObject.WorkspaceEditDto;
+import com.spring.CustomObject.WorkspaceSprintEditDto;
+import com.spring.Model.Project;
+import com.spring.Model.Sprint;
 import com.spring.Model.Team;
 import com.spring.Model.UserAccount;
 import com.spring.Model.UserRol;
@@ -27,6 +33,12 @@ public class WorkspaceService extends AbstractService {
 
 	@Autowired
 	private ColumnService serviceColumns;
+
+	@Autowired
+	private SprintService serviceSprint;
+
+	@Autowired
+	private ProjectService serviceProject;
 
 	public UserRol findUserRoleByUserAccountAndTeam(int userAccount, int team) {
 		return this.repository.findUserRoleByUserAccountAndTeam(userAccount, team);
@@ -49,14 +61,41 @@ public class WorkspaceService extends AbstractService {
 		return w;
 	}
 
-	public Workspace save(Workspace workspace) {
+	public Workspace saveCreateWithSprint(WorkspaceSprintEditDto workspaceDto) throws Exception {
+
+		Project project = this.serviceProject.findOne(workspaceDto.getProject());
+
+		assert project != null;
+
+		SprintCreateDto dtoSprint = new SprintCreateDto();
+		dtoSprint.setStartDate(workspaceDto.getStartDate());
+		dtoSprint.setEndDate(workspaceDto.getEndDate());
+		dtoSprint.setProject(project);
+
+		Sprint sprint = this.serviceSprint.saveSprint(dtoSprint);
+
+		Workspace workspace = new Workspace(workspaceDto.getName(), sprint);
+		Workspace saveTo = this.repository.save(workspace);
+		this.serviceColumns.saveDefaultColumns(saveTo);
+		return saveTo;
+	}
+
+	public Workspace save(int idWorkspace, WorkspaceEditDto workspaceDto) {
 
 		Workspace saveTo = null;
 
-		if (workspace.getId() != 0) {
-			checkAuthorityAdmin(workspace.getId());
+		Workspace workspace = null;
+
+		if (idWorkspace != 0) {
+			checkAuthorityAdmin(idWorkspace);
+			workspace = this.repository.getOne(idWorkspace);
+			workspace.setName(workspaceDto.getName());
+			if (workspaceDto.getSprint() != 0) {
+				workspace.setSprint(this.serviceSprint.getOne(workspaceDto.getSprint()));
+			}
 			saveTo = this.repository.save(workspace);
 		} else {
+			workspace = new Workspace(workspaceDto.getName(), this.serviceSprint.getOne(workspaceDto.getSprint()));
 			saveTo = this.repository.save(workspace);
 			this.serviceColumns.saveDefaultColumns(saveTo);
 		}

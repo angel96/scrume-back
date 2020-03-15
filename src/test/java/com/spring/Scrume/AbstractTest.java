@@ -22,7 +22,7 @@ import com.spring.Security.UserAccountService;
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { ScrumeApplication.class, H2Testing.class })
 @ActiveProfiles("test")
-@TestPropertySource("classpath:application-test.properties")
+@TestPropertySource(locations = "classpath:application-test.properties")
 @Transactional
 @AutoConfigureMockMvc
 public abstract class AbstractTest {
