@@ -1,6 +1,5 @@
 package com.spring.Service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -11,11 +10,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.spring.CustomObject.TaskDto;
+import com.spring.Model.Column;
 import com.spring.Model.Project;
 import com.spring.Model.Task;
 import com.spring.Model.Team;
+import com.spring.Model.User;
 import com.spring.Model.UserAccount;
 import com.spring.Model.UserRol;
+import com.spring.Model.Workspace;
 import com.spring.Repository.TaskRepository;
 import com.spring.Security.UserAccountService;
 
@@ -29,8 +31,6 @@ public class TaskService extends AbstractService {
 	private ProjectService projectService;
 	@Autowired
 	private UserRolService userRolService;
-	@Autowired
-	private UserAccountService UAService;
 	@Autowired
 	private WorkspaceService workspaceService;
 
@@ -52,8 +52,15 @@ public class TaskService extends AbstractService {
 		taskDB.setPoints(taskEntity.getPoints());
 		taskDB.setProject(project);
 		taskDB.setTitle(taskEntity.getTitle());
-		taskDB.setUsers(Arrays.asList(UserAccountService.getPrincipal()));
-//		taskDB.setColumn(new Column();
+		User user = this.taskRepository.findUserByUserAccount(UserAccountService.getPrincipal().getId());
+		taskDB.setUsers(Arrays.asList(user));
+
+		Workspace w = this.taskRepository.findWorkspaceByProject(projectId);
+
+		Column c = this.taskRepository.findColumnToDoByWorkspace(w.getId());
+
+		taskDB.setColumn(c);
+
 		taskRepository.save(taskDB);
 		return mapper.map(taskDB, TaskDto.class);
 	}
@@ -66,13 +73,18 @@ public class TaskService extends AbstractService {
 		taskDB.setPoints(taskEntity.getPoints());
 		taskDB.setProject(taskEntity.getProject());
 		taskDB.setTitle(taskEntity.getTitle());
-		if (checkDistinctUser(taskDB.getUsers())) { //Preguntar a Front como van a hacer esto, porque si es, por ejemplo
-			List<UserAccount> temp = new ArrayList<>(); //mostrando una lista con todos los usuarios del equipo, esto no sirve
-			taskEntity.getUsers().add(UserAccountService.getPrincipal());
-			taskDB.setUsers(temp);
+		if (checkDistinctUser(taskDB.getUsers())) { // Preguntar a Front como van a hacer esto, porque si es, por
+													// ejemplo
+			// mostrando una lista con todos los usuarios del equipo, esto
+			// no sirve
+			User user = this.taskRepository.findUserByUserAccount(UserAccountService.getPrincipal().getId());
+			taskDB.setUsers(Arrays.asList(user));
 		}
-//		taskDB.setColumn();
+
+		taskDB.setColumn(task.getColumn());
+
 		taskRepository.save(taskDB);
+
 		return mapper.map(taskDB, TaskDto.class);
 	}
 
@@ -89,9 +101,8 @@ public class TaskService extends AbstractService {
 		return this.userRolService.isUserOnTeam(role.getUser(), team) ? true : false;
 	}
 
-	private boolean checkDistinctUser(List<UserAccount> account) {
+	private boolean checkDistinctUser(List<User> account) {
 		UserAccount principal = UserAccountService.getPrincipal();
-		return account.stream().noneMatch(x -> x.getUsername().equals(principal.getUsername()));
-
+		return account.stream().noneMatch(x -> x.getUserAccount().getUsername().equals(principal.getUsername()));
 	}
 }
