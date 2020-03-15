@@ -27,7 +27,7 @@ public class ProfileApiController extends AbstractApiController {
 	public ResponseEntity<?> findAll() {
 
 		ResponseEntity<?> result = null;
-
+		
 		try {
 			result = new ResponseEntity<>(service.findAll(), HttpStatus.OK);
 			super.logger.info("/api/list" + HttpStatus.OK);
@@ -46,7 +46,7 @@ public class ProfileApiController extends AbstractApiController {
 		ResponseEntity<?> result = null;
 
 		try {
-			result = new ResponseEntity<>(service.findOne(id), HttpStatus.OK);
+			
 		} catch (final Throwable oops) {
 			result = new ResponseEntity<>("Element not found", HttpStatus.NOT_FOUND);
 			super.logger.error("GET /api/profile/" + id + " =>" + HttpStatus.NOT_FOUND);
@@ -94,4 +94,5 @@ public class ProfileApiController extends AbstractApiController {
 
 		return result;
 	}
+
 }
