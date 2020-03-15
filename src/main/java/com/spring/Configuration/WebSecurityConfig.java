@@ -30,22 +30,22 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
-
 		// TODO: Probar si al cierre de sesion, sigue disponible la API
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
-		http.logout().logoutUrl("/api/login/logout").clearAuthentication(true).deleteCookies("JSESSIONID").and().csrf()
-				.disable();
 
 		http.httpBasic().authenticationEntryPoint(customBasicAuthenticationEntryPoint).and().authorizeRequests()
 				.antMatchers(HttpMethod.GET, "/api/profile/list").hasRole("ADMIN")
 				.antMatchers(HttpMethod.GET, "/api/profile/get/**").hasRole("ADMIN")
 				.antMatchers(HttpMethod.POST, "/api/profile/save").hasRole("ADMIN")
-				.antMatchers(HttpMethod.GET, "/api/profile/delete/**").hasRole("ADMIN").antMatchers("/team/*")
-				.authenticated().antMatchers("/sprint/*").authenticated().antMatchers("/api/login/roles")
-				.authenticated().antMatchers("/api/project/**").authenticated().antMatchers("/api/workspace/**")
-				.authenticated().antMatchers("/api/history-task/**").authenticated()
-				.antMatchers("/api/task/**").authenticated();
+				.antMatchers(HttpMethod.GET, "/api/profile/delete/**").hasRole("ADMIN")
+				.antMatchers("/team/*").authenticated()
+                .antMatchers("/sprint/*").authenticated()
+				.antMatchers("/api/login/roles").authenticated()
+				.antMatchers("/api/project/**").authenticated()
+				.antMatchers("/api/workspace/**").authenticated()
+				.antMatchers("/api/history-task/**").authenticated();
+                
+		        http.logout().logoutUrl("/api/login/logout").clearAuthentication(true).deleteCookies("JSESSIONID").and().csrf().disable();
 	}
 
 	@Bean

@@ -49,7 +49,7 @@ public class HistoryTaskService extends AbstractService {
 		Column origin = this.serviceColumn.findOne(dto.getOrigin());
 		Column destiny = this.serviceColumn.findOne(dto.getDestiny());
 		Task task = serviceTask.findOne(dto.getTask());
-		
+
 		Collection<Column> columns = this.repository.findColumnsByTeamId(task.getProject().getTeam().getId());
 
 		HistoryTaskDto dtoToReturn = null;
@@ -63,8 +63,7 @@ public class HistoryTaskService extends AbstractService {
 
 			dtoToReturn = new HistoryTaskDto(saveTo.getOrigin().getId(), saveTo.getDestiny().getId(),
 					saveTo.getTask().getId());
-			
-			task.setColumn(destiny);
+
 		}
 
 		return dtoToReturn;

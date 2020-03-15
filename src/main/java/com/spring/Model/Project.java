@@ -1,7 +1,6 @@
 package com.spring.Model;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
@@ -32,7 +31,7 @@ public class Project extends BaseEntity {
 	private String description;
 	
 	@JsonProperty
-	@ManyToOne(fetch = FetchType.EAGER)
+	@ManyToOne
 	private Team team;
 	
 	

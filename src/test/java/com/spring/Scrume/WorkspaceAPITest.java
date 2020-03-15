@@ -19,7 +19,7 @@ public class WorkspaceAPITest extends AbstractTest {
 
 	@PostConstruct
 	public void initBefore() {
-		super.authenticateOrUnauthenticate("angdellun@gmail.com");
+		super.authenticateOrUnauthenticate("angdellun");
 	}
 
 	@Test

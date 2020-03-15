@@ -22,9 +22,8 @@ public abstract class Actor extends BaseEntity {
 	 */
 	private static final long serialVersionUID = 7616122021941518198L;
 
-	@NotNull
 	@OneToOne(optional = false)
-	@JoinColumn(name = "user_account_id", nullable = false)
+	@NotNull
 	private UserAccount userAccount;
 
 }
