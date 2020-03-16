@@ -8,6 +8,9 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
@@ -22,7 +25,8 @@ public class Column extends BaseEntity {
 	private String name;
 
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "workspace_id", nullable = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	@JoinColumn(name = "workspace", nullable = false)
 	private Workspace workspace;
 
 }
