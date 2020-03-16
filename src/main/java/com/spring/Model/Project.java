@@ -11,6 +11,7 @@ import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.validator.constraints.SafeHtml;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -28,11 +29,13 @@ public class Project extends BaseEntity {
 	@NotBlank
 	@NotNull
 	@JsonProperty
+	@SafeHtml
 	private String name;
 	
 	@NotBlank
 	@NotNull
 	@JsonProperty
+	@SafeHtml
 	private String description;
 	
 	@JsonProperty

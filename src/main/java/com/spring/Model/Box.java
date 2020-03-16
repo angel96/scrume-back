@@ -9,6 +9,8 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import org.hibernate.validator.constraints.SafeHtml;
+
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,6 +28,7 @@ public class Box extends BaseEntity{
 	@NotNull
 	@Pattern(regexp = "BASIC|STANDARD|PRO")
 	@Column(name = "name", nullable = false)
+	@SafeHtml
     private String name;
  
 	@Min(0)

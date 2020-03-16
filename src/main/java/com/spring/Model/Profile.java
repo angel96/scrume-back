@@ -6,6 +6,8 @@ import javax.persistence.InheritanceType;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotEmpty;
 
+import org.hibernate.validator.constraints.SafeHtml;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -24,6 +26,7 @@ public class Profile extends BaseEntity {
 
 	@NotEmpty
 	@JsonProperty
+	@SafeHtml
 	private String name;
 	
 	@JsonProperty

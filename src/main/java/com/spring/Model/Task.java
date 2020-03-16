@@ -13,6 +13,7 @@ import javax.validation.constraints.NotBlank;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.validator.constraints.SafeHtml;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 
@@ -29,13 +30,18 @@ public class Task extends BaseEntity {
 
 	@JsonProperty
 	@NotBlank
+	@SafeHtml
 	private String title;
+	
 	@JsonProperty
 	@NotBlank
+	@SafeHtml
 	private String description;
+	
 	@JsonProperty
 	@Min(value = 0)
 	private Integer points;
+	
 	@ManyToOne
 	@JsonProperty
 	private Project project;

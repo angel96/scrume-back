@@ -10,6 +10,7 @@ import javax.validation.constraints.NotBlank;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.validator.constraints.SafeHtml;
 
 import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ import lombok.NoArgsConstructor;
 public class Column extends BaseEntity {
 
 	@NotBlank
+	@SafeHtml
 	private String name;
 
 	@ManyToOne(optional = false)
