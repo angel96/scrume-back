@@ -3,6 +3,7 @@ package com.spring.Service;
 import java.lang.reflect.Type;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -17,8 +18,10 @@ import com.spring.CustomObject.SprintCreateDto;
 import com.spring.CustomObject.SprintDatesDto;
 import com.spring.CustomObject.SprintDto;
 import com.spring.CustomObject.SprintEditDto;
+import com.spring.CustomObject.SprintStatisticsDto;
 import com.spring.Model.Project;
 import com.spring.Model.Sprint;
+import com.spring.Model.Task;
 import com.spring.Model.User;
 import com.spring.Repository.SprintRepository;
 
@@ -40,9 +43,29 @@ public class SprintService extends AbstractService {
 	
 	@Autowired
 	private WorkspaceService workspaceService;
+	
+	@Autowired
+	private TaskService taskService;
 
 	public Sprint getOne(int id) {
 		return this.sprintRepository.findById(id).orElse(null);
+	}
+	
+	public SprintStatisticsDto getStatistics(Integer idSprint) {
+		User principal = this.userService.getUserByPrincipal();
+		SprintStatisticsDto res = new SprintStatisticsDto();
+		Sprint sprint = this.getOne(idSprint);
+		this.validateSprint(sprint);
+		this.validateUserPrincipal(principal, sprint.getProject());
+		List<Task> tasksOfSprint = this.taskService.findBySprint(sprint);
+		List<Task> completeTasksOfSprint = this.taskService.findCompleteTaskBySprint(sprint);
+		Integer totalHP = tasksOfSprint.stream().collect(Collectors.summingInt(x-> x.getPoints()));
+		Integer completedHP = tasksOfSprint.stream().collect(Collectors.summingInt(x-> x.getPoints()));
+		res.setTotalTasks(tasksOfSprint.size());
+		res.setCompletedTasks(completeTasksOfSprint.size());
+		res.setTotalHP(totalHP);
+		res.setCompletedHP(completedHP);
+		return res;
 	}
 
 	public SprintCreateDto save(SprintCreateDto sprintCreateDto) throws Exception {
@@ -156,5 +179,6 @@ public class SprintService extends AbstractService {
 		Project project = this.projectService.findOne(sprintDatesDto.getIdProject());
 		return areValidDates(startDate, endDate, project, 0);
 	}
+
 
 }

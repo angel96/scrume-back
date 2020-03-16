@@ -16,6 +16,7 @@ import org.modelmapper.TypeToken;
 
 import com.spring.CustomObject.ProjectDto;
 import com.spring.Model.Project;
+import com.spring.Model.Sprint;
 import com.spring.Model.Team;
 import com.spring.Model.User;
 import com.spring.Repository.ProjectRepository;
@@ -140,4 +141,5 @@ public class ProjectService extends AbstractService{
 			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be an admin of the team to edit the project");
 		}
 	}
+
 }
