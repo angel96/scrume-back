@@ -5,7 +5,6 @@ import java.util.Collection;
 
 import javax.transaction.Transactional;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -18,6 +17,7 @@ import com.spring.CustomObject.WorkspaceSprintEditDto;
 import com.spring.Model.Project;
 import com.spring.Model.Sprint;
 import com.spring.Model.Team;
+import com.spring.Model.User;
 import com.spring.Model.UserAccount;
 import com.spring.Model.UserRol;
 import com.spring.Model.Workspace;
@@ -39,6 +39,15 @@ public class WorkspaceService extends AbstractService {
 
 	@Autowired
 	private ProjectService serviceProject;
+	
+	@Autowired
+	private UserRolService serviceUserRol;
+	
+	@Autowired
+	private TeamService serviceTeam;
+	
+	@Autowired
+	private UserService serviceUser;
 
 	public UserRol findUserRoleByUserAccountAndTeam(int userAccount, int team) {
 		return this.repository.findUserRoleByUserAccountAndTeam(userAccount, team);
@@ -61,23 +70,13 @@ public class WorkspaceService extends AbstractService {
 		return w;
 	}
 
-	public Workspace saveCreateWithSprint(WorkspaceSprintEditDto workspaceDto) throws Exception {
+	public void saveDefaultWorkspace(Sprint sprint) throws Exception {
 
-		Project project = this.serviceProject.findOne(workspaceDto.getProject());
-
-		assert project != null;
-
-		SprintCreateDto dtoSprint = new SprintCreateDto();
-		dtoSprint.setStartDate(workspaceDto.getStartDate());
-		dtoSprint.setEndDate(workspaceDto.getEndDate());
-		dtoSprint.setProject(project);
-
-		Sprint sprint = this.serviceSprint.saveSprint(dtoSprint);
-
-		Workspace workspace = new Workspace(workspaceDto.getName(), sprint);
+		Workspace workspace = new Workspace();
+		workspace.setName("Default");
+		workspace.setSprint(sprint);
 		Workspace saveTo = this.repository.save(workspace);
 		this.serviceColumns.saveDefaultColumns(saveTo);
-		return saveTo;
 	}
 
 	public Workspace save(int idWorkspace, WorkspaceEditDto workspaceDto) {
@@ -116,15 +115,16 @@ public class WorkspaceService extends AbstractService {
 		return check;
 	}
 
-	public void checkMembers(int team) {
-		UserAccount userAccount = UserAccountService.getPrincipal();
-		UserRol uRol = this.repository.findUserRoleByUserAccountAndTeam(userAccount.getId(), team);
-		// Param 0 -> Object to check
-		// Param 1 -> HttpStatus status
-		// Param 2 -> String message
-		super.assertValues(
-				Arrays.asList(new Object[] { userAccount, HttpStatus.FORBIDDEN, "The authentication is not correct" },
-						new Object[] { uRol, HttpStatus.FORBIDDEN, "You are not member of this team" }));
+	public void checkMembers(int teamId) {
+		User user = this.serviceUser.getUserByPrincipal();
+		Team team = this.serviceTeam.findOne(teamId);
+		if (user == null) {
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
+		}
+		if (!this.serviceUserRol.isUserOnTeam(user, team)) {
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must belong to the team");
+		}
+
 	}
 
 	private void checkAuthorityAdmin(int workspace) {
