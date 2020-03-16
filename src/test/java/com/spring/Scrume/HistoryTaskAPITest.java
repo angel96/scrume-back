@@ -18,7 +18,7 @@ public class HistoryTaskAPITest extends AbstractTest {
 
 	@PostConstruct
 	public void initBefore() {
-		super.authenticateOrUnauthenticate("angdellun");
+		super.authenticateOrUnauthenticate("angdellun@gmail.com");
 	}
 
 	@Test

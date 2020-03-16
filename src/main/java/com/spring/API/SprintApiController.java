@@ -19,13 +19,13 @@ import com.spring.Service.SprintService;
 
 @RestController
 @RequestMapping("/api/sprint")
-public class SprintApiController {
+public class SprintApiController extends AbstractApiController{
 
 	@Autowired
 	private SprintService sprintService;
 	
 	@GetMapping("/list")
-	public List<SprintDto> save(@RequestParam(value="idProject") Integer idProject) throws Exception{
+	public List<SprintDto> list(@RequestParam(value="idProject") Integer idProject) throws Exception{
 		return this.sprintService.listByProject(idProject);
 	}
 	
