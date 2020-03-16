@@ -3,10 +3,15 @@ package com.spring.Utiles;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.stream.Stream;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.client.HttpClientErrorException;
+
+import com.spring.Model.BaseEntity;
 
 public class Utiles {
 
@@ -50,5 +55,11 @@ public class Utiles {
 			System.out.println("La contraseña a encriptar es: " + str + "\n");
 			System.out.println("La contraseña codificada es: " + Utiles.encryptedPassword(str) + "\n");
 		} while (!str.equals("stop"));
+
+//		Object[] objects = { new Sprint(LocalDateTime.now(), LocalDateTime.now()), HttpStatus.ACCEPTED,
+//				"Probando el mensaje uno" };
+//		Object[] objects2 = { null, HttpStatus.BAD_GATEWAY, "Probando el mensaje 2" };
+//
+//		Utiles.assertValues(Arrays.asList(objects, objects2));
 	}
 }

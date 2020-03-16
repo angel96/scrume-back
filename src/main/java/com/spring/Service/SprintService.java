@@ -34,10 +34,27 @@ public class SprintService extends AbstractService {
 
 	@Autowired
 	private ProjectService projectService;
-	
+
 	@Autowired
 	private UserRolService userRolService;
-	
+
+	public Sprint getOne(int id) {
+		return this.sprintRepository.findById(id).orElse(null);
+	}
+
+	public Sprint saveSprint(SprintCreateDto sprintCreateDto) throws Exception {
+		ModelMapper modelMapper = new ModelMapper();
+		User principal = this.userService.getUserByPrincipal();
+		Sprint sprintEntity = modelMapper.map(sprintCreateDto, Sprint.class);
+		Project project = this.projectService.findOne(sprintEntity.getProject().getId());
+		this.validateProject(project);
+		sprintEntity.setProject(project);
+		this.validateDates(sprintEntity);
+		this.validateUserPrincipal(principal, sprintEntity.getProject());
+		Sprint sprintDB = this.sprintRepository.save(sprintEntity);
+		return sprintDB;
+	}
+
 	public SprintCreateDto save(SprintCreateDto sprintCreateDto) throws Exception {
 		ModelMapper modelMapper = new ModelMapper();
 		User principal = this.userService.getUserByPrincipal();
@@ -63,7 +80,7 @@ public class SprintService extends AbstractService {
 		Sprint sprintDB = this.sprintRepository.save(sprintEntity);
 		return modelMapper.map(sprintDB, SprintEditDto.class);
 	}
-	
+
 	public List<SprintDto> listByProject(Integer idProject) {
 		ModelMapper modelMapper = new ModelMapper();
 		User principal = this.userService.getUserByPrincipal();
@@ -71,67 +88,72 @@ public class SprintService extends AbstractService {
 		this.validateProject(project);
 		this.validateUserToList(principal, project);
 		List<Sprint> sprints = this.sprintRepository.findBySprintsOrdered(project);
-		Type listType = new TypeToken<List<SprintDto>>(){}.getType();
-		return modelMapper.map(sprints,listType);
+		Type listType = new TypeToken<List<SprintDto>>() {
+		}.getType();
+		return modelMapper.map(sprints, listType);
 	}
-	
+
 	private void validateUserToList(User principal, Project project) {
-		if(principal == null) {
+		if (principal == null) {
 			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
 		}
 
-		if(!this.userRolService.isUserOnTeam(principal, project.getTeam())) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must belong to the team of the project");
+		if (!this.userRolService.isUserOnTeam(principal, project.getTeam())) {
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,
+					"The user must belong to the team of the project");
 		}
 	}
 
-	private void validateUserPrincipal(User principal, Project project){
-		if(principal == null) {
+	private void validateUserPrincipal(User principal, Project project) {
+		if (principal == null) {
 			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
 		}
 
-		if(!this.userRolService.isUserOnTeam(principal, project.getTeam())) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must belong to the team of the project");
+		if (!this.userRolService.isUserOnTeam(principal, project.getTeam())) {
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,
+					"The user must belong to the team of the project");
 		}
-		if(!this.userRolService.isAdminOnTeam(principal, project.getTeam())) {
+		if (!this.userRolService.isAdminOnTeam(principal, project.getTeam())) {
 			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be an admin of the team");
 		}
-		
+
 	}
-	
-	private void validateProject(Project project){
-		if(project == null) {
+
+	private void validateProject(Project project) {
+		if (project == null) {
 			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "The project is not in the database");
 		}
 	}
-	
-	private void validateSprint(Sprint sprint){
-		if(sprint == null) {
+
+	private void validateSprint(Sprint sprint) {
+		if (sprint == null) {
 			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "The sprint is not in the database");
 		}
 	}
-	
-	private void validateDates(Sprint sprint){
-		if(sprint.getStartDate() == null) {
+
+	private void validateDates(Sprint sprint) {
+		if (sprint.getStartDate() == null) {
 			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "the start date cannot be null");
 		}
-		if(sprint.getEndDate() == null) {
+		if (sprint.getEndDate() == null) {
 			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "the end date cannot be null");
 		}
-		if(sprint.getEndDate().before(sprint.getStartDate())) {
-			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "The end date of the sprint must be later than the start date");
+		if (sprint.getEndDate().before(sprint.getStartDate())) {
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"The end date of the sprint must be later than the start date");
 		}
-		if(this.areValidDates(sprint.getStartDate(), sprint.getEndDate(), sprint.getProject())) {
-			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "Sprint dates overlap with an existing sprint");
+		if (!this.areValidDates(sprint.getStartDate(), sprint.getEndDate(), sprint.getProject())) {
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"Sprint dates overlap with an existing sprint");
 		}
-		
+
 	}
 
 	public boolean areValidDates(Date startDate, Date endDate, Project project) {
 		boolean res;
-		if(this.sprintRepository.areValidDates(startDate, endDate, project) == 0) {
+		if (this.sprintRepository.areValidDates(startDate, endDate, project) == 0) {
 			res = true;
-		}else {
+		} else {
 			res = false;
 		}
 		return res;
