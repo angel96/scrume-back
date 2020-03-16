@@ -50,7 +50,7 @@ public class TeamService extends AbstractService {
 		this.validateEditPermission(principal, teamEntity);
 		this.validateUserPrincipal(principal);
 		teamEntity.setName(teamEditDto.getName());
-		Team teamDB = this.teamRepository.save(teamEntity);
+		Team teamDB = this.teamRepository.saveAndFlush(teamEntity);
 		return modelMapper.map(teamDB, TeamEditDto.class);
 	}
 

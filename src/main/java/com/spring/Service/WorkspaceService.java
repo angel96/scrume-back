@@ -75,7 +75,7 @@ public class WorkspaceService extends AbstractService {
 		Workspace workspace = new Workspace();
 		workspace.setName("Default");
 		workspace.setSprint(sprint);
-		Workspace saveTo = this.repository.save(workspace);
+		Workspace saveTo = this.repository.saveAndFlush(workspace);
 		this.serviceColumns.saveDefaultColumns(saveTo);
 	}
 
@@ -95,7 +95,7 @@ public class WorkspaceService extends AbstractService {
 			saveTo = this.repository.save(workspace);
 		} else {
 			workspace = new Workspace(workspaceDto.getName(), this.serviceSprint.getOne(workspaceDto.getSprint()));
-			saveTo = this.repository.save(workspace);
+			saveTo = this.repository.saveAndFlush(workspace);
 			this.serviceColumns.saveDefaultColumns(saveTo);
 		}
 
