@@ -36,12 +36,6 @@ public class WorkspaceApiController extends AbstractApiController {
 		return this.serviceWorkspace.findOne(workspace);
 	}
 
-	@PostMapping("/create-with-sprint")
-	public Workspace save(@RequestBody WorkspaceSprintEditDto workspace) throws Exception {
-		return this.serviceWorkspace.saveCreateWithSprint(workspace);
-	}
-
-
 	@PostMapping("/save")
 	public Workspace save(@RequestBody WorkspaceEditDto workspace) {
 		return this.serviceWorkspace.save(0, workspace);

@@ -70,23 +70,13 @@ public class WorkspaceService extends AbstractService {
 		return w;
 	}
 
-	public Workspace saveCreateWithSprint(WorkspaceSprintEditDto workspaceDto) throws Exception {
+	public void saveDefaultWorkspace(Sprint sprint) throws Exception {
 
-		Project project = this.serviceProject.findOne(workspaceDto.getProject());
-
-		assert project != null;
-
-		SprintCreateDto dtoSprint = new SprintCreateDto();
-		dtoSprint.setStartDate(workspaceDto.getStartDate());
-		dtoSprint.setEndDate(workspaceDto.getEndDate());
-		dtoSprint.setProject(project);
-
-		Sprint sprint = this.serviceSprint.saveSprint(dtoSprint);
-
-		Workspace workspace = new Workspace(workspaceDto.getName(), sprint);
+		Workspace workspace = new Workspace();
+		workspace.setName("Default");
+		workspace.setSprint(sprint);
 		Workspace saveTo = this.repository.save(workspace);
 		this.serviceColumns.saveDefaultColumns(saveTo);
-		return saveTo;
 	}
 
 	public Workspace save(int idWorkspace, WorkspaceEditDto workspaceDto) {

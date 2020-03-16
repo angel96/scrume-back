@@ -37,22 +37,12 @@ public class SprintService extends AbstractService {
 
 	@Autowired
 	private UserRolService userRolService;
+	
+	@Autowired
+	private WorkspaceService workspaceService;
 
 	public Sprint getOne(int id) {
 		return this.sprintRepository.findById(id).orElse(null);
-	}
-
-	public Sprint saveSprint(SprintCreateDto sprintCreateDto) throws Exception {
-		ModelMapper modelMapper = new ModelMapper();
-		User principal = this.userService.getUserByPrincipal();
-		Sprint sprintEntity = modelMapper.map(sprintCreateDto, Sprint.class);
-		Project project = this.projectService.findOne(sprintEntity.getProject().getId());
-		this.validateProject(project);
-		sprintEntity.setProject(project);
-		this.validateDates(sprintEntity);
-		this.validateUserPrincipal(principal, sprintEntity.getProject());
-		Sprint sprintDB = this.sprintRepository.save(sprintEntity);
-		return sprintDB;
 	}
 
 	public SprintCreateDto save(SprintCreateDto sprintCreateDto) throws Exception {
@@ -65,6 +55,7 @@ public class SprintService extends AbstractService {
 		this.validateDates(sprintEntity);
 		this.validateUserPrincipal(principal, sprintEntity.getProject());
 		Sprint sprintDB = this.sprintRepository.save(sprintEntity);
+		this.workspaceService.saveDefaultWorkspace(sprintDB);
 		return modelMapper.map(sprintDB, SprintCreateDto.class);
 	}
 
