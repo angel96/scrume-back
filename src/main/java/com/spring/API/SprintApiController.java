@@ -1,6 +1,5 @@
 package com.spring.API;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +14,7 @@ import com.spring.CustomObject.SprintCreateDto;
 import com.spring.CustomObject.SprintDatesDto;
 import com.spring.CustomObject.SprintDto;
 import com.spring.CustomObject.SprintEditDto;
+import com.spring.CustomObject.SprintStatisticsDto;
 import com.spring.Service.SprintService;
 
 @RestController
@@ -27,6 +27,11 @@ public class SprintApiController extends AbstractApiController{
 	@GetMapping("/list")
 	public List<SprintDto> list(@RequestParam(value="idProject") Integer idProject) throws Exception{
 		return this.sprintService.listByProject(idProject);
+	}
+	
+	@GetMapping("/statistics")
+	public SprintStatisticsDto getStatistics(@RequestParam(value="idSprint") Integer idSprint) throws Exception{
+		return this.sprintService.getStatistics(idSprint);
 	}
 	
 	@GetMapping("/check-dates")

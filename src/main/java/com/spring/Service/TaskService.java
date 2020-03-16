@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import com.spring.CustomObject.TaskDto;
 import com.spring.Model.Column;
 import com.spring.Model.Project;
+import com.spring.Model.Sprint;
 import com.spring.Model.Task;
 import com.spring.Model.Team;
 import com.spring.Model.User;
@@ -34,6 +35,14 @@ public class TaskService extends AbstractService {
 	@Autowired
 	private WorkspaceService workspaceService;
 
+	public List<Task> findBySprint(Sprint sprint){
+		return this.taskRepository.findBySprint(sprint);
+	}
+	
+	public List<Task> findCompleteTaskBySprint(Sprint sprint){
+		return this.taskRepository.findCompleteTaskBySprint(sprint);
+	}
+	
 	public Task findOne(int id) {
 		return this.taskRepository.findById(id).orElse(null);
 	}
@@ -61,7 +70,7 @@ public class TaskService extends AbstractService {
 
 		taskDB.setColumn(c);
 
-		taskRepository.save(taskDB);
+		taskRepository.saveAndFlush(taskDB);
 		return mapper.map(taskDB, TaskDto.class);
 	}
 
@@ -83,7 +92,7 @@ public class TaskService extends AbstractService {
 
 		taskDB.setColumn(task.getColumn());
 
-		taskRepository.save(taskDB);
+		taskRepository.saveAndFlush(taskDB);
 
 		return mapper.map(taskDB, TaskDto.class);
 	}

@@ -6,6 +6,8 @@ import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.SortedMap;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -38,12 +40,28 @@ public class Utiles {
 		return s.replaceAll("[^a-zA-Z0-9$]", "");
 	}
 
-	public static Map<String, Integer> leeFichero(String nombreFichero) {
-		Map<String, Integer> result = null;
+	public static SortedMap<String, Integer> leeFichero(String nombreFichero) {
+		SortedMap<String, Integer> result = new TreeMap<String, Integer>();
 
 		try {
-			result = Files.lines(Paths.get(nombreFichero)).collect(
-					Collectors.toMap(x -> String.valueOf(x.split("=")[0]), x -> Integer.valueOf(x.split("=")[1])));
+
+			Files.lines(Paths.get(nombreFichero)).forEach(x -> {
+
+				String entityName = "";
+				Integer id = 0;
+
+				try {
+					entityName = x.split("=")[0].equals("null") || x.split("=")[0].equals(null) ? "" : x.split("=")[0];
+					id = x.split("=")[1].equals("null") || x.split("=")[1].equals(null) ? 0
+							: Integer.valueOf(x.split("=")[1]);
+
+				} catch (NumberFormatException e) {
+					entityName = x.split("=")[0].equals("null") || x.split("=")[0].equals(null) ? "" : x.split("=")[0];
+				}
+
+				result.put(entityName, id);
+			});
+
 		} catch (IOException e) {
 			System.out.println("Error en la lectura del fichero:" + e);
 		}
@@ -51,13 +69,13 @@ public class Utiles {
 		return result;
 	}
 
-	public static void escribeFichero(Map<String, Integer> map, String nombreFichero) {
+	public static void escribeFichero(SortedMap<String, Integer> map, String nombreFichero) {
+		String content = " ";
+
 		try {
-
-			String content = "";
-
 			if (map.size() > 0) {
-				content = map.keySet().stream().map(x -> x + "=" + String.valueOf(map.get(x)) + "\n")
+				content = map.keySet().stream()
+						.map(x -> x + "=" + String.valueOf(map.get(x) == null ? 0 : map.get(x)) + "\n")
 						.collect(Collectors.joining());
 			}
 
@@ -65,6 +83,7 @@ public class Utiles {
 		} catch (IOException e) {
 			System.out.println("No se ha podido generar el fichero: " + e);
 		}
+
 	}
 
 	public static void main(String[] args) throws IOException {
@@ -84,10 +103,5 @@ public class Utiles {
 			System.out.println("La contraseña codificada es: " + Utiles.encryptedPassword(str) + "\n");
 		} while (!str.equals("stop"));
 
-//		Object[] objects = { new Sprint(LocalDateTime.now(), LocalDateTime.now()), HttpStatus.ACCEPTED,
-//				"Probando el mensaje uno" };
-//		Object[] objects2 = { null, HttpStatus.BAD_GATEWAY, "Probando el mensaje 2" };
-//
-//		Utiles.assertValues(Arrays.asList(objects, objects2));
 	}
 }

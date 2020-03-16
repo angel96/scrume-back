@@ -37,7 +37,7 @@ public class UserRolService extends AbstractService {
 
 	public UserRol save(UserRol userRol) throws Exception {
 		try {		
-			return this.userRolRepository.save(userRol);
+			return this.userRolRepository.saveAndFlush(userRol);
 		}catch(Exception e) {
 			throw new Exception("Error when saving the user rol");
 		}
@@ -119,7 +119,7 @@ public class UserRolService extends AbstractService {
 		UserRol userRol = this.findByUserAndTeam(user, team);
 		this.validateUserRol(userRol);
 		userRol.setAdmin(admin);
-		UserRol userRolDB = this.userRolRepository.save(userRol);
+		UserRol userRolDB = this.userRolRepository.saveAndFlush(userRol);
 		return userRolDB;
 	}
 	

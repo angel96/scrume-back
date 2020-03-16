@@ -21,7 +21,6 @@ public class HistoryTaskAPITest extends AbstractTest {
 		super.authenticateOrUnauthenticate("angdellun@gmail.com");
 	}
 
-
 	@After
 	public void initFinish() {
 		super.authenticateOrUnauthenticate(null);

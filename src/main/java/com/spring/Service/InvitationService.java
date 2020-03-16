@@ -60,7 +60,7 @@ public class InvitationService extends AbstractService {
 		
 		invitationEntity.setSender(principal);
 		
-		Invitation invitationDB = this.invitationRepository.save(invitationEntity);
+		Invitation invitationDB = this.invitationRepository.saveAndFlush(invitationEntity);
 		return modelMapper.map(invitationDB, InvitationSenderDto.class);
 	}
 
@@ -74,7 +74,7 @@ public class InvitationService extends AbstractService {
 		Invitation invitationEntity = this.invitationRepository.findById(invitationRecipientDto.getId()).orElse(null);
 		this.validateInvitationEntityAnswer(invitationEntity);
 		invitationEntity.setIsAccepted(invitationRecipientDto.getIsAccepted());
-		Invitation invitationDB = this.invitationRepository.save(invitationEntity);
+		Invitation invitationDB = this.invitationRepository.saveAndFlush(invitationEntity);
 		if (invitationDB.getIsAccepted() != null && invitationDB.getIsAccepted()) {
 			UserRol userRol = new UserRol();
 			userRol.setAdmin(false);
