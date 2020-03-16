@@ -29,12 +29,24 @@ public class ProjectService extends AbstractService{
 	@Autowired
 	private TeamService teamService;
 	
+	@Autowired
+	private UserService userService;
+	
+	@Autowired
+	private UserRolService userRolService;
+	
+	@Autowired
+	private SprintService sprintService;
+	
 	public List<Project> findAll() {
 		return repository.findAll();
 	}
 	
 	public List<ProjectDto> findProjectByTeamId(Integer id) {
+		User principal = this.userService.getUserByPrincipal();
 		Team team = teamService.findOne(id);
+		validateTeam(team);
+		validateSeeProject(team, principal);
 		List<Project> lista = repository.findByTeam(team);
 		
 		ModelMapper mapper = new ModelMapper();
@@ -48,11 +60,15 @@ public class ProjectService extends AbstractService{
 	}
 	
 	public ProjectDto update(ProjectDto projectDto, Integer idProject) {
+		User principal = this.userService.getUserByPrincipal();
 		ModelMapper mapper = new ModelMapper();
 		Project projectEntity = mapper.map(projectDto, Project.class);
+		validateProject(projectEntity);
+		validateEditPermission(projectEntity, principal);
 		Project projectDB = this.repository.getOne(idProject);
 		Integer idTeam = projectEntity.getTeam().getId();
 		Team team = teamService.findOne(idTeam);
+		validateTeam(team);
 		projectDB.setTeam(team);
 		projectDB.setName(projectEntity.getName());
 		projectDB.setDescription(projectEntity.getDescription());
@@ -62,7 +78,9 @@ public class ProjectService extends AbstractService{
 	
 	public ProjectDto save(ProjectDto projectDto) {
 		ModelMapper mapper = new ModelMapper();
+		User principal = this.userService.getUserByPrincipal();
 		Project projectEntity = mapper.map(projectDto, Project.class);
+		validateEditPermission(projectEntity, principal);
 		Project projectDB = new Project();
 		Integer idTeam = projectEntity.getTeam().getId();
 		Team team = teamService.findOne(idTeam);
@@ -74,10 +92,42 @@ public class ProjectService extends AbstractService{
 	}
 	
 	public boolean delete(Integer id) {
+		User principal = this.userService.getUserByPrincipal();
 		boolean checkIfExists = this.repository.existsById(id);
+		Project projectDB = this.repository.getOne(id);
+		validateEditPermission(projectDB, principal);
 		if (checkIfExists) {
 			repository.deleteById(id);
 		}
 		return checkIfExists;
+	}
+	
+	private void validateProject(Project project) {
+		if(project == null) {
+			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "the project is not in the database");
+		}
+	}
+	
+	private void validateTeam(Team team) {
+		if(team == null) {
+			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "the team is not in the database");
+		}
+	}
+	
+	private void validateSeeProject(Team team, User principal) {
+		if(!this.userRolService.isUserOnTeam(principal, team)) {
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must belong to the team to see the project");
+			
+		}
+	}
+	
+	private void validateEditPermission(Project project, User principal) {
+		Team team = project.getTeam();
+		if(!this.userRolService.isUserOnTeam(principal, team)) {
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must belong to the team to edit the project");
+		}	
+		if(!this.userRolService.isAdminOnTeam(principal, team)) {
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be an admin of the team to edit the project");
+		}
 	}
 }
