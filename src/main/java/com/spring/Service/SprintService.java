@@ -142,16 +142,16 @@ public class SprintService extends AbstractService {
 			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"The end date of the sprint must be later than the start date");
 		}
-		if (!this.areValidDates(sprint.getStartDate(), sprint.getEndDate(), sprint.getProject())) {
+		if (!this.areValidDates(sprint.getStartDate(), sprint.getEndDate(), sprint.getProject(), sprint.getId())) {
 			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"Sprint dates overlap with an existing sprint");
 		}
 
 	}
 
-	public boolean areValidDates(Date startDate, Date endDate, Project project) {
+	public boolean areValidDates(Date startDate, Date endDate, Project project, Integer idSprint) {
 		boolean res;
-		if (this.sprintRepository.areValidDates(startDate, endDate, project) == 0) {
+		if (this.sprintRepository.areValidDates(startDate, endDate, project, idSprint) == 0) {
 			res = true;
 		} else {
 			res = false;
@@ -163,7 +163,7 @@ public class SprintService extends AbstractService {
 		Date startDate = sprintDatesDto.getStartDate();
 		Date endDate = sprintDatesDto.getEndDate();
 		Project project = this.projectService.findOne(sprintDatesDto.getIdProject());
-		return areValidDates(startDate, endDate, project);
+		return areValidDates(startDate, endDate, project, 0);
 	}
 
 }

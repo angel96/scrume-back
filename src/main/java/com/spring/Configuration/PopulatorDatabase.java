@@ -147,11 +147,11 @@ public class PopulatorDatabase implements CommandLineRunner {
 		Date date = new GregorianCalendar(2020, Calendar.DECEMBER, 30).getTime();
 		
 		User user2 = new User();
-		user.setBox(basicBox);
+		user2.setBox(basicBox);
 		Date date2 = new GregorianCalendar(2020, Calendar.DECEMBER, 29).getTime();
 		
 		User user3 = new User();
-		user.setBox(basicBox);
+		user3.setBox(basicBox);
 		Date date3 = new GregorianCalendar(2020, Calendar.DECEMBER, 28).getTime();
 		
 
@@ -161,32 +161,46 @@ public class PopulatorDatabase implements CommandLineRunner {
 		user.setSurnames("surnames");
 		user.setUserAccount(userAccount);
 		userRepository.save(user);
-
-		Administrator actor = new Administrator();
-		actor.setUserAccount(account);
-		Administrator actor_saved_1 = repositoryAdmin.save(actor);
-
-		Administrator actor2 = new Administrator();
-		actor2.setUserAccount(account2);
-		Administrator actor_saved_2 = repositoryAdmin.save(actor2);
 		
-		Administrator actor3 = new Administrator();
-		actor3.setUserAccount(account3);
-		Administrator actor_saved_3 = repositoryAdmin.save(actor3);
+		user2.setEndingBoxDate(date2);
+		user2.setName("Name2");
+		user2.setNick("nick2");
+		user2.setSurnames("surnames2");
+		user2.setUserAccount(account2);
+		userRepository.save(user2);
 		
-		Administrator actor4 = new Administrator();
-		actor4.setUserAccount(account4);
-		Administrator actor_saved_4 = repositoryAdmin.save(actor4);
-		
-		Administrator actor5 = new Administrator();
-		actor5.setUserAccount(account5);
-		Administrator actor_saved_5 = repositoryAdmin.save(actor5);
+		user3.setEndingBoxDate(date3);
+		user3.setName("Name3");
+		user3.setNick("nick3");
+		user3.setSurnames("surnames3");
+		user3.setUserAccount(account3);
+		userRepository.save(user3);
 
-		Profile profile1 = repositoryProfile.save(new Profile("Perfil 1", actor));
-		Profile profile2 = repositoryProfile.save(new Profile("Perfil 2", actor2));
-		Profile profile3 = repositoryProfile.save(new Profile("Perfil 3", actor3));
-		Profile profile4 = repositoryProfile.save(new Profile("Perfil 4", actor4));
-		Profile profile5 = repositoryProfile.save(new Profile("Perfil 5", actor5));
+//		Administrator actor = new Administrator();
+//		actor.setUserAccount(account);
+//		Administrator actor_saved_1 = repositoryAdmin.save(actor);
+//
+//		Administrator actor2 = new Administrator();
+//		actor2.setUserAccount(account2);
+//		Administrator actor_saved_2 = repositoryAdmin.save(actor2);
+//		
+//		Administrator actor3 = new Administrator();
+//		actor3.setUserAccount(account3);
+//		Administrator actor_saved_3 = repositoryAdmin.save(actor3);
+//		
+//		Administrator actor4 = new Administrator();
+//		actor4.setUserAccount(account4);
+//		Administrator actor_saved_4 = repositoryAdmin.save(actor4);
+//		
+//		Administrator actor5 = new Administrator();
+//		actor5.setUserAccount(account5);
+//		Administrator actor_saved_5 = repositoryAdmin.save(actor5);
+//
+//		Profile profile1 = repositoryProfile.save(new Profile("Perfil 1", actor));
+//		Profile profile2 = repositoryProfile.save(new Profile("Perfil 2", actor2));
+//		Profile profile3 = repositoryProfile.save(new Profile("Perfil 3", actor3));
+//		Profile profile4 = repositoryProfile.save(new Profile("Perfil 4", actor4));
+//		Profile profile5 = repositoryProfile.save(new Profile("Perfil 5", actor5));
 
 		Team team1 = repositoryTeam.save(new Team("Equipo 1"));
 		Team team2 = repositoryTeam.save(new Team("Equipo 2"));
@@ -207,27 +221,27 @@ public class PopulatorDatabase implements CommandLineRunner {
 		LocalDateTime localDateTime = LocalDateTime.now();
 		Date localDate = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 		LocalDateTime localDateTime1 = LocalDateTime.of(2020, 4, 03, 10, 15);
-		Date localDate1 = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-		LocalDateTime localDateTime2 = LocalDateTime.of(2020, 4, 13, 10, 15);
-		Date localDate2 = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-		LocalDateTime localDateTime3 = LocalDateTime.of(2020, 4, 24, 10, 15);
-		Date localDate3 = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-		LocalDateTime localDateTime4 = LocalDateTime.of(2020, 5, 05, 10, 15);
-		Date localDate4 = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-		LocalDateTime localDateTime5 = LocalDateTime.of(2020, 5, 25, 10, 15);
-		Date localDate5 = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-		LocalDateTime localDateTime6 = LocalDateTime.of(2020, 6, 05, 10, 15);
-		Date localDate6 = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
-		LocalDateTime localDateTime7 = LocalDateTime.of(2020, 6, 25, 10, 15);
-		Date localDate7 = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+		Date localDate1 = Date.from(localDateTime1.atZone(ZoneId.systemDefault()).toInstant());
+		LocalDateTime localDateTime2 = LocalDateTime.of(2020, 5, 13, 10, 15);
+		Date localDate2 = Date.from(localDateTime2.atZone(ZoneId.systemDefault()).toInstant());
+		LocalDateTime localDateTime3 = LocalDateTime.of(2020, 6, 24, 10, 15);
+		Date localDate3 = Date.from(localDateTime3.atZone(ZoneId.systemDefault()).toInstant());
+		LocalDateTime localDateTime4 = LocalDateTime.of(2020, 7, 05, 10, 15);
+		Date localDate4 = Date.from(localDateTime4.atZone(ZoneId.systemDefault()).toInstant());
+		LocalDateTime localDateTime5 = LocalDateTime.of(2020, 8, 25, 10, 15);
+		Date localDate5 = Date.from(localDateTime5.atZone(ZoneId.systemDefault()).toInstant());
+		LocalDateTime localDateTime6 = LocalDateTime.of(2020, 9, 05, 10, 15);
+		Date localDate6 = Date.from(localDateTime6.atZone(ZoneId.systemDefault()).toInstant());
+		LocalDateTime localDateTime7 = LocalDateTime.of(2020, 10, 25, 10, 15);
+		Date localDate7 = Date.from(localDateTime7.atZone(ZoneId.systemDefault()).toInstant());
 		LocalDateTime localDateTime8 = LocalDateTime.of(2020, 7, 05, 10, 15);
-		Date localDate8 = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+		Date localDate8 = Date.from(localDateTime8.atZone(ZoneId.systemDefault()).toInstant());
 		LocalDateTime localDateTime9 = LocalDateTime.of(2020, 7, 25, 10, 15);
-		Date localDate9 = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+		Date localDate9 = Date.from(localDateTime9.atZone(ZoneId.systemDefault()).toInstant());
 		LocalDateTime localDateTime10 = LocalDateTime.of(2020, 8, 25, 10, 15);
-		Date localDate10 = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+		Date localDate10 = Date.from(localDateTime10.atZone(ZoneId.systemDefault()).toInstant());
 		LocalDateTime localDateTime11 = LocalDateTime.of(2020, 8, 25, 10, 15);
-		Date localDate11 = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+		Date localDate11 = Date.from(localDateTime11.atZone(ZoneId.systemDefault()).toInstant());
 
 		Sprint sprint1 = this.repositorySprint.save(new Sprint(localDate, localDate1, project1));
 		Sprint sprint2 = this.repositorySprint.save(new Sprint(localDate2, localDate3, project1));
