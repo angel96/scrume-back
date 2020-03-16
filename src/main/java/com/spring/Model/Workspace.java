@@ -9,6 +9,7 @@ import javax.validation.constraints.NotBlank;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
+import org.hibernate.validator.constraints.SafeHtml;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,6 +23,7 @@ import lombok.NoArgsConstructor;
 public class Workspace extends BaseEntity {
 
 	@NotBlank(message = "No puede ser vacio el nombre")
+	@SafeHtml
 	private String name;
 	
 	@ManyToOne(optional = false)

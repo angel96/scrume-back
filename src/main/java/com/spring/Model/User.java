@@ -13,6 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.validator.constraints.SafeHtml;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.AllArgsConstructor;
@@ -31,19 +32,23 @@ public class User extends Actor{
 	@NotBlank
 	@NotNull
 	@Column(name = "name", nullable = false)
+	@SafeHtml
     private String name;
  
 	@NotBlank
 	@NotNull
 	@Column(name = "surnames", nullable = false)
+	@SafeHtml
     private String surnames;
 	
 	@NotBlank
 	@NotNull
     @Column(name = "nick", nullable = false, unique = true)
+	@SafeHtml
     private String nick;
 	
 	@Column(name = "gitUser")
+	@SafeHtml
     private String gitUser;
 	
 	@Lob

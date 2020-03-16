@@ -17,6 +17,7 @@ import org.modelmapper.TypeToken;
 import com.spring.CustomObject.ProjectDto;
 import com.spring.Model.Project;
 import com.spring.Model.Team;
+import com.spring.Model.User;
 import com.spring.Repository.ProjectRepository;
 
 @Service
@@ -57,6 +58,15 @@ public class ProjectService extends AbstractService{
 	
 	public Project findOne(Integer id) {
 		return repository.findById(id).orElse(null);
+	}
+	
+	public ProjectDto getOne(Integer idProject) {
+		User principal = this.userService.getUserByPrincipal();
+		ModelMapper mapper = new ModelMapper();
+		Project projectEntity = this.repository.getOne(idProject);
+		validateProject(projectEntity);
+		validateSeeProject(projectEntity.getTeam(), principal);
+		return mapper.map(projectEntity, ProjectDto.class);
 	}
 	
 	public ProjectDto update(ProjectDto projectDto, Integer idProject) {
