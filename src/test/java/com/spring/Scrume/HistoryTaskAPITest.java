@@ -21,25 +21,6 @@ public class HistoryTaskAPITest extends AbstractTest {
 		super.authenticateOrUnauthenticate("angdellun@gmail.com");
 	}
 
-	@Test
-	public void historicalByWorkspace() throws Exception {
-
-		super.mockMvc
-				.perform(get("/api/profile/list").contentType(MediaType.APPLICATION_JSON)
-						.with(user(UserAccountService.getPrincipal())))
-				.andExpect(status().isOk()).andExpect(jsonPath("$[0].name", is("Perfil 1")));
-
-	}
-
-	@Test
-	public void moveTask() throws Exception {
-
-		super.mockMvc
-				.perform(get("/api/profile/list").contentType(MediaType.APPLICATION_JSON)
-						.with(user(UserAccountService.getPrincipal())))
-				.andExpect(status().isOk()).andExpect(jsonPath("$[0].name", is("Perfil 1")));
-
-	}
 
 	@After
 	public void initFinish() {
