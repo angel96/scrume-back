@@ -52,7 +52,7 @@ import com.spring.Utiles.Utiles;
 @Component
 public class PopulatorDatabase implements CommandLineRunner {
 
-	private static final String file = "files/entities.txt";
+	private static final String file = "entities.properties";
 
 	protected final Logger logger = Logger.getLogger(PopulatorDatabase.class);
 

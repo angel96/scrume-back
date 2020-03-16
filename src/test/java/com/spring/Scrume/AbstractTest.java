@@ -37,9 +37,13 @@ public abstract class AbstractTest {
 
 	@PostConstruct
 	public void init() {
-		entities = Utiles.leeFichero("files/entities.txt");
+		entities = Utiles.leeFichero("entities.properties");
 	}
 
+	public SortedMap<String, Integer> entities(){
+		return entities;
+	}
+	
 	public void authenticateOrUnauthenticate(String username) {
 		UserDetails userDetails = username == null ? null : service.loadUserByUsername(username);
 		Authentication authenticationToken = new TestingAuthenticationToken(userDetails, null);
