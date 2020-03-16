@@ -28,9 +28,14 @@ public class ProjectApiController extends AbstractApiController {
 	@Autowired
 	private ProjectService projectService;
 	
+	@GetMapping("/get")
+	public ProjectDto get(@RequestParam(value="id") Integer idProject) throws Exception {
+		return this.projectService.getOne(idProject);
+	}
+	
 	@GetMapping("/list")
-	public List<ProjectDto> list(@RequestParam(value="id") Integer idProject) throws Exception {
-		return this.projectService.findProjectByTeamId(idProject);
+	public List<ProjectDto> list(@RequestParam(value="id") Integer idTeam) throws Exception {
+		return this.projectService.findProjectByTeamId(idTeam);
 	}
 	
 	@PostMapping("/save")

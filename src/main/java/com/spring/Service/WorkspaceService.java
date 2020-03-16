@@ -106,12 +106,12 @@ public class WorkspaceService extends AbstractService {
 	public boolean delete(int workspace) {
 
 		Boolean check = this.repository.existsById(workspace);
-
-		if (check) {
-			checkAuthorityAdmin(workspace);
-			this.serviceColumns.deleteColumns(workspace);
+//
+//		if (check) {
+//			checkAuthorityAdmin(workspace);
+//			this.serviceColumns.deleteColumns(workspace);
 			this.repository.deleteById(workspace);
-		}
+//		}
 
 		return check;
 	}
