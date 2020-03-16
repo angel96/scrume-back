@@ -7,6 +7,9 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,8 +23,10 @@ public class Workspace extends BaseEntity {
 
 	@NotBlank(message = "No puede ser vacio el nombre")
 	private String name;
+	
 	@ManyToOne(optional = false)
-	@JoinColumn(name = "sprint_id", nullable = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	@JoinColumn(name = "sprint", nullable = false)
 	private Sprint sprint;
 
 }

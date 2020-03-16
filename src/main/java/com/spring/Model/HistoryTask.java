@@ -2,11 +2,15 @@ package com.spring.Model;
 
 import java.time.LocalDateTime;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -25,14 +29,17 @@ public class HistoryTask extends BaseEntity {
 	private LocalDateTime date = LocalDateTime.now();
 
 	@ManyToOne
-	@JoinColumn(name = "origin_id", nullable = false)
+	@JoinColumn(name = "origin", nullable = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	private Column origin;
 
 	@ManyToOne
-	@JoinColumn(name = "destiny_id", nullable = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	@JoinColumn(name = "destiny", nullable = false)
 	private Column destiny;
 
 	@ManyToOne
-	@JoinColumn(name = "task_id", nullable = false)
+	@OnDelete(action = OnDeleteAction.CASCADE)
+	@JoinColumn(name = "task", nullable = false)
 	private Task task;
 }

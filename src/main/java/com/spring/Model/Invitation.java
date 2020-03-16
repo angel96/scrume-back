@@ -9,6 +9,8 @@ import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.AllArgsConstructor;
@@ -49,6 +51,7 @@ public class Invitation extends BaseEntity{
 	
 	@ManyToOne
 	@NotNull
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "team", nullable = false)
     private Team team;
 }
