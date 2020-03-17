@@ -23,7 +23,7 @@ public class SprintApiController extends AbstractApiController{
 	private SprintService sprintService;
 	
 	@GetMapping("/list")
-	public List<SprintDto> list(@RequestParam(value="idProject") Integer idProject) throws Exception{
+	public List<SprintStatisticsDto> list(@RequestParam(value="idProject") Integer idProject) throws Exception{
 		return this.sprintService.listByProject(idProject);
 	}
 	
