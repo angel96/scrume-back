@@ -13,9 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-
-import com.spring.CustomObject.SprintCreateDto;
-import com.spring.CustomObject.SprintDatesDto;
 import com.spring.CustomObject.SprintDto;
 import com.spring.CustomObject.SprintEditDto;
 import com.spring.CustomObject.SprintStatisticsDto;
@@ -68,7 +65,7 @@ public class SprintService extends AbstractService {
 		return res;
 	}
 
-	public SprintCreateDto save(SprintCreateDto sprintCreateDto) throws Exception {
+	public SprintDto save(SprintDto sprintCreateDto) throws Exception {
 		ModelMapper modelMapper = new ModelMapper();
 		User principal = this.userService.getUserByPrincipal();
 		Sprint sprintEntity = modelMapper.map(sprintCreateDto, Sprint.class);
@@ -79,7 +76,7 @@ public class SprintService extends AbstractService {
 		this.validateUserPrincipal(principal, sprintEntity.getProject());
 		Sprint sprintDB = this.sprintRepository.saveAndFlush(sprintEntity);
 		this.workspaceService.saveDefaultWorkspace(sprintDB);
-		return modelMapper.map(sprintDB, SprintCreateDto.class);
+		return modelMapper.map(sprintDB, SprintDto.class);
 	}
 
 	public SprintEditDto update(SprintEditDto sprintEditDto) throws Exception {
@@ -173,10 +170,10 @@ public class SprintService extends AbstractService {
 		return res;
 	}
 
-	public boolean areValidDates(SprintDatesDto sprintDatesDto) {
-		Date startDate = sprintDatesDto.getStartDate();
-		Date endDate = sprintDatesDto.getEndDate();
-		Project project = this.projectService.findOne(sprintDatesDto.getIdProject());
+	public boolean areValidDates(SprintDto sprintDto) {
+		Date startDate = sprintDto.getStartDate();
+		Date endDate = sprintDto.getEndDate();
+		Project project = this.projectService.findOne(sprintDto.getProject().getId());
 		return areValidDates(startDate, endDate, project, 0);
 	}
 

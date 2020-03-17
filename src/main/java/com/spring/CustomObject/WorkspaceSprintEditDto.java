@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class WorkspaceSprintEditDto {
 
+	private Integer id;
+
 	private String name;
 	
 	private Date startDate;

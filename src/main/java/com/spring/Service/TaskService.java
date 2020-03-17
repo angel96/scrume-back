@@ -1,15 +1,20 @@
 package com.spring.Service;
 
+import java.lang.reflect.Type;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 
 import com.spring.CustomObject.TaskDto;
+import com.spring.CustomObject.TaskListDto;
 import com.spring.Model.Column;
 import com.spring.Model.Project;
 import com.spring.Model.Sprint;
@@ -30,6 +35,10 @@ public class TaskService extends AbstractService {
 	private TaskRepository taskRepository;
 	@Autowired
 	private ProjectService projectService;
+	
+	@Autowired
+	private UserService userService;
+	
 	@Autowired
 	private UserRolService userRolService;
 	@Autowired
@@ -114,4 +123,37 @@ public class TaskService extends AbstractService {
 		UserAccount principal = UserAccountService.getPrincipal();
 		return account.stream().noneMatch(x -> x.getUserAccount().getUsername().equals(principal.getUsername()));
 	}
+
+	public List<TaskListDto> getAllTasksByProject(int idProject) {
+		ModelMapper modelMapper = new ModelMapper();
+		User principal = this.userService.getUserByPrincipal();
+		Project project = this.projectService.findOne(idProject);
+		this.validateProject(project);
+		this.validateUserToList(principal, project);
+		List<Task> tasks = this.taskRepository.findByProject(project);
+		Type listType = new TypeToken<List<TaskListDto>>() {
+		}.getType();
+		return modelMapper.map(tasks, listType);
+	}
+	
+	private void validateProject(Project project) {
+		if (project == null) {
+			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "The project is not in the database");
+		}
+	}
+	
+	private void validateUserToList(User principal, Project project) {
+		if (principal == null) {
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
+		}
+
+		if (!this.userRolService.isUserOnTeam(principal, project.getTeam())) {
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,
+					"The user must belong to the team of the project");
+		}
+	}
+
+	
+
+
 }

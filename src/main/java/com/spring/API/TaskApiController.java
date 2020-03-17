@@ -1,5 +1,7 @@
 package com.spring.API;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.CustomObject.TaskDto;
+import com.spring.CustomObject.TaskListDto;
 import com.spring.Model.Task;
 import com.spring.Service.TaskService;
 
@@ -37,5 +40,13 @@ public class TaskApiController extends AbstractApiController {
 	public void delete(@RequestParam(value = "id") int taskId) {
 		this.taskService.delete(taskId);
 	}
+	
+	@GetMapping("/list-by-project")
+	public List<TaskListDto> getAllTasksByProject(@RequestParam(value = "idProject") int idProject) {
+		return this.taskService.getAllTasksByProject(idProject);
+	}
+	
+	
+	
 
 }

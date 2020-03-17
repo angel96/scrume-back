@@ -13,6 +13,7 @@ import lombok.Data;
 @Data
 @AllArgsConstructor
 public class WorkspaceDto {
+	private Integer id;
 
 	private Workspace workspace;
 
