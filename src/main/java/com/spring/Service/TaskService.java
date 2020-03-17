@@ -1,8 +1,10 @@
 package com.spring.Service;
 
 import java.lang.reflect.Type;
-import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -13,17 +15,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
+import com.spring.CustomObject.ListAllTaskByProjectDto;
 import com.spring.CustomObject.TaskDto;
 import com.spring.CustomObject.TaskListDto;
-import com.spring.Model.Column;
 import com.spring.Model.Project;
 import com.spring.Model.Sprint;
 import com.spring.Model.Task;
 import com.spring.Model.Team;
 import com.spring.Model.User;
 import com.spring.Model.UserAccount;
-import com.spring.Model.UserRol;
-import com.spring.Model.Workspace;
 import com.spring.Repository.TaskRepository;
 import com.spring.Security.UserAccountService;
 
@@ -35,15 +35,21 @@ public class TaskService extends AbstractService {
 	private TaskRepository taskRepository;
 	@Autowired
 	private ProjectService projectService;
-	
-	@Autowired
-	private UserService userService;
-	
 	@Autowired
 	private UserRolService userRolService;
 	@Autowired
-	private WorkspaceService workspaceService;
+	private UserService userService;
 
+	public Task findOne(int id) {
+		return this.taskRepository.findById(id)
+				.orElseThrow(() -> new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
+						"The requested task doesn´t exists"));
+	}
+
+	public List<Task> findAll() {
+		return this.taskRepository.findAll();
+	}
+	
 	public List<Task> findBySprint(Sprint sprint){
 		return this.taskRepository.findBySprint(sprint);
 	}
@@ -51,17 +57,10 @@ public class TaskService extends AbstractService {
 	public List<Task> findCompleteTaskBySprint(Sprint sprint){
 		return this.taskRepository.findCompleteTaskBySprint(sprint);
 	}
-	
-	public Task findOne(int id) {
-		return this.taskRepository.findById(id).orElse(null);
-	}
-
-	public List<Task> findAll() {
-		return this.taskRepository.findAll();
-	}
 
 	public TaskDto save(TaskDto task, int projectId) {
 		Project project = this.projectService.findOne(projectId);
+		checkUserLogged(UserAccountService.getPrincipal());
 		checkUserOnTeam(UserAccountService.getPrincipal(), project.getTeam());
 		ModelMapper mapper = new ModelMapper();
 		Task taskEntity = mapper.map(task, Task.class);
@@ -70,14 +69,16 @@ public class TaskService extends AbstractService {
 		taskDB.setPoints(taskEntity.getPoints());
 		taskDB.setProject(project);
 		taskDB.setTitle(taskEntity.getTitle());
-		User user = this.taskRepository.findUserByUserAccount(UserAccountService.getPrincipal().getId());
-		taskDB.setUsers(Arrays.asList(user));
-
-		Workspace w = this.taskRepository.findWorkspaceByProject(projectId);
-
-		Column c = this.taskRepository.findColumnToDoByWorkspace(w.getId());
-
-		taskDB.setColumn(c);
+		if (taskEntity.getUsers() == null || taskEntity.getUsers().isEmpty()) {
+			Set<User> usuarios = new HashSet<>();
+			taskDB.setUsers(usuarios);
+		} else {
+			Set<User> usuarios = taskEntity.getUsers();
+			Set<User> userAux = usuarios.stream().filter(x -> x.getId() > 0)
+					.map(x -> this.userService.findOne(x.getId())).collect(Collectors.toSet());
+			usuarios.stream().forEach(x -> checkUserOnTeam(x.getUserAccount(), project.getTeam()));
+			taskDB.setUsers(userAux);
+		}
 
 		taskRepository.saveAndFlush(taskDB);
 		return mapper.map(taskDB, TaskDto.class);
@@ -86,45 +87,50 @@ public class TaskService extends AbstractService {
 	public TaskDto update(TaskDto task, int taskId) {
 		ModelMapper mapper = new ModelMapper();
 		Task taskEntity = mapper.map(task, Task.class);
+		Project project = this.projectService.findOne(taskEntity.getProject().getId());
+		checkUserLogged(UserAccountService.getPrincipal());
+		checkUserOnTeam(UserAccountService.getPrincipal(), project.getTeam());
+
 		Task taskDB = findOne(taskId);
+		if (taskEntity.getUsers() == null || taskEntity.getUsers().isEmpty()) {
+			Set<User> usuarios = new HashSet<>();
+			taskDB.setUsers(usuarios);
+		} else {
+			Set<User> usuarios = taskEntity.getUsers();
+			Set<User> userAux = usuarios.stream().filter(x -> x.getId() > 0)
+					.map(x -> this.userService.findOne(x.getId())).collect(Collectors.toSet());
+			usuarios.stream().forEach(x -> checkUserOnTeam(x.getUserAccount(), project.getTeam()));
+			taskDB.getUsers().retainAll(userAux);
+		}
 		taskDB.setDescription(taskEntity.getDescription());
 		taskDB.setPoints(taskEntity.getPoints());
-		taskDB.setProject(taskEntity.getProject());
+		taskDB.setProject(project);
 		taskDB.setTitle(taskEntity.getTitle());
-		if (checkDistinctUser(taskDB.getUsers())) { // Preguntar a Front como van a hacer esto, porque si es, por
-													// ejemplo
-			// mostrando una lista con todos los usuarios del equipo, esto
-			// no sirve
-			User user = this.taskRepository.findUserByUserAccount(UserAccountService.getPrincipal().getId());
-			taskDB.setUsers(Arrays.asList(user));
-		}
 
-		taskDB.setColumn(task.getColumn());
-
+		/*
+		 * if (taskEntity.getColumn() != null) { Workspace w =
+		 * this.taskRepository.findWorkspaceByProject(project.getId());
+		 * 
+		 * Column c = this.taskRepository.findColumnToDoByWorkspace(w.getId());
+		 * taskDB.setColumn(c); }
+		 */
 		taskRepository.saveAndFlush(taskDB);
 
 		return mapper.map(taskDB, TaskDto.class);
 	}
 
-	public boolean delete(int taskId) {
-		boolean checkIfExists = this.taskRepository.existsById(taskId);
-		if (checkIfExists) {
+	public void delete(int taskId) {
+		Task task = this.findOne(taskId);
+		Project project = task.getProject();
+		checkUserOnTeam(UserAccountService.getPrincipal(), project.getTeam());
+
+		if (this.taskRepository.existsById(taskId))
 			taskRepository.deleteById(taskId);
-		}
-		return checkIfExists;
+		else
+			throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "The Task with id=" + taskId + " doesn´t exist");
 	}
 
-	private boolean checkUserOnTeam(UserAccount user, Team team) {
-		UserRol role = this.workspaceService.findUserRoleByUserAccountAndTeam(user.getId(), team.getId());
-		return this.userRolService.isUserOnTeam(role.getUser(), team) ? true : false;
-	}
-
-	private boolean checkDistinctUser(List<User> account) {
-		UserAccount principal = UserAccountService.getPrincipal();
-		return account.stream().noneMatch(x -> x.getUserAccount().getUsername().equals(principal.getUsername()));
-	}
-
-	public List<TaskListDto> getAllTasksByProject(int idProject) {
+	public ListAllTaskByProjectDto getAllTasksByProject(int idProject) {
 		ModelMapper modelMapper = new ModelMapper();
 		User principal = this.userService.getUserByPrincipal();
 		Project project = this.projectService.findOne(idProject);
@@ -133,15 +139,21 @@ public class TaskService extends AbstractService {
 		List<Task> tasks = this.taskRepository.findByProject(project);
 		Type listType = new TypeToken<List<TaskListDto>>() {
 		}.getType();
-		return modelMapper.map(tasks, listType);
+		List<TaskListDto> taskListDto = modelMapper.map(tasks, listType);
+		ListAllTaskByProjectDto res = new ListAllTaskByProjectDto();
+		res.setId(project.getId());
+		res.setName(project.getName());
+		res.setDescription(project.getDescription());
+		res.setTasks(taskListDto);
+		return res;
 	}
-	
+
 	private void validateProject(Project project) {
 		if (project == null) {
 			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "The project is not in the database");
 		}
 	}
-	
+
 	private void validateUserToList(User principal, Project project) {
 		if (principal == null) {
 			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
@@ -153,7 +165,15 @@ public class TaskService extends AbstractService {
 		}
 	}
 
-	
+	private void checkUserOnTeam(UserAccount user, Team team) {
+		User usuario = this.userService.getUserByPrincipal();
+		if (!this.userRolService.isUserOnTeam(usuario, team))
+			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
+					"The user " + user.getUsername() + " does not belong to the team: " + team.getName());
+	}
 
-
+	private void checkUserLogged(UserAccount user) {
+		if (user == null)
+			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "You must be logged");
+	}
 }
