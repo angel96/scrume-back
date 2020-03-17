@@ -1,15 +1,19 @@
 package com.spring.Service;
 
+import java.lang.reflect.Type;
+import java.util.List;
+
 import javax.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import com.spring.CustomObject.ChangeRolDto;
-import com.spring.CustomObject.TeamEditDto;
+import com.spring.CustomObject.TeamDto;
 import com.spring.Model.Team;
 import com.spring.Model.User;
 import com.spring.Model.UserRol;
@@ -30,7 +34,7 @@ public class UserRolService extends AbstractService {
 
 	public UserRol save(UserRol userRol) throws Exception {
 		try {		
-			return this.userRolRepository.save(userRol);
+			return this.userRolRepository.saveAndFlush(userRol);
 		}catch(Exception e) {
 			throw new Exception("Error when saving the user rol");
 		}
@@ -48,14 +52,15 @@ public class UserRolService extends AbstractService {
 		User principal = this.userService.getUserByPrincipal();
 		Team team = this.teamService.findOne(idTeam);
 		this.validateTeam(team);
-		this.validateUserPrincipal(principal, team);
+		this.validatePrincipal(principal);
+		this.validatePrincipalTeam(principal, team);
 		if(this.isTheOnlyAdminOnTeam(principal, team)) {	
 			User newAdmin = this.getAnotherUserNoAdmin(principal, team);
 			this.changeRol(newAdmin, team, true);
 		}
 		this.userRolRepository.delete(this.findByUserAndTeam(principal, team));
 		if(this.getNumberOfUsersOfTeam(team)==0) {
-			this.teamService.delete(team.getId());
+			this.teamService.deleteVoid(team.getId());
 		}
 	}
 	
@@ -68,7 +73,8 @@ public class UserRolService extends AbstractService {
 			Team team = this.teamService.findOne(idTeam);
 			this.validateTeam(team);
 			this.validateUser(user, team);
-			this.validateUserPrincipal(principal, team);
+			this.validatePrincipal(principal);
+			this.validatePrincipalTeam(principal, team);
 			this.validateIsAdmin(principal, team);
 			this.userRolRepository.delete(this.findByUserAndTeam(principal, team));
 		}
@@ -104,17 +110,27 @@ public class UserRolService extends AbstractService {
 	
 	private UserRol changeRol(User user, Team team, Boolean admin) {
 		User principal = this.userService.getUserByPrincipal();
-		this.validateUserPrincipal(principal, team);
+		this.validatePrincipal(principal);
+		this.validatePrincipalTeam(principal, team);
 		this.validateIsAdmin(principal, team);
 		UserRol userRol = this.findByUserAndTeam(user, team);
 		this.validateUserRol(userRol);
 		userRol.setAdmin(admin);
-		UserRol userRolDB = this.userRolRepository.save(userRol);
+		UserRol userRolDB = this.userRolRepository.saveAndFlush(userRol);
 		return userRolDB;
 	}
 	
 	public void delete(UserRol userRol) {
 		this.userRolRepository.delete(userRol);
+	}
+	
+	public List<TeamDto> listAllTeamsOfAnUser(Integer idUser) {
+		ModelMapper modelMapper = new ModelMapper();
+		User principal = this.userService.getUserByPrincipal();
+		this.validatePrincipal(principal);
+		List<Team> teams = this.userRolRepository.findByUser(principal);
+		Type listType = new TypeToken<List<TeamDto>>(){}.getType();
+		return modelMapper.map(teams,listType);
 	}
 	
 	private void validateUserRol(UserRol userRol) {
@@ -145,14 +161,18 @@ public class UserRolService extends AbstractService {
 		}
 	}
 
-	private void validateUserPrincipal(User principal, Team team){
+	private void validatePrincipal(User principal) {
 		if(principal == null) {
 			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
 		}
+	}
+	
+	private void validatePrincipalTeam(User principal, Team team){
 		if(!this.isUserOnTeam(principal, team)) {
 			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user who performs the action must belong to the team");
 		}
 	}
+
 
 
 }

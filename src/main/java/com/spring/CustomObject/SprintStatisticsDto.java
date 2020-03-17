@@ -11,11 +11,21 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SprintCreateDto {
+public class SprintStatisticsDto {
+
+	private Integer id;
 	
 	private Date startDate;
 	
 	private Date endDate;
 	
 	private Project project;
+	
+	private Integer totalTasks;
+	
+	private Integer completedTasks;
+	
+	private Integer totalHP;
+	
+	private Integer completedHP;
 }

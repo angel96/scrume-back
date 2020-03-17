@@ -25,4 +25,7 @@ public interface UserRolRepository extends AbstractRepository<UserRol> {
 	
 	@Query("select ur.user from UserRol ur where ur.user != ?1 and ur.team = ?2")
 	List<User> getAnotherUserNoAdmin(User user, Team team);
+	
+	@Query("select ur.team from UserRol ur where ur.user = ?1")
+	List<Team> findByUser(User principal);
 }

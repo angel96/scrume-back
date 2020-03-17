@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.CustomObject.WorkspaceEditDto;
-import com.spring.CustomObject.WorkspaceSprintEditDto;
 import com.spring.Model.Workspace;
 import com.spring.Service.WorkspaceService;
 
@@ -35,12 +34,6 @@ public class WorkspaceApiController extends AbstractApiController {
 	public Workspace get(@PathVariable int workspace) {
 		return this.serviceWorkspace.findOne(workspace);
 	}
-
-	@PostMapping("/create-with-sprint")
-	public Workspace save(@RequestBody WorkspaceSprintEditDto workspace) throws Exception {
-		return this.serviceWorkspace.saveCreateWithSprint(workspace);
-	}
-
 
 	@PostMapping("/save")
 	public Workspace save(@RequestBody WorkspaceEditDto workspace) {

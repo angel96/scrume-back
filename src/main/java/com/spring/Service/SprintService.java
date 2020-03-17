@@ -1,8 +1,10 @@
 package com.spring.Service;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -12,13 +14,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-
-import com.spring.CustomObject.SprintCreateDto;
-import com.spring.CustomObject.SprintDatesDto;
 import com.spring.CustomObject.SprintDto;
 import com.spring.CustomObject.SprintEditDto;
+import com.spring.CustomObject.SprintStatisticsDto;
 import com.spring.Model.Project;
 import com.spring.Model.Sprint;
+import com.spring.Model.Task;
 import com.spring.Model.User;
 import com.spring.Repository.SprintRepository;
 
@@ -37,25 +38,39 @@ public class SprintService extends AbstractService {
 
 	@Autowired
 	private UserRolService userRolService;
+	
+	@Autowired
+	private WorkspaceService workspaceService;
 
+	@Autowired
+	private TaskService taskService;
+	
 	public Sprint getOne(int id) {
 		return this.sprintRepository.findById(id).orElse(null);
 	}
-
-	public Sprint saveSprint(SprintCreateDto sprintCreateDto) throws Exception {
-		ModelMapper modelMapper = new ModelMapper();
+	
+	public SprintStatisticsDto getStatistics(Integer idSprint) {
 		User principal = this.userService.getUserByPrincipal();
-		Sprint sprintEntity = modelMapper.map(sprintCreateDto, Sprint.class);
-		Project project = this.projectService.findOne(sprintEntity.getProject().getId());
-		this.validateProject(project);
-		sprintEntity.setProject(project);
-		this.validateDates(sprintEntity);
-		this.validateUserPrincipal(principal, sprintEntity.getProject());
-		Sprint sprintDB = this.sprintRepository.save(sprintEntity);
-		return sprintDB;
+		SprintStatisticsDto res = new SprintStatisticsDto();
+		Sprint sprint = this.getOne(idSprint);
+		this.validateSprint(sprint);
+		this.validateUserPrincipal(principal, sprint.getProject());
+		List<Task> tasksOfSprint = this.taskService.findBySprint(sprint);
+		List<Task> completeTasksOfSprint = this.taskService.findCompleteTaskBySprint(sprint);
+		Integer totalHP = tasksOfSprint.stream().collect(Collectors.summingInt(x-> x.getPoints()));
+		Integer completedHP = completeTasksOfSprint.stream().collect(Collectors.summingInt(x-> x.getPoints()));
+		res.setId(sprint.getId());
+		res.setStartDate(sprint.getStartDate());
+		res.setEndDate(sprint.getEndDate());
+		res.setProject(sprint.getProject());
+		res.setTotalTasks(tasksOfSprint.size());
+		res.setCompletedTasks(completeTasksOfSprint.size());
+		res.setTotalHP(totalHP);
+		res.setCompletedHP(completedHP);
+		return res;
 	}
 
-	public SprintCreateDto save(SprintCreateDto sprintCreateDto) throws Exception {
+	public SprintDto save(SprintDto sprintCreateDto) throws Exception {
 		ModelMapper modelMapper = new ModelMapper();
 		User principal = this.userService.getUserByPrincipal();
 		Sprint sprintEntity = modelMapper.map(sprintCreateDto, Sprint.class);
@@ -64,8 +79,9 @@ public class SprintService extends AbstractService {
 		sprintEntity.setProject(project);
 		this.validateDates(sprintEntity);
 		this.validateUserPrincipal(principal, sprintEntity.getProject());
-		Sprint sprintDB = this.sprintRepository.save(sprintEntity);
-		return modelMapper.map(sprintDB, SprintCreateDto.class);
+		Sprint sprintDB = this.sprintRepository.saveAndFlush(sprintEntity);
+		this.workspaceService.saveDefaultWorkspace(sprintDB);
+		return modelMapper.map(sprintDB, SprintDto.class);
 	}
 
 	public SprintEditDto update(SprintEditDto sprintEditDto) throws Exception {
@@ -77,20 +93,21 @@ public class SprintService extends AbstractService {
 		sprintEntity.setStartDate(sprintEditDto.getStartDate());
 		sprintEntity.setEndDate(sprintEditDto.getEndDate());
 		this.validateDates(sprintEntity);
-		Sprint sprintDB = this.sprintRepository.save(sprintEntity);
+		Sprint sprintDB = this.sprintRepository.saveAndFlush(sprintEntity);
 		return modelMapper.map(sprintDB, SprintEditDto.class);
 	}
 
-	public List<SprintDto> listByProject(Integer idProject) {
-		ModelMapper modelMapper = new ModelMapper();
+	public List<SprintStatisticsDto> listByProject(Integer idProject) {
 		User principal = this.userService.getUserByPrincipal();
 		Project project = this.projectService.findOne(idProject);
 		this.validateProject(project);
 		this.validateUserToList(principal, project);
-		List<Sprint> sprints = this.sprintRepository.findBySprintsOrdered(project);
-		Type listType = new TypeToken<List<SprintDto>>() {
-		}.getType();
-		return modelMapper.map(sprints, listType);
+		List<Integer> IdsSprints = this.sprintRepository.findBySprintsOrdered(project);
+		List<SprintStatisticsDto> res = new ArrayList<SprintStatisticsDto>();
+		for (Integer idSprint : IdsSprints) {
+			res.add(this.getStatistics(idSprint));
+		}
+		return res;
 	}
 
 	private void validateUserToList(User principal, Project project) {
@@ -142,16 +159,16 @@ public class SprintService extends AbstractService {
 			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"The end date of the sprint must be later than the start date");
 		}
-		if (!this.areValidDates(sprint.getStartDate(), sprint.getEndDate(), sprint.getProject())) {
+		if (!this.areValidDates(sprint.getStartDate(), sprint.getEndDate(), sprint.getProject(), sprint.getId())) {
 			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"Sprint dates overlap with an existing sprint");
 		}
 
 	}
 
-	public boolean areValidDates(Date startDate, Date endDate, Project project) {
+	public boolean areValidDates(Date startDate, Date endDate, Project project, Integer idSprint) {
 		boolean res;
-		if (this.sprintRepository.areValidDates(startDate, endDate, project) == 0) {
+		if (this.sprintRepository.areValidDates(startDate, endDate, project, idSprint) == 0) {
 			res = true;
 		} else {
 			res = false;
@@ -159,11 +176,11 @@ public class SprintService extends AbstractService {
 		return res;
 	}
 
-	public boolean areValidDates(SprintDatesDto sprintDatesDto) {
-		Date startDate = sprintDatesDto.getStartDate();
-		Date endDate = sprintDatesDto.getEndDate();
-		Project project = this.projectService.findOne(sprintDatesDto.getIdProject());
-		return areValidDates(startDate, endDate, project);
+	public boolean areValidDates(SprintDto sprintDto) {
+		Date startDate = sprintDto.getStartDate();
+		Date endDate = sprintDto.getEndDate();
+		Project project = this.projectService.findOne(sprintDto.getProject().getId());
+		return areValidDates(startDate, endDate, project, 0);
 	}
 
 }

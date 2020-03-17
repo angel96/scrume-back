@@ -1,6 +1,10 @@
 package com.spring.API;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,14 +15,13 @@ import com.spring.CustomObject.ChangeRolDto;
 import com.spring.CustomObject.InvitationRecipientDto;
 import com.spring.CustomObject.InvitationSenderDto;
 import com.spring.CustomObject.TeamDto;
-import com.spring.CustomObject.TeamEditDto;
 import com.spring.Service.InvitationService;
 import com.spring.Service.TeamService;
 import com.spring.Service.UserRolService;
 
 @RestController
 @RequestMapping("/api/team")
-public class TeamApiController {
+public class TeamApiController extends AbstractApiController{
 
 	@Autowired
 	private TeamService teamService;
@@ -35,7 +38,7 @@ public class TeamApiController {
 	}
 	
 	@PostMapping("/update")
-	public TeamEditDto update(@RequestParam(value="idTeam") Integer idTeam, @RequestBody TeamEditDto teamEditDto) throws Exception{
+	public TeamDto update(@RequestParam(value="idTeam") Integer idTeam, @RequestBody TeamDto teamEditDto) throws Exception{
 		teamEditDto.setId(idTeam);
 		return this.teamService.update(teamEditDto);
 	}
@@ -45,14 +48,19 @@ public class TeamApiController {
 		this.userRolService.teamOut(idTeam);
 	}
 	
-	@PostMapping("/delete")
+	@DeleteMapping("/delete")
 	public void delete(@RequestParam(value="idTeam") Integer idTeam) throws Exception{
 		this.teamService.delete(idTeam);
 	}
 	
-	@PostMapping("/remove-from-team")
+	@GetMapping("/remove-from-team")
 	public void removeFromTeam(@RequestParam(value="idUser") Integer idUser, @RequestParam(value="idTeam") Integer idTeam) throws Exception{
 		this.userRolService.removeFromTeam(idUser, idTeam);
+	}
+	
+	@GetMapping("/list")
+	public List<TeamDto> list(@RequestParam(value="idUser") Integer idUser) throws Exception{
+		return this.userRolService.listAllTeamsOfAnUser(idUser);
 	}
 	
 	@PostMapping("/change-rol")

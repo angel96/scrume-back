@@ -19,6 +19,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import org.hibernate.validator.constraints.SafeHtml;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -48,9 +49,11 @@ public class UserAccount extends BaseEntity implements UserDetails {
 	@Email
 	@NotNull
 	@Column(unique = true, nullable = false)
+	@SafeHtml
 	private String username;
 	
 	@JsonIgnore
+	@SafeHtml
 	private String password;
 
 	@CreatedDate

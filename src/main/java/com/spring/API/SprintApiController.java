@@ -1,6 +1,5 @@
 package com.spring.API;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,33 +9,39 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import com.spring.CustomObject.SprintCreateDto;
-import com.spring.CustomObject.SprintDatesDto;
 import com.spring.CustomObject.SprintDto;
 import com.spring.CustomObject.SprintEditDto;
+import com.spring.CustomObject.SprintStatisticsDto;
+import com.spring.Model.Project;
 import com.spring.Service.SprintService;
 
 @RestController
 @RequestMapping("/api/sprint")
-public class SprintApiController {
+public class SprintApiController extends AbstractApiController{
 
 	@Autowired
 	private SprintService sprintService;
 	
 	@GetMapping("/list")
-	public List<SprintDto> save(@RequestParam(value="idProject") Integer idProject) throws Exception{
+	public List<SprintStatisticsDto> list(@RequestParam(value="idProject") Integer idProject) throws Exception{
 		return this.sprintService.listByProject(idProject);
 	}
 	
+	@GetMapping("/statistics")
+	public SprintStatisticsDto getStatistics(@RequestParam(value="idSprint") Integer idSprint) throws Exception{
+		return this.sprintService.getStatistics(idSprint);
+	}
+	
 	@GetMapping("/check-dates")
-	public boolean areValidDates(@RequestParam(value="idProject") Integer idProject, @RequestBody SprintDatesDto sprintDatesDto) throws Exception{
-		sprintDatesDto.setIdProject(idProject);
-		return this.sprintService.areValidDates(sprintDatesDto);
+	public boolean areValidDates(@RequestParam(value="idProject") Integer idProject, @RequestBody SprintDto sprintDto) throws Exception{
+		Project project = new Project();
+		project.setId(idProject);
+		sprintDto.setProject(project);
+		return this.sprintService.areValidDates(sprintDto);
 	}
 	
 	@PostMapping("/save")
-	public SprintCreateDto save(@RequestBody SprintCreateDto sprintDto) throws Exception{
+	public SprintDto save(@RequestBody SprintDto sprintDto) throws Exception{
 		return this.sprintService.save(sprintDto);
 	}
 	
