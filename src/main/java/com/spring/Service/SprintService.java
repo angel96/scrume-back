@@ -40,9 +40,6 @@ public class SprintService extends AbstractService {
 	
 	@Autowired
 	private WorkspaceService workspaceService;
-	
-	@Autowired
-	private TaskService taskService;
 
 	@Autowired
 	private TaskService taskService;
@@ -60,7 +57,7 @@ public class SprintService extends AbstractService {
 		List<Task> tasksOfSprint = this.taskService.findBySprint(sprint);
 		List<Task> completeTasksOfSprint = this.taskService.findCompleteTaskBySprint(sprint);
 		Integer totalHP = tasksOfSprint.stream().collect(Collectors.summingInt(x-> x.getPoints()));
-		Integer completedHP = tasksOfSprint.stream().collect(Collectors.summingInt(x-> x.getPoints()));
+		Integer completedHP = completeTasksOfSprint.stream().collect(Collectors.summingInt(x-> x.getPoints()));
 		res.setTotalTasks(tasksOfSprint.size());
 		res.setCompletedTasks(completeTasksOfSprint.size());
 		res.setTotalHP(totalHP);
@@ -179,6 +176,5 @@ public class SprintService extends AbstractService {
 		Project project = this.projectService.findOne(sprintDto.getProject().getId());
 		return areValidDates(startDate, endDate, project, 0);
 	}
-
 
 }

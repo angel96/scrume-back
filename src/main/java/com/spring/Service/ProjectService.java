@@ -14,7 +14,6 @@ import org.springframework.web.client.HttpClientErrorException;
 
 import com.spring.CustomObject.ProjectDto;
 import com.spring.Model.Project;
-import com.spring.Model.Sprint;
 import com.spring.Model.Team;
 import com.spring.Model.User;
 import com.spring.Repository.ProjectRepository;
