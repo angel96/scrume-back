@@ -1,6 +1,5 @@
 package com.spring.Service;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 import javax.transaction.Transactional;
@@ -10,11 +9,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
-import com.spring.CustomObject.SprintCreateDto;
 import com.spring.CustomObject.WorkspaceDto;
 import com.spring.CustomObject.WorkspaceEditDto;
-import com.spring.CustomObject.WorkspaceSprintEditDto;
-import com.spring.Model.Project;
 import com.spring.Model.Sprint;
 import com.spring.Model.Team;
 import com.spring.Model.User;
@@ -36,9 +32,6 @@ public class WorkspaceService extends AbstractService {
 
 	@Autowired
 	private SprintService serviceSprint;
-
-	@Autowired
-	private ProjectService serviceProject;
 	
 	@Autowired
 	private UserRolService serviceUserRol;
@@ -55,7 +48,7 @@ public class WorkspaceService extends AbstractService {
 
 	public WorkspaceDto findWorkspaceWithColumns(int id) {
 		Workspace w = this.findOne(id);
-		return new WorkspaceDto(w, serviceColumns.findColumnsTasksByWorkspace(id));
+		return new WorkspaceDto(id, w, serviceColumns.findColumnsTasksByWorkspace(id));
 	}
 
 	public Collection<Workspace> findWorkspacesByTeam(int team) {
@@ -75,7 +68,7 @@ public class WorkspaceService extends AbstractService {
 		Workspace workspace = new Workspace();
 		workspace.setName("Default");
 		workspace.setSprint(sprint);
-		Workspace saveTo = this.repository.save(workspace);
+		Workspace saveTo = this.repository.saveAndFlush(workspace);
 		this.serviceColumns.saveDefaultColumns(saveTo);
 	}
 
@@ -95,7 +88,7 @@ public class WorkspaceService extends AbstractService {
 			saveTo = this.repository.save(workspace);
 		} else {
 			workspace = new Workspace(workspaceDto.getName(), this.serviceSprint.getOne(workspaceDto.getSprint()));
-			saveTo = this.repository.save(workspace);
+			saveTo = this.repository.saveAndFlush(workspace);
 			this.serviceColumns.saveDefaultColumns(saveTo);
 		}
 

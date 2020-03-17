@@ -22,46 +22,6 @@ public class WorkspaceAPITest extends AbstractTest {
 		super.authenticateOrUnauthenticate("angdellun@gmail.com");
 	}
 
-	@Test
-	public void listWorkspaces() throws Exception {
-
-		super.mockMvc
-				.perform(get("/api/profile/list").contentType(MediaType.APPLICATION_JSON)
-						.with(user(UserAccountService.getPrincipal())))
-				.andExpect(status().isOk()).andExpect(jsonPath("$[0].name", is("Perfil 1")));
-
-	}
-
-	@Test
-	public void getWorkspace() throws Exception {
-
-		super.mockMvc
-				.perform(get("/api/profile/list").contentType(MediaType.APPLICATION_JSON)
-						.with(user(UserAccountService.getPrincipal())))
-				.andExpect(status().isOk()).andExpect(jsonPath("$[0].name", is("Perfil 1")));
-
-	}
-
-	@Test
-	public void createWorkspace() throws Exception {
-
-		super.mockMvc
-				.perform(get("/api/profile/list").contentType(MediaType.APPLICATION_JSON)
-						.with(user(UserAccountService.getPrincipal())))
-				.andExpect(status().isOk()).andExpect(jsonPath("$[0].name", is("Perfil 1")));
-
-	}
-
-	@Test
-	public void deleteWorkspace() throws Exception {
-
-		super.mockMvc
-				.perform(get("/api/profile/list").contentType(MediaType.APPLICATION_JSON)
-						.with(user(UserAccountService.getPrincipal())))
-				.andExpect(status().isOk()).andExpect(jsonPath("$[0].name", is("Perfil 1")));
-
-	}
-
 	@After
 	public void initFinish() {
 		super.authenticateOrUnauthenticate(null);

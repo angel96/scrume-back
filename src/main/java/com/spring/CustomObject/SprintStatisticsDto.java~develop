@@ -7,11 +7,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class HistoryTaskDto {
+public class SprintStatisticsDto {
 
-	public int id;
-	public int origin;
-	public int destiny;
-	public int task;
-
+	private Integer totalTasks;
+	
+	private Integer completedTasks;
+	
+	private Integer totalHP;
+	
+	private Integer completedHP;
 }

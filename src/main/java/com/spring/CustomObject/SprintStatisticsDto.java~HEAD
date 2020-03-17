@@ -1,9 +1,5 @@
 package com.spring.CustomObject;
 
-import java.util.Date;
-
-import com.spring.Model.Project;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -11,11 +7,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SprintCreateDto {
+public class SprintStatisticsDto {
+
+	private Integer totalTasks;
 	
-	private Date startDate;
+	private Integer completedTasks;
 	
-	private Date endDate;
+	private Integer totalHP;
 	
-	private Project project;
+	private Integer completedHP;
 }
