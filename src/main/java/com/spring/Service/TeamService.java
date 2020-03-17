@@ -7,9 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
-
 import com.spring.CustomObject.TeamDto;
-import com.spring.CustomObject.TeamEditDto;
 import com.spring.Model.Team;
 import com.spring.Model.User;
 import com.spring.Model.UserRol;
@@ -42,7 +40,7 @@ public class TeamService extends AbstractService {
 		return modelMapper.map(teamDB, TeamDto.class);
 	}
 
-	public TeamEditDto update(TeamEditDto teamEditDto) {
+	public TeamDto update(TeamDto teamEditDto) {
 		ModelMapper modelMapper = new ModelMapper();
 		User principal = this.userService.getUserByPrincipal();
 		Team teamEntity = this.teamRepository.findById(teamEditDto.getId()).orElse(null);
@@ -51,7 +49,7 @@ public class TeamService extends AbstractService {
 		this.validateUserPrincipal(principal);
 		teamEntity.setName(teamEditDto.getName());
 		Team teamDB = this.teamRepository.saveAndFlush(teamEntity);
-		return modelMapper.map(teamDB, TeamEditDto.class);
+		return modelMapper.map(teamDB, TeamDto.class);
 	}
 
 	public void delete(Integer idTeam) {

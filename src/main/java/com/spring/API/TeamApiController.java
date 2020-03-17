@@ -15,7 +15,6 @@ import com.spring.CustomObject.ChangeRolDto;
 import com.spring.CustomObject.InvitationRecipientDto;
 import com.spring.CustomObject.InvitationSenderDto;
 import com.spring.CustomObject.TeamDto;
-import com.spring.CustomObject.TeamEditDto;
 import com.spring.Service.InvitationService;
 import com.spring.Service.TeamService;
 import com.spring.Service.UserRolService;
@@ -39,7 +38,7 @@ public class TeamApiController extends AbstractApiController{
 	}
 	
 	@PostMapping("/update")
-	public TeamEditDto update(@RequestParam(value="idTeam") Integer idTeam, @RequestBody TeamEditDto teamEditDto) throws Exception{
+	public TeamDto update(@RequestParam(value="idTeam") Integer idTeam, @RequestBody TeamDto teamEditDto) throws Exception{
 		teamEditDto.setId(idTeam);
 		return this.teamService.update(teamEditDto);
 	}
@@ -60,7 +59,7 @@ public class TeamApiController extends AbstractApiController{
 	}
 	
 	@GetMapping("/list")
-	public List<TeamEditDto> list(@RequestParam(value="idUser") Integer idUser) throws Exception{
+	public List<TeamDto> list(@RequestParam(value="idUser") Integer idUser) throws Exception{
 		return this.userRolService.listAllTeamsOfAnUser(idUser);
 	}
 	

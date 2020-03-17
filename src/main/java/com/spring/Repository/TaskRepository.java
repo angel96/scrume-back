@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.spring.Model.Column;
+import com.spring.Model.Project;
 import com.spring.Model.Sprint;
 import com.spring.Model.Task;
 import com.spring.Model.User;
@@ -34,4 +35,6 @@ public interface TaskRepository extends AbstractRepository<Task> {
 	
 	@Query("select t from Task t join t.column c join c.workspace w join w.sprint s where s = ?1 and c.name = 'Done'")
 	List<Task> findCompleteTaskBySprint(Sprint sprint);
+
+	List<Task> findByProject(Project project);
 }

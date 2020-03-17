@@ -13,10 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 
 import com.spring.CustomObject.ChangeRolDto;
-import com.spring.CustomObject.SprintDto;
-import com.spring.CustomObject.TeamEditDto;
-import com.spring.Model.Project;
-import com.spring.Model.Sprint;
+import com.spring.CustomObject.TeamDto;
 import com.spring.Model.Team;
 import com.spring.Model.User;
 import com.spring.Model.UserRol;
@@ -127,12 +124,12 @@ public class UserRolService extends AbstractService {
 		this.userRolRepository.delete(userRol);
 	}
 	
-	public List<TeamEditDto> listAllTeamsOfAnUser(Integer idUser) {
+	public List<TeamDto> listAllTeamsOfAnUser(Integer idUser) {
 		ModelMapper modelMapper = new ModelMapper();
 		User principal = this.userService.getUserByPrincipal();
 		this.validatePrincipal(principal);
 		List<Team> teams = this.userRolRepository.findByUser(principal);
-		Type listType = new TypeToken<List<TeamEditDto>>(){}.getType();
+		Type listType = new TypeToken<List<TeamDto>>(){}.getType();
 		return modelMapper.map(teams,listType);
 	}
 	

@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.CustomObject.WorkspaceEditDto;
-import com.spring.CustomObject.WorkspaceSprintEditDto;
 import com.spring.Model.Workspace;
 import com.spring.Service.WorkspaceService;
 

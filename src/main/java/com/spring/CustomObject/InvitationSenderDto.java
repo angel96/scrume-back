@@ -8,6 +8,8 @@ import lombok.Data;
 @Data
 public class InvitationSenderDto {
 	
+	private Integer id;
+
     private String message;
  		
     private User recipient;
