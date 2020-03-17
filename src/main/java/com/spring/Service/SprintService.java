@@ -1,6 +1,7 @@
 package com.spring.Service;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,6 +59,10 @@ public class SprintService extends AbstractService {
 		List<Task> completeTasksOfSprint = this.taskService.findCompleteTaskBySprint(sprint);
 		Integer totalHP = tasksOfSprint.stream().collect(Collectors.summingInt(x-> x.getPoints()));
 		Integer completedHP = completeTasksOfSprint.stream().collect(Collectors.summingInt(x-> x.getPoints()));
+		res.setId(sprint.getId());
+		res.setStartDate(sprint.getStartDate());
+		res.setEndDate(sprint.getEndDate());
+		res.setProject(sprint.getProject());
 		res.setTotalTasks(tasksOfSprint.size());
 		res.setCompletedTasks(completeTasksOfSprint.size());
 		res.setTotalHP(totalHP);
@@ -92,16 +97,17 @@ public class SprintService extends AbstractService {
 		return modelMapper.map(sprintDB, SprintEditDto.class);
 	}
 
-	public List<SprintDto> listByProject(Integer idProject) {
-		ModelMapper modelMapper = new ModelMapper();
+	public List<SprintStatisticsDto> listByProject(Integer idProject) {
 		User principal = this.userService.getUserByPrincipal();
 		Project project = this.projectService.findOne(idProject);
 		this.validateProject(project);
 		this.validateUserToList(principal, project);
-		List<Sprint> sprints = this.sprintRepository.findBySprintsOrdered(project);
-		Type listType = new TypeToken<List<SprintDto>>() {
-		}.getType();
-		return modelMapper.map(sprints, listType);
+		List<Integer> IdsSprints = this.sprintRepository.findBySprintsOrdered(project);
+		List<SprintStatisticsDto> res = new ArrayList<SprintStatisticsDto>();
+		for (Integer idSprint : IdsSprints) {
+			res.add(this.getStatistics(idSprint));
+		}
+		return res;
 	}
 
 	private void validateUserToList(User principal, Project project) {
