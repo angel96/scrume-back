@@ -18,8 +18,6 @@ import com.spring.Security.Role;
 import com.spring.Security.UserAccountService;
 
 @Controller
-@CrossOrigin(origins = "*", methods = { RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT,
-		RequestMethod.DELETE })
 public abstract class AbstractApiController extends ApiValidation {
 
 	@Autowired
