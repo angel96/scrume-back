@@ -9,6 +9,7 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.TestingAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContext;
@@ -17,6 +18,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.web.client.HttpClientErrorException;
 
 import com.spring.Configuration.H2Testing;
 import com.spring.Security.UserAccountService;
@@ -40,10 +42,33 @@ public abstract class AbstractTest {
 		entities = Utiles.leeFichero("entities.properties");
 	}
 
-	public SortedMap<String, Integer> entities(){
+	protected void checkExceptions(Class<?> expected, Class<?> caught) {
+		if (expected != null && caught == null) {
+			throw new RuntimeException(expected.getName() + "was expected");
+		} else if (expected == null && caught != null) {
+			throw new RuntimeException(caught.getName() + "was unexpected");
+		} else if (expected != null && caught != null && !expected.equals(caught)) {
+			throw new RuntimeException(
+					expected.getName() + "was expected" + " but " + caught.getName() + " was thrown");
+		}
+	}
+
+	protected void checkExceptions(HttpStatus expected, HttpStatus caught) {
+
+		if (expected != null && caught == null) {
+			throw new RuntimeException(expected.name() + "was expected");
+		} else if (expected == null && caught != null) {
+			throw new RuntimeException(caught.name() + "was unexpected");
+		} else if (expected != null && caught != null && !expected.equals(caught)) {
+			throw new RuntimeException(expected.name() + "was expected" + " but " + caught.name() + " was thrown");
+		}
+
+	}
+
+	public SortedMap<String, Integer> entities() {
 		return entities;
 	}
-	
+
 	public void authenticateOrUnauthenticate(String username) {
 		UserDetails userDetails = username == null ? null : service.loadUserByUsername(username);
 		Authentication authenticationToken = new TestingAuthenticationToken(userDetails, null);

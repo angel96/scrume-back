@@ -2,13 +2,12 @@ package com.spring.Configuration;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 
@@ -214,8 +213,8 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("team1", team1.getId());
 		entities.put("team2", team2.getId());
 		entities.put("team3", team3.getId());
-		entities.put("team4", team3.getId());
-		entities.put("team5", team3.getId());
+		entities.put("team4", team4.getId());
+		entities.put("team5", team5.getId());
 
 		UserRol rol1 = this.repositoryUserRol.save(new UserRol(true, user, team1));
 		UserRol rol2 = this.repositoryUserRol.save(new UserRol(true, user2, team2));
@@ -337,14 +336,14 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("inProgress6", inProgress6.getId());
 		entities.put("done6", done6.getId());
 
-		List<User> list1 = new ArrayList<>();
+		Set<User> list1 = new HashSet<>();
 		list1.add(user);
 		list1.add(user2);
 
-		List<User> list2 = new ArrayList<>();
+		Set<User> list2 = new HashSet<>();
 		list1.add(user2);
 
-		List<User> list3 = new ArrayList<>();
+		Set<User> list3 = new HashSet<>();
 		list1.add(user3);
 
 		Task task1 = this.repositoryTask.save(new Task("Tarea1", "Descripcion1", 10, project1, list1, toDo));

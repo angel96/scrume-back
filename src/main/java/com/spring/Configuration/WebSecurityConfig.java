@@ -37,7 +37,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.logout().logoutUrl("/api/login/logout").clearAuthentication(true).deleteCookies("JSESSIONID").and().csrf()
 				.disable();
 
-		http.httpBasic().authenticationEntryPoint(customBasicAuthenticationEntryPoint).and().authorizeRequests()
+		http.cors().and().httpBasic().authenticationEntryPoint(customBasicAuthenticationEntryPoint).and().authorizeRequests()
 				.antMatchers(HttpMethod.GET, "/api/profile/list").hasRole("ADMIN")
 				.antMatchers(HttpMethod.GET, "/api/profile/get/**").hasRole("ADMIN")
 				.antMatchers(HttpMethod.POST, "/api/profile/save").hasRole("ADMIN")
