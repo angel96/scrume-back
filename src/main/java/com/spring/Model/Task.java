@@ -1,6 +1,6 @@
 package com.spring.Model;
 
-import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
@@ -10,6 +10,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
@@ -44,11 +45,12 @@ public class Task extends BaseEntity {
 	
 	@ManyToOne
 	@JsonProperty
+	@NotNull
 	private Project project;
 
 	@ManyToMany
 	@JsonProperty
-	private List<User> users;
+	private Set<User> users;
 
 	@ManyToOne
 	@OnDelete(action = OnDeleteAction.CASCADE)
