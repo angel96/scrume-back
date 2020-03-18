@@ -10,7 +10,7 @@ import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.ChangeRolDto;
 import com.spring.CustomObject.TeamDto;
@@ -86,10 +86,10 @@ public class UserRolService extends AbstractService {
 	
 	private void validateUser(User user,Team team) {
 		if(user == null) {
-			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "The user is not in the database");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The user is not in the database");
 		}
 		if(!this.isUserOnTeam(user, team)) {
-			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "The user you're throwing out doesn't belong to the team");
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "The user you're throwing out doesn't belong to the team");
 		}
 	}
 
@@ -135,13 +135,13 @@ public class UserRolService extends AbstractService {
 	
 	private void validateUserRol(UserRol userRol) {
 		if(userRol == null) {
-			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "there is no record in the database in which the user related to the team appears");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "there is no record in the database in which the user related to the team appears");
 		}
 	}
 
 	private void validateIsAdmin(User user, Team team) {
 		if(!this.isAdminOnTeam(user, team)) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user who performs the action must be an admin of the team");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user who performs the action must be an admin of the team");
 		}		
 	}
 
@@ -157,19 +157,19 @@ public class UserRolService extends AbstractService {
 
 	private void validateTeam(Team team) {
 		if(team == null) {
-			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "The team is not in the database");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The team is not in the database");
 		}
 	}
 
 	private void validatePrincipal(User principal) {
 		if(principal == null) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
 		}
 	}
 	
 	private void validatePrincipalTeam(User principal, Team team){
 		if(!this.isUserOnTeam(principal, team)) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user who performs the action must belong to the team");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user who performs the action must belong to the team");
 		}
 	}
 

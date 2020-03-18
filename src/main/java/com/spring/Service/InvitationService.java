@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.InvitationRecipientDto;
 import com.spring.CustomObject.InvitationSenderDto;
@@ -87,13 +88,13 @@ public class InvitationService extends AbstractService {
 	
 	private void validateInvitationEntityAnswer(Invitation invitationEntity) {
 		if(invitationEntity == null) {
-			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "The invitation is not in the database");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The invitation is not in the database");
 		}
 	}
 
 	private void validateIsAcceptedStatus(Boolean isAccepted) {
 		if(isAccepted == null) {
-			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "The invitation must be accepted or rejected");
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "The invitation must be accepted or rejected");
 		}
 	}
 
