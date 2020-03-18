@@ -42,7 +42,7 @@ public class TaskService extends AbstractService {
 
 	public Task findOne(int id) {
 		return this.taskRepository.findById(id)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						"The requested task doesn´t exists"));
 	}
 
@@ -168,7 +168,7 @@ public class TaskService extends AbstractService {
 	private void checkUserOnTeam(UserAccount user, Team team) {
 		User usuario = this.userService.getUserByPrincipal();
 		if (!this.userRolService.isUserOnTeam(usuario, team))
-			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 					"The user " + user.getUsername() + " does not belong to the team: " + team.getName());
 	}
 

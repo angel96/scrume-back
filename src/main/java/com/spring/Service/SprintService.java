@@ -11,7 +11,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.SprintDto;
@@ -138,29 +137,29 @@ public class SprintService extends AbstractService {
 
 	private void validateProject(Project project) {
 		if (project == null) {
-			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "The project is not in the database");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The project is not in the database");
 		}
 	}
 
 	private void validateSprint(Sprint sprint) {
 		if (sprint == null) {
-			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "The sprint is not in the database");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The sprint is not in the database");
 		}
 	}
 
 	private void validateDates(Sprint sprint) {
 		if (sprint.getStartDate() == null) {
-			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "the start date cannot be null");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "the start date cannot be null");
 		}
 		if (sprint.getEndDate() == null) {
-			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "the end date cannot be null");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "the end date cannot be null");
 		}
 		if (sprint.getEndDate().before(sprint.getStartDate())) {
-			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 					"The end date of the sprint must be later than the start date");
 		}
 		if (!this.areValidDates(sprint.getStartDate(), sprint.getEndDate(), sprint.getProject(), sprint.getId())) {
-			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 					"Sprint dates overlap with an existing sprint");
 		}
 
