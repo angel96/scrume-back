@@ -13,7 +13,7 @@ import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.ListAllTaskByProjectDto;
 import com.spring.CustomObject.TaskDto;
@@ -42,7 +42,7 @@ public class TaskService extends AbstractService {
 
 	public Task findOne(int id) {
 		return this.taskRepository.findById(id)
-				.orElseThrow(() -> new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
 						"The requested task doesn´t exists"));
 	}
 
@@ -127,7 +127,7 @@ public class TaskService extends AbstractService {
 		if (this.taskRepository.existsById(taskId))
 			taskRepository.deleteById(taskId);
 		else
-			throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "The Task with id=" + taskId + " doesn´t exist");
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The Task with id=" + taskId + " doesn´t exist");
 	}
 
 	public ListAllTaskByProjectDto getAllTasksByProject(int idProject) {
@@ -150,17 +150,17 @@ public class TaskService extends AbstractService {
 
 	private void validateProject(Project project) {
 		if (project == null) {
-			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "The project is not in the database");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The project is not in the database");
 		}
 	}
 
 	private void validateUserToList(User principal, Project project) {
 		if (principal == null) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
 		}
 
 		if (!this.userRolService.isUserOnTeam(principal, project.getTeam())) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The user must belong to the team of the project");
 		}
 	}
@@ -168,12 +168,12 @@ public class TaskService extends AbstractService {
 	private void checkUserOnTeam(UserAccount user, Team team) {
 		User usuario = this.userService.getUserByPrincipal();
 		if (!this.userRolService.isUserOnTeam(usuario, team))
-			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
+			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR,
 					"The user " + user.getUsername() + " does not belong to the team: " + team.getName());
 	}
 
 	private void checkUserLogged(UserAccount user) {
 		if (user == null)
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "You must be logged");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You must be logged");
 	}
 }

@@ -26,10 +26,8 @@ import com.spring.Model.User;
 import com.spring.Model.UserAccount;
 import com.spring.Model.UserRol;
 import com.spring.Model.Workspace;
-import com.spring.Repository.AdministratorRepository;
 import com.spring.Repository.BoxRepository;
 import com.spring.Repository.ColumnRepository;
-import com.spring.Repository.ProfileRepository;
 import com.spring.Repository.ProjectRepository;
 import com.spring.Repository.SprintRepository;
 import com.spring.Repository.TaskRepository;
@@ -57,12 +55,6 @@ public class PopulatorDatabase implements CommandLineRunner {
 
 	@Autowired
 	private UserAccountRepository repositoryAccount;
-
-	@Autowired
-	private AdministratorRepository repositoryAdmin;
-
-	@Autowired
-	private ProfileRepository repositoryProfile;
 
 	@Autowired
 	private BoxRepository boxRepository;
@@ -106,8 +98,6 @@ public class PopulatorDatabase implements CommandLineRunner {
 		repositoryTeam.deleteAll();
 		userRepository.deleteAll();
 		boxRepository.deleteAll();
-		repositoryProfile.deleteAll();
-		repositoryAdmin.deleteAll();
 		repositoryAccount.deleteAll();
 
 		UserAccount account = repositoryAccount
@@ -373,8 +363,6 @@ public class PopulatorDatabase implements CommandLineRunner {
 		repositoryTeam.flush();
 		userRepository.flush();
 		boxRepository.flush();
-		repositoryProfile.flush();
-		repositoryAdmin.flush();
 		repositoryAccount.flush();
 
 	}

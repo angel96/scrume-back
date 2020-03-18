@@ -6,6 +6,7 @@ import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.Model.BaseEntity;
 
@@ -37,7 +38,7 @@ public class AbstractService {
 				String message = (String) object[2];
 
 				if (o == null) {
-					throw new HttpClientErrorException(status, message);
+					throw new ResponseStatusException(status, message);
 				}
 			});
 
@@ -50,7 +51,7 @@ public class AbstractService {
 			String message = (String) object[2];
 
 			if (o == null) {
-				throw new HttpClientErrorException(status, message);
+				throw new ResponseStatusException(status, message);
 			}
 		}
 
