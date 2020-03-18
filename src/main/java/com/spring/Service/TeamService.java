@@ -6,7 +6,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.TeamDto;
@@ -92,13 +91,13 @@ public class TeamService extends AbstractService {
 
 	private void validateUserPrincipal(User principal){
 		if(principal == null) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
 		}
 	}
 
 	private void validateDeletePermission(Team team) {
 		if(this.userRolService.getNumberOfUsersOfTeam(team) != 1) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "To delete a team, the only member must be the administrator");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "To delete a team, the only member must be the administrator");
 		}
 	}
 

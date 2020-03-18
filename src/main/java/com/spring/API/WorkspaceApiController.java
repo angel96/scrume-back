@@ -27,26 +27,31 @@ public class WorkspaceApiController extends AbstractApiController {
 
 	@GetMapping("/list/{team}")
 	public Collection<Workspace> list(@PathVariable int team) {
+		super.logger.info("GET /api/workspace/list/" + String.valueOf(team));
 		return serviceWorkspace.findWorkspacesByTeam(team);
 	}
 
-	@GetMapping("/get/{workspace}")
+	@GetMapping("/{workspace}")
 	public Workspace get(@PathVariable int workspace) {
+		super.logger.info("GET /api/workspace/" + String.valueOf(workspace));
 		return this.serviceWorkspace.findOne(workspace);
 	}
 
-	@PostMapping("/save")
+	@PostMapping
 	public Workspace save(@RequestBody WorkspaceEditDto workspace) {
+		super.logger.info("POST /api/workspace");
 		return this.serviceWorkspace.save(0, workspace);
 	}
 
-	@PutMapping("/save/{workspace}")
+	@PutMapping("/{workspace}")
 	public Workspace save(@PathVariable int workspace, @RequestBody WorkspaceEditDto workspaceDto) {
+		super.logger.info("PUT /api/workspace/" + String.valueOf(workspace));
 		return this.serviceWorkspace.save(workspace, workspaceDto);
 	}
 
-	@DeleteMapping("/delete/{workspace}")
+	@DeleteMapping("/{workspace}")
 	public ResponseEntity<?> delete(@PathVariable int workspace) {
+		super.logger.info("DELETE /api/workspace/" + String.valueOf(workspace));
 		return this.serviceWorkspace.delete(workspace)
 				? new ResponseEntity<>("It has been delete properly", HttpStatus.OK)
 				: new ResponseEntity<>("There was a problem!", HttpStatus.OK);
