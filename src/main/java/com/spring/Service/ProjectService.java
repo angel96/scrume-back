@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.ProjectDto;
 import com.spring.Model.Project;
@@ -111,13 +112,13 @@ public class ProjectService extends AbstractService {
 
 	private void validateProject(Project project) {
 		if (project == null) {
-			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "the project is not in the database");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "the project is not in the database");
 		}
 	}
 
 	private void validateTeam(Team team) {
 		if (team == null) {
-			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "the team is not in the database");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "the team is not in the database");
 		}
 	}
 

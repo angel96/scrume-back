@@ -1,6 +1,5 @@
 package com.spring.Service;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -9,11 +8,12 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
+
 import com.spring.CustomObject.SprintDto;
 import com.spring.CustomObject.SprintEditDto;
 import com.spring.CustomObject.SprintStatisticsDto;
@@ -112,26 +112,26 @@ public class SprintService extends AbstractService {
 
 	private void validateUserToList(User principal, Project project) {
 		if (principal == null) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
 		}
 
 		if (!this.userRolService.isUserOnTeam(principal, project.getTeam())) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The user must belong to the team of the project");
 		}
 	}
 
 	private void validateUserPrincipal(User principal, Project project) {
 		if (principal == null) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
 		}
 
 		if (!this.userRolService.isUserOnTeam(principal, project.getTeam())) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The user must belong to the team of the project");
 		}
 		if (!this.userRolService.isAdminOnTeam(principal, project.getTeam())) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be an admin of the team");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be an admin of the team");
 		}
 
 	}
