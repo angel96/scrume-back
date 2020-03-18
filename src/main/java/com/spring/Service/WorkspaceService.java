@@ -7,7 +7,7 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.WorkspaceDto;
 import com.spring.CustomObject.WorkspaceEditDto;
@@ -58,7 +58,7 @@ public class WorkspaceService extends AbstractService {
 	public Workspace findOne(int id) {
 
 		Workspace w = this.repository.findById(id).orElseThrow(
-				() -> new HttpClientErrorException(HttpStatus.BAD_REQUEST, "The workspace requested does not exists"));
+				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The workspace requested does not exists"));
 		checkMembers(w.getSprint().getProject().getTeam().getId());
 		return w;
 	}
@@ -112,10 +112,10 @@ public class WorkspaceService extends AbstractService {
 		User user = this.serviceUser.getUserByPrincipal();
 		Team team = this.serviceTeam.findOne(teamId);
 		if (user == null) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
 		}
 		if (!this.serviceUserRol.isUserOnTeam(user, team)) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must belong to the team");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must belong to the team");
 		}
 
 	}
@@ -125,9 +125,9 @@ public class WorkspaceService extends AbstractService {
 
 		Collection<Team> teams = this.repository.findAllTeamsByUserAccountAdmin(userAccount.getId());
 		Workspace w = this.repository.findById(workspace).orElseThrow(
-				() -> new HttpClientErrorException(HttpStatus.BAD_REQUEST, "The workspace requested does not exists"));
+				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The workspace requested does not exists"));
 		if (!teams.contains(w.getSprint().getProject().getTeam())) {
-			throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "You do not own to the team of this workspace.");
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not own to the team of this workspace.");
 		}
 	}
 
