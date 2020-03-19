@@ -1,4 +1,4 @@
-package com.spring.security;
+package com.spring.Security;
 
 import javax.transaction.Transactional;
 
@@ -12,7 +12,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import com.spring.model.UserAccount;
+import com.spring.Model.UserAccount;
 
 @Service
 @Transactional

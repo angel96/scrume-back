@@ -1,4 +1,4 @@
-package com.spring.api;
+package com.spring.API;
 
 import javax.servlet.http.HttpSession;
 

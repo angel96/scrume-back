@@ -1,4 +1,4 @@
-package com.spring.service;
+package com.spring.Service;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -11,13 +11,13 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.spring.customobject.InvitationRecipientDto;
-import com.spring.customobject.InvitationSenderDto;
-import com.spring.model.Invitation;
-import com.spring.model.Team;
-import com.spring.model.User;
-import com.spring.model.UserRol;
-import com.spring.repository.InvitationRepository;
+import com.spring.CustomObject.InvitationRecipientDto;
+import com.spring.CustomObject.InvitationSenderDto;
+import com.spring.Model.Invitation;
+import com.spring.Model.Team;
+import com.spring.Model.User;
+import com.spring.Model.UserRol;
+import com.spring.Repository.InvitationRepository;
 
 @Service
 @Transactional

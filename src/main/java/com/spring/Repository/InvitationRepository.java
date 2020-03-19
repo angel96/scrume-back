@@ -1,11 +1,11 @@
-package com.spring.repository;
+package com.spring.Repository;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.spring.model.Invitation;
-import com.spring.model.Team;
-import com.spring.model.User;
+import com.spring.Model.Invitation;
+import com.spring.Model.Team;
+import com.spring.Model.User;
 
 @Repository
 public interface InvitationRepository extends AbstractRepository<Invitation> {

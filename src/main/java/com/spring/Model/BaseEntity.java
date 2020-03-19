@@ -1,4 +1,4 @@
-package com.spring.model;
+package com.spring.Model;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;

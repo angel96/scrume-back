@@ -1,4 +1,4 @@
-package com.spring.model;
+package com.spring.Model;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -23,7 +23,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.spring.security.Role;
+import com.spring.Security.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
