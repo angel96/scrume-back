@@ -9,7 +9,6 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.InvitationRecipientDto;
@@ -94,41 +93,41 @@ public class InvitationService extends AbstractService {
 
 	private void validateIsAcceptedStatus(Boolean isAccepted) {
 		if(isAccepted == null) {
-			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "The invitation must be accepted or rejected");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The invitation must be accepted or rejected");
 		}
 	}
 
 	private void validateUserPrincipal(User principal){
 		if(principal == null) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
 		}
 	}
 
 	
 	private void validateTeam(Team team){
 		if(team == null) {
-			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "The team is not in the database");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The team is not in the database");
 		}
 	}
 	
 	private void validateSender(User sender, Team team){
 		if(!this.userRolService.isUserOnTeam(sender, team)) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The sender must belong to the team");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The sender must belong to the team");
 		}
 		if(!this.userRolService.isAdminOnTeam(sender, team)) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The sender must be an administrator of the team");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The sender must be an administrator of the team");
 		}
 	}
 	
 	private void validateRecipient(User recipient, Team team){
 		if(recipient == null) {
-			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "The recipient is not in the database");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The recipient is not in the database");
 		}
 		if(this.userRolService.isUserOnTeam(recipient, team)) {
-			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "The recipient must not belong to the team");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The recipient must not belong to the team");
 		}
 		if(this.existsActiveInvitation(recipient, team)) {
-			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "The recipient cannot have active invitations to the team");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The recipient cannot have active invitations to the team");
 		}
 	}
 

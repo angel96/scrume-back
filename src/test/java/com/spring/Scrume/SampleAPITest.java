@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.ResponseStatusException;
 
 import com.spring.CustomObject.TeamDto;
 import com.spring.Model.Team;
@@ -30,7 +30,7 @@ public class SampleAPITest extends AbstractTest {
 			team.setName("Testing wrong");
 			this.service.save(new ModelMapper().map(team, TeamDto.class));
 		} catch (Throwable oops) {
-			super.checkExceptions(HttpClientErrorException.class, oops.getClass());
+			super.checkExceptions(ResponseStatusException.class, oops.getClass());
 		}
 	}
 
