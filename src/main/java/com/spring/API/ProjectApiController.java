@@ -1,4 +1,4 @@
-package com.spring.api;
+package com.spring.API;
 
 import java.util.List;
 
@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.spring.customobject.ProjectDto;
-import com.spring.service.ProjectService;
+import com.spring.CustomObject.ProjectDto;
+import com.spring.Service.ProjectService;
 
 @RestController
 @RequestMapping("/api/project")

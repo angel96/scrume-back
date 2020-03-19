@@ -1,7 +1,7 @@
-package com.spring.customobject;
+package com.spring.CustomObject;
 
-import com.spring.model.Team;
-import com.spring.model.User;
+import com.spring.Model.Team;
+import com.spring.Model.User;
 
 import lombok.Data;
 

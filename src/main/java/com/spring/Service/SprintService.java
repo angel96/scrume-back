@@ -1,4 +1,4 @@
-package com.spring.service;
+package com.spring.Service;
 
 import java.util.Date;
 import java.util.List;
@@ -12,14 +12,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.spring.customobject.SprintDto;
-import com.spring.customobject.SprintEditDto;
-import com.spring.customobject.SprintStatisticsDto;
-import com.spring.model.Project;
-import com.spring.model.Sprint;
-import com.spring.model.Task;
-import com.spring.model.User;
-import com.spring.repository.SprintRepository;
+import com.spring.CustomObject.SprintDto;
+import com.spring.CustomObject.SprintEditDto;
+import com.spring.CustomObject.SprintStatisticsDto;
+import com.spring.Model.Project;
+import com.spring.Model.Sprint;
+import com.spring.Model.Task;
+import com.spring.Model.User;
+import com.spring.Repository.SprintRepository;
 
 @Service
 @Transactional

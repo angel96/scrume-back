@@ -1,4 +1,4 @@
-package com.spring.service;
+package com.spring.Service;
 
 import java.util.Collection;
 
@@ -9,16 +9,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.spring.customobject.WorkspaceDto;
-import com.spring.customobject.WorkspaceEditDto;
-import com.spring.model.Sprint;
-import com.spring.model.Team;
-import com.spring.model.User;
-import com.spring.model.UserAccount;
-import com.spring.model.UserRol;
-import com.spring.model.Workspace;
-import com.spring.repository.WorkspaceRepository;
-import com.spring.security.UserAccountService;
+import com.spring.CustomObject.WorkspaceDto;
+import com.spring.CustomObject.WorkspaceEditDto;
+import com.spring.Model.Sprint;
+import com.spring.Model.Team;
+import com.spring.Model.User;
+import com.spring.Model.UserAccount;
+import com.spring.Model.UserRol;
+import com.spring.Model.Workspace;
+import com.spring.Repository.WorkspaceRepository;
+import com.spring.Security.UserAccountService;
 
 @Service
 @Transactional

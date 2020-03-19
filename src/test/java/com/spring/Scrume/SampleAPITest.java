@@ -7,9 +7,9 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.spring.customobject.TeamDto;
-import com.spring.model.Team;
-import com.spring.service.TeamService;
+import com.spring.CustomObject.TeamDto;
+import com.spring.Model.Team;
+import com.spring.Service.TeamService;
 
 public class SampleAPITest extends AbstractTest {
 

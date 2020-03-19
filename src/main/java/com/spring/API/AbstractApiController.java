@@ -1,4 +1,4 @@
-package com.spring.api;
+package com.spring.API;
 
 import java.util.Collection;
 
@@ -12,8 +12,8 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 
-import com.spring.security.Role;
-import com.spring.security.UserAccountService;
+import com.spring.Security.Role;
+import com.spring.Security.UserAccountService;
 
 @Controller
 public abstract class AbstractApiController extends ApiValidation {

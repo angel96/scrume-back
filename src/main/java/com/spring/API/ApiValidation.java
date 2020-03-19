@@ -1,4 +1,4 @@
-package com.spring.api;
+package com.spring.API;
 
 import java.util.List;
 import java.util.stream.Collectors;

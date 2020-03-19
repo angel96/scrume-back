@@ -1,4 +1,4 @@
-package com.spring.api;
+package com.spring.API;
 
 import java.util.Collection;
 
@@ -12,9 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.spring.customobject.WorkspaceEditDto;
-import com.spring.model.Workspace;
-import com.spring.service.WorkspaceService;
+import com.spring.CustomObject.WorkspaceEditDto;
+import com.spring.Model.Workspace;
+import com.spring.Service.WorkspaceService;
 
 @RestController
 @RequestMapping("/api/workspace")

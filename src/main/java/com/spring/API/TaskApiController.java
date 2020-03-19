@@ -1,4 +1,4 @@
-package com.spring.api;
+package com.spring.API;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -10,10 +10,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.spring.customobject.ListAllTaskByProjectDto;
-import com.spring.customobject.TaskDto;
-import com.spring.model.Task;
-import com.spring.service.TaskService;
+import com.spring.CustomObject.ListAllTaskByProjectDto;
+import com.spring.CustomObject.TaskDto;
+import com.spring.Model.Task;
+import com.spring.Service.TaskService;
 
 @RestController
 @RequestMapping("api/task")

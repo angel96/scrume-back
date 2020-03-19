@@ -1,4 +1,4 @@
-package com.spring.configuration;
+package com.spring.Configuration;
 
 import org.jboss.logging.Logger;
 import org.springframework.boot.CommandLineRunner;
