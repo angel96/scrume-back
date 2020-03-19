@@ -1,4 +1,4 @@
-package com.spring.Service;
+package com.spring.service;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -10,12 +10,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.spring.CustomObject.HistoryTaskDto;
-import com.spring.Model.Column;
-import com.spring.Model.HistoryTask;
-import com.spring.Model.Task;
-import com.spring.Model.Workspace;
-import com.spring.Repository.HistoryTaskRepository;
+import com.spring.customobject.HistoryTaskDto;
+import com.spring.model.Column;
+import com.spring.model.HistoryTask;
+import com.spring.model.Task;
+import com.spring.model.Workspace;
+import com.spring.repository.HistoryTaskRepository;
 
 @Service
 @Transactional
@@ -46,10 +46,10 @@ public class HistoryTaskService extends AbstractService {
 
 	public HistoryTaskDto save(HistoryTaskDto dto) {
 
-		Column origin = this.serviceColumn.findOne(dto.getOrigin());
 		Column destiny = this.serviceColumn.findOne(dto.getDestiny());
 		Task task = serviceTask.findOne(dto.getTask());
-		
+		Column origin = task.getColumn();
+
 		Collection<Column> columns = this.repository.findColumnsByTeamId(task.getProject().getTeam().getId());
 
 		HistoryTaskDto dtoToReturn = null;
@@ -61,13 +61,14 @@ public class HistoryTaskService extends AbstractService {
 
 			HistoryTask saveTo = this.repository.saveAndFlush(historyTask);
 
-			dtoToReturn = new HistoryTaskDto(saveTo.getId(), saveTo.getOrigin().getId(), saveTo.getDestiny().getId(),
-					saveTo.getTask().getId());
-			
+			dtoToReturn = new HistoryTaskDto(saveTo.getId(), saveTo.getDestiny().getId(), saveTo.getTask().getId());
+
 			task.setColumn(destiny);
 		}
 
 		return dtoToReturn;
 	}
-
+	public void flush() {
+		repository.flush();
+	}
 }

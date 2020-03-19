@@ -1,25 +1,26 @@
 package com.spring.Scrume;
 
-import static org.hamcrest.CoreMatchers.is;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.user;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.junit.Assert.assertTrue;
 
 import javax.annotation.PostConstruct;
 
 import org.junit.After;
-import org.junit.jupiter.api.Test;
-import org.springframework.http.MediaType;
-
-import com.spring.Security.UserAccountService;
-
+import org.junit.Test;
 
 public class WorkspaceAPITest extends AbstractTest {
 
 	@PostConstruct
 	public void initBefore() {
 		super.authenticateOrUnauthenticate("angdellun@gmail.com");
+	}
+
+	@Test
+	public void workspaceDriverCreateTest() {
+		assertTrue(true);
+	}
+
+	protected void driverWorkspaceDriverCreateTest() {
+
 	}
 
 	@After

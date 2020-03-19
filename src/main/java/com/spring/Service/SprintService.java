@@ -1,6 +1,5 @@
-package com.spring.Service;
+package com.spring.service;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -13,14 +12,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.spring.CustomObject.SprintDto;
-import com.spring.CustomObject.SprintEditDto;
-import com.spring.CustomObject.SprintStatisticsDto;
-import com.spring.Model.Project;
-import com.spring.Model.Sprint;
-import com.spring.Model.Task;
-import com.spring.Model.User;
-import com.spring.Repository.SprintRepository;
+import com.spring.customobject.SprintDto;
+import com.spring.customobject.SprintEditDto;
+import com.spring.customobject.SprintStatisticsDto;
+import com.spring.model.Project;
+import com.spring.model.Sprint;
+import com.spring.model.Task;
+import com.spring.model.User;
+import com.spring.repository.SprintRepository;
 
 @Service
 @Transactional
@@ -37,17 +36,17 @@ public class SprintService extends AbstractService {
 
 	@Autowired
 	private UserRolService userRolService;
-	
+
 	@Autowired
 	private WorkspaceService workspaceService;
 
 	@Autowired
 	private TaskService taskService;
-	
+
 	public Sprint getOne(int id) {
 		return this.sprintRepository.findById(id).orElse(null);
 	}
-	
+
 	public SprintStatisticsDto getStatistics(Integer idSprint) {
 		User principal = this.userService.getUserByPrincipal();
 		SprintStatisticsDto res = new SprintStatisticsDto();
@@ -56,8 +55,8 @@ public class SprintService extends AbstractService {
 		this.validateUserPrincipal(principal, sprint.getProject());
 		List<Task> tasksOfSprint = this.taskService.findBySprint(sprint);
 		List<Task> completeTasksOfSprint = this.taskService.findCompleteTaskBySprint(sprint);
-		Integer totalHP = tasksOfSprint.stream().collect(Collectors.summingInt(x-> x.getPoints()));
-		Integer completedHP = completeTasksOfSprint.stream().collect(Collectors.summingInt(x-> x.getPoints()));
+		Integer totalHP = tasksOfSprint.stream().collect(Collectors.summingInt(Task::getPoints));
+		Integer completedHP = completeTasksOfSprint.stream().collect(Collectors.summingInt(Task::getPoints));
 		res.setId(sprint.getId());
 		res.setStartDate(sprint.getStartDate());
 		res.setEndDate(sprint.getEndDate());
@@ -69,7 +68,7 @@ public class SprintService extends AbstractService {
 		return res;
 	}
 
-	public SprintDto save(SprintDto sprintCreateDto) throws Exception {
+	public SprintDto save(SprintDto sprintCreateDto) {
 		ModelMapper modelMapper = new ModelMapper();
 		User principal = this.userService.getUserByPrincipal();
 		Sprint sprintEntity = modelMapper.map(sprintCreateDto, Sprint.class);
@@ -83,7 +82,7 @@ public class SprintService extends AbstractService {
 		return modelMapper.map(sprintDB, SprintDto.class);
 	}
 
-	public SprintEditDto update(SprintEditDto sprintEditDto) throws Exception {
+	public SprintEditDto update(SprintEditDto sprintEditDto) {
 		ModelMapper modelMapper = new ModelMapper();
 		User principal = this.userService.getUserByPrincipal();
 		Sprint sprintEntity = this.sprintRepository.findById(sprintEditDto.getId()).orElse(null);
@@ -101,12 +100,8 @@ public class SprintService extends AbstractService {
 		Project project = this.projectService.findOne(idProject);
 		this.validateProject(project);
 		this.validateUserToList(principal, project);
-		List<Integer> IdsSprints = this.sprintRepository.findBySprintsOrdered(project);
-		List<SprintStatisticsDto> res = new ArrayList<SprintStatisticsDto>();
-		for (Integer idSprint : IdsSprints) {
-			res.add(this.getStatistics(idSprint));
-		}
-		return res;
+		return this.sprintRepository.findBySprintsOrdered(project).stream().map(x -> this.getStatistics(x))
+				.collect(Collectors.toList());
 	}
 
 	private void validateUserToList(User principal, Project project) {
@@ -159,8 +154,7 @@ public class SprintService extends AbstractService {
 					"The end date of the sprint must be later than the start date");
 		}
 		if (!this.areValidDates(sprint.getStartDate(), sprint.getEndDate(), sprint.getProject(), sprint.getId())) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"Sprint dates overlap with an existing sprint");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sprint dates overlap with an existing sprint");
 		}
 
 	}
@@ -182,4 +176,7 @@ public class SprintService extends AbstractService {
 		return areValidDates(startDate, endDate, project, 0);
 	}
 
+	public void flush() {
+		sprintRepository.flush();
+	}
 }

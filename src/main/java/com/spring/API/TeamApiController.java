@@ -1,4 +1,4 @@
-package com.spring.API;
+package com.spring.api;
 
 import java.util.List;
 
@@ -10,84 +10,85 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.spring.CustomObject.ChangeRolDto;
-import com.spring.CustomObject.InvitationRecipientDto;
-import com.spring.CustomObject.InvitationSenderDto;
-import com.spring.CustomObject.TeamDto;
-import com.spring.Service.InvitationService;
-import com.spring.Service.TeamService;
-import com.spring.Service.UserRolService;
+import com.spring.customobject.ChangeRolDto;
+import com.spring.customobject.InvitationRecipientDto;
+import com.spring.customobject.InvitationSenderDto;
+import com.spring.customobject.TeamDto;
+import com.spring.service.InvitationService;
+import com.spring.service.TeamService;
+import com.spring.service.UserRolService;
 
 @RestController
 @RequestMapping("/api/team")
-public class TeamApiController extends AbstractApiController{
+public class TeamApiController extends AbstractApiController {
 
 	@Autowired
 	private TeamService teamService;
-	
+
 	@Autowired
 	private InvitationService invitationService;
-	
+
 	@Autowired
 	private UserRolService userRolService;
-	
+
 	@PostMapping
-	public TeamDto save(@RequestBody TeamDto teamDto) throws Exception{
+	public TeamDto save(@RequestBody TeamDto teamDto) throws Exception {
 		super.logger.info("POST /api/team");
 		return this.teamService.save(teamDto);
 	}
-	
+
 	@PutMapping("/{idTeam}")
-	public TeamDto update(@PathVariable Integer idTeam, @RequestBody TeamDto teamEditDto) throws Exception{
+	public TeamDto update(@PathVariable Integer idTeam, @RequestBody TeamDto teamEditDto) {
 		teamEditDto.setId(idTeam);
-		super.logger.info("PUT /api/team/" + String.valueOf(idTeam));
+		super.logger.info("PUT /api/team/" + idTeam);
 		return this.teamService.update(teamEditDto);
 	}
-	
+
 	@PostMapping("/team-out/{idTeam}")
-	public void teamOut(@PathVariable Integer idTeam) throws Exception{
-		super.logger.info("POST /api/team/team-out/" + String.valueOf(idTeam));
+	public void teamOut(@PathVariable Integer idTeam) {
+		super.logger.info("POST /api/team/team-out/" + idTeam);
 		this.userRolService.teamOut(idTeam);
 	}
-	
+
 	@DeleteMapping("/{idTeam}")
-	public void delete(@PathVariable Integer idTeam) throws Exception{
-		super.logger.info("DELETE /api/team/" + String.valueOf(idTeam));
+	public void delete(@PathVariable Integer idTeam) {
+		super.logger.info("DELETE /api/team/" + idTeam);
 		this.teamService.delete(idTeam);
 	}
-	
+
 	@GetMapping("/remove-from-team/{idUser}/{idTeam}")
-	public void removeFromTeam(@PathVariable Integer idUser, @PathVariable Integer idTeam) throws Exception{
-		super.logger.info("GET /api/team/remove-from-team/" + String.valueOf(idUser) + "/" + String.valueOf(idTeam));
+	public void removeFromTeam(@PathVariable Integer idUser, @PathVariable Integer idTeam) {
+		super.logger.info("GET /api/team/remove-from-team/" + idUser + "/" + idTeam);
 		this.userRolService.removeFromTeam(idUser, idTeam);
 	}
-	
-	@GetMapping("/list/{idUser}")
-	public List<TeamDto> list(@PathVariable Integer idUser) throws Exception{
-		super.logger.info("GET /api/team/list/" + String.valueOf(idUser));
-		return this.userRolService.listAllTeamsOfAnUser(idUser);
+
+	@GetMapping("/list")
+	public List<TeamDto> list() {
+		super.logger.info("GET /api/team/list/");
+		return this.userRolService.listAllTeamsOfAnUser();
 	}
-	
+
 	@PostMapping("/change-rol/{idUser}/{idTeam}")
-	public ChangeRolDto changeRol(@PathVariable Integer idUser, @PathVariable Integer idTeam, @RequestBody ChangeRolDto changeRolDto) throws Exception{
-		super.logger.info("GET /api/team/change-rol/" + String.valueOf(idUser) + "/" + String.valueOf(idTeam));
+	public ChangeRolDto changeRol(@PathVariable Integer idUser, @PathVariable Integer idTeam,
+			@RequestBody ChangeRolDto changeRolDto) {
+		super.logger.info("GET /api/team/change-rol/" + idUser + "/" + idTeam);
 		return this.userRolService.changeRol(idUser, idTeam, changeRolDto);
 	}
-	
+
 	@PostMapping("/invite")
-	public InvitationSenderDto invite(@RequestBody InvitationSenderDto invitationSenderDto) throws Exception{
+	public InvitationSenderDto invite(@RequestBody InvitationSenderDto invitationSenderDto) {
 		super.logger.info("POST /api/team/invite");
 		return this.invitationService.save(invitationSenderDto);
 	}
-	
+
 	@PutMapping("/answer-invitation/{idInvitation}")
-	public InvitationRecipientDto answerInvitation(@PathVariable Integer idInvitation, @RequestBody InvitationRecipientDto invitationRecipientDto) throws Exception{
+	public InvitationRecipientDto answerInvitation(@PathVariable Integer idInvitation,
+			@RequestBody InvitationRecipientDto invitationRecipientDto) throws Exception {
 		invitationRecipientDto.setId(idInvitation);
-		super.logger.info("PUT /api/team/answer-invitation/" + String.valueOf(idInvitation));
+		super.logger.info("PUT /api/team/answer-invitation/" + idInvitation);
 		return this.invitationService.answerInvitation(invitationRecipientDto);
 	}
-	
+
 }

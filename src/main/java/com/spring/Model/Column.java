@@ -1,4 +1,4 @@
-package com.spring.Model;
+package com.spring.model;
 
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
@@ -13,6 +13,7 @@ import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.SafeHtml;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -20,6 +21,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Table(name = "`column`")
+@EqualsAndHashCode(callSuper = true)
 public class Column extends BaseEntity {
 
 	@NotBlank

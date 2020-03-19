@@ -1,11 +1,10 @@
-package com.spring.Model;
+package com.spring.model;
 
 import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -14,10 +13,8 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.OneToOne;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
 import org.hibernate.validator.constraints.SafeHtml;
 import org.springframework.data.annotation.CreatedDate;
@@ -26,19 +23,23 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.spring.Security.Role;
+import com.spring.security.Role;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(callSuper = true)
 public class UserAccount extends BaseEntity implements UserDetails {
 
 	/**

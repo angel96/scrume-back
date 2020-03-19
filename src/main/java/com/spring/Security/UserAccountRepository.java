@@ -1,4 +1,4 @@
-package com.spring.Security;
+package com.spring.security;
 
 import java.util.Optional;
 
@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.spring.Model.UserAccount;
+import com.spring.model.UserAccount;
 
 @Repository
 public interface UserAccountRepository extends JpaRepository<UserAccount, Integer> {
