@@ -89,7 +89,7 @@ public class UserRolService extends AbstractService {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The user is not in the database");
 		}
 		if(!this.isUserOnTeam(user, team)) {
-			throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "The user you're throwing out doesn't belong to the team");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user you're throwing out doesn't belong to the team");
 		}
 	}
 

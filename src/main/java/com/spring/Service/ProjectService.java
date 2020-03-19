@@ -10,7 +10,6 @@ import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.ProjectDto;
@@ -124,7 +123,7 @@ public class ProjectService extends AbstractService {
 
 	private void validateSeeProject(Team team, User principal) {
 		if (!this.userRolService.isUserOnTeam(principal, team)) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The user must belong to the team to see the project");
 
 		}
@@ -132,11 +131,11 @@ public class ProjectService extends AbstractService {
 
 	private void validateEditPermission(Team team, User principal) {
 		if (!this.userRolService.isUserOnTeam(principal, team)) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The user must belong to the team to edit the project");
 		}
 		if (!this.userRolService.isAdminOnTeam(principal, team)) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The user must be an admin of the team to edit the project");
 		}
 	}
