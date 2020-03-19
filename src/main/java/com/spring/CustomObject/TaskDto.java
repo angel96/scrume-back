@@ -1,10 +1,10 @@
-package com.spring.customobject;
+package com.spring.CustomObject;
 
 import java.util.Set;
 
-import com.spring.model.Column;
-import com.spring.model.Project;
-import com.spring.model.User;
+import com.spring.Model.Column;
+import com.spring.Model.Project;
+import com.spring.Model.User;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package com.spring.service;
+package com.spring.Service;
 
 import java.util.List;
 
@@ -7,9 +7,9 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.spring.model.Box;
-import com.spring.model.Team;
-import com.spring.repository.BoxRepository;
+import com.spring.Model.Box;
+import com.spring.Model.Team;
+import com.spring.Repository.BoxRepository;
 
 
 @Service

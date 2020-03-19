@@ -1,4 +1,4 @@
-package com.spring.service;
+package com.spring.Service;
 
 import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.stereotype.Service;

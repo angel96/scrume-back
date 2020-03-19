@@ -1,9 +1,9 @@
-package com.spring.customobject;
+package com.spring.CustomObject;
 
 import java.sql.Blob;
 import java.util.Date;
 
-import com.spring.model.Box;
+import com.spring.Model.Box;
 
 import lombok.Data;
 

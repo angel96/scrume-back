@@ -1,4 +1,4 @@
-package com.spring.api;
+package com.spring.API;
 
 import java.util.Collection;
 
@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.spring.customobject.HistoryTaskDto;
-import com.spring.model.HistoryTask;
-import com.spring.service.HistoryTaskService;
+import com.spring.CustomObject.HistoryTaskDto;
+import com.spring.Model.HistoryTask;
+import com.spring.Service.HistoryTaskService;
 
 @RestController
 @RequestMapping("/api/history-task")

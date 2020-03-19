@@ -1,4 +1,4 @@
-package com.spring.service;
+package com.spring.Service;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -10,10 +10,10 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.spring.model.Column;
-import com.spring.model.Task;
-import com.spring.model.Workspace;
-import com.spring.repository.ColumnRepository;
+import com.spring.Model.Column;
+import com.spring.Model.Task;
+import com.spring.Model.Workspace;
+import com.spring.Repository.ColumnRepository;
 
 @Service
 @Transactional

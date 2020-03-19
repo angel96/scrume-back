@@ -1,4 +1,4 @@
-package com.spring.security;
+package com.spring.Security;
 
 public enum Role {
 	ROLE_ADMIN, ROLE_ANONYMOUS

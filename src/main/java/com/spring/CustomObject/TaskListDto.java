@@ -1,6 +1,6 @@
-package com.spring.customobject;
+package com.spring.CustomObject;
 
-import com.spring.model.Column;
+import com.spring.Model.Column;
 
 import lombok.Data;
 

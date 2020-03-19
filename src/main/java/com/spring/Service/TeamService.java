@@ -1,4 +1,4 @@
-package com.spring.service;
+package com.spring.Service;
 
 import javax.transaction.Transactional;
 
@@ -8,11 +8,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.spring.customobject.TeamDto;
-import com.spring.model.Team;
-import com.spring.model.User;
-import com.spring.model.UserRol;
-import com.spring.repository.TeamRepository;
+import com.spring.CustomObject.TeamDto;
+import com.spring.Model.Team;
+import com.spring.Model.User;
+import com.spring.Model.UserRol;
+import com.spring.Repository.TeamRepository;
 
 @Service
 @Transactional

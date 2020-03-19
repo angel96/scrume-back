@@ -1,4 +1,4 @@
-package com.spring.api;
+package com.spring.API;
 
 import java.util.List;
 
@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.spring.customobject.ChangeRolDto;
-import com.spring.customobject.InvitationRecipientDto;
-import com.spring.customobject.InvitationSenderDto;
-import com.spring.customobject.TeamDto;
-import com.spring.service.InvitationService;
-import com.spring.service.TeamService;
-import com.spring.service.UserRolService;
+import com.spring.CustomObject.ChangeRolDto;
+import com.spring.CustomObject.InvitationRecipientDto;
+import com.spring.CustomObject.InvitationSenderDto;
+import com.spring.CustomObject.TeamDto;
+import com.spring.Service.InvitationService;
+import com.spring.Service.TeamService;
+import com.spring.Service.UserRolService;
 
 @RestController
 @RequestMapping("/api/team")

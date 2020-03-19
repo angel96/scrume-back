@@ -19,10 +19,10 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import com.spring.configuration.H2Testing;
-import com.spring.scrume.ScrumeApplication;
-import com.spring.security.UserAccountService;
-import com.spring.utiles.Utiles;
+import com.spring.Configuration.H2Testing;
+import com.spring.Scrume.ScrumeApplication;
+import com.spring.Security.UserAccountService;
+import com.spring.Utiles.Utiles;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { ScrumeApplication.class, H2Testing.class })

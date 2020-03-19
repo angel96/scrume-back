@@ -1,4 +1,4 @@
-package com.spring.api;
+package com.spring.API;
 
 import java.util.List;
 
@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.spring.customobject.SprintDto;
-import com.spring.customobject.SprintEditDto;
-import com.spring.customobject.SprintStatisticsDto;
-import com.spring.model.Project;
-import com.spring.service.SprintService;
+import com.spring.CustomObject.SprintDto;
+import com.spring.CustomObject.SprintEditDto;
+import com.spring.CustomObject.SprintStatisticsDto;
+import com.spring.Model.Project;
+import com.spring.Service.SprintService;
 
 @RestController
 @RequestMapping("/api/sprint")
