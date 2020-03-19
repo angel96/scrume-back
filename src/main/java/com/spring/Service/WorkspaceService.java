@@ -1,28 +1,24 @@
-package com.spring.Service;
+package com.spring.service;
 
-import java.util.Arrays;
 import java.util.Collection;
 
 import javax.transaction.Transactional;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
-import com.spring.CustomObject.SprintCreateDto;
-import com.spring.CustomObject.WorkspaceDto;
-import com.spring.CustomObject.WorkspaceEditDto;
-import com.spring.CustomObject.WorkspaceSprintEditDto;
-import com.spring.Model.Project;
-import com.spring.Model.Sprint;
-import com.spring.Model.Team;
-import com.spring.Model.UserAccount;
-import com.spring.Model.UserRol;
-import com.spring.Model.Workspace;
-import com.spring.Repository.WorkspaceRepository;
-import com.spring.Security.UserAccountService;
+import com.spring.customobject.WorkspaceDto;
+import com.spring.customobject.WorkspaceEditDto;
+import com.spring.model.Sprint;
+import com.spring.model.Team;
+import com.spring.model.User;
+import com.spring.model.UserAccount;
+import com.spring.model.UserRol;
+import com.spring.model.Workspace;
+import com.spring.repository.WorkspaceRepository;
+import com.spring.security.UserAccountService;
 
 @Service
 @Transactional
@@ -38,7 +34,13 @@ public class WorkspaceService extends AbstractService {
 	private SprintService serviceSprint;
 
 	@Autowired
-	private ProjectService serviceProject;
+	private UserRolService serviceUserRol;
+
+	@Autowired
+	private TeamService serviceTeam;
+
+	@Autowired
+	private UserService serviceUser;
 
 	public UserRol findUserRoleByUserAccountAndTeam(int userAccount, int team) {
 		return this.repository.findUserRoleByUserAccountAndTeam(userAccount, team);
@@ -46,7 +48,7 @@ public class WorkspaceService extends AbstractService {
 
 	public WorkspaceDto findWorkspaceWithColumns(int id) {
 		Workspace w = this.findOne(id);
-		return new WorkspaceDto(w, serviceColumns.findColumnsTasksByWorkspace(id));
+		return new WorkspaceDto(id, w, serviceColumns.findColumnsTasksByWorkspace(id));
 	}
 
 	public Collection<Workspace> findWorkspacesByTeam(int team) {
@@ -56,28 +58,18 @@ public class WorkspaceService extends AbstractService {
 	public Workspace findOne(int id) {
 
 		Workspace w = this.repository.findById(id).orElseThrow(
-				() -> new HttpClientErrorException(HttpStatus.BAD_REQUEST, "The workspace requested does not exists"));
+				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The workspace requested does not exists"));
 		checkMembers(w.getSprint().getProject().getTeam().getId());
 		return w;
 	}
 
-	public Workspace saveCreateWithSprint(WorkspaceSprintEditDto workspaceDto) throws Exception {
+	public void saveDefaultWorkspace(Sprint sprint) {
 
-		Project project = this.serviceProject.findOne(workspaceDto.getProject());
-
-		assert project != null;
-
-		SprintCreateDto dtoSprint = new SprintCreateDto();
-		dtoSprint.setStartDate(workspaceDto.getStartDate());
-		dtoSprint.setEndDate(workspaceDto.getEndDate());
-		dtoSprint.setProject(project);
-
-		Sprint sprint = this.serviceSprint.saveSprint(dtoSprint);
-
-		Workspace workspace = new Workspace(workspaceDto.getName(), sprint);
-		Workspace saveTo = this.repository.save(workspace);
+		Workspace workspace = new Workspace();
+		workspace.setName("Default");
+		workspace.setSprint(sprint);
+		Workspace saveTo = this.repository.saveAndFlush(workspace);
 		this.serviceColumns.saveDefaultColumns(saveTo);
-		return saveTo;
 	}
 
 	public Workspace save(int idWorkspace, WorkspaceEditDto workspaceDto) {
@@ -96,35 +88,33 @@ public class WorkspaceService extends AbstractService {
 			saveTo = this.repository.save(workspace);
 		} else {
 			workspace = new Workspace(workspaceDto.getName(), this.serviceSprint.getOne(workspaceDto.getSprint()));
-			saveTo = this.repository.save(workspace);
+			saveTo = this.repository.saveAndFlush(workspace);
 			this.serviceColumns.saveDefaultColumns(saveTo);
 		}
 
 		return saveTo;
 	}
 
-	public boolean delete(int workspace) {
+	public void delete(int workspace) {
 
-		Boolean check = this.repository.existsById(workspace);
-
+		boolean check = this.repository.existsById(workspace);
 		if (check) {
-			checkAuthorityAdmin(workspace);
-			this.serviceColumns.deleteColumns(workspace);
+//			checkAuthorityAdmin(workspace);
+//			this.serviceColumns.deleteColumns(workspace);
 			this.repository.deleteById(workspace);
 		}
-
-		return check;
 	}
 
-	public void checkMembers(int team) {
-		UserAccount userAccount = UserAccountService.getPrincipal();
-		UserRol uRol = this.repository.findUserRoleByUserAccountAndTeam(userAccount.getId(), team);
-		// Param 0 -> Object to check
-		// Param 1 -> HttpStatus status
-		// Param 2 -> String message
-		super.assertValues(
-				Arrays.asList(new Object[] { userAccount, HttpStatus.FORBIDDEN, "The authentication is not correct" },
-						new Object[] { uRol, HttpStatus.FORBIDDEN, "You are not member of this team" }));
+	public void checkMembers(int teamId) {
+		User user = this.serviceUser.getUserByPrincipal();
+		Team team = this.serviceTeam.findOne(teamId);
+		if (user == null) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
+		}
+		if (!this.serviceUserRol.isUserOnTeam(user, team)) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must belong to the team");
+		}
+
 	}
 
 	private void checkAuthorityAdmin(int workspace) {
@@ -132,10 +122,12 @@ public class WorkspaceService extends AbstractService {
 
 		Collection<Team> teams = this.repository.findAllTeamsByUserAccountAdmin(userAccount.getId());
 		Workspace w = this.repository.findById(workspace).orElseThrow(
-				() -> new HttpClientErrorException(HttpStatus.BAD_REQUEST, "The workspace requested does not exists"));
+				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The workspace requested does not exists"));
 		if (!teams.contains(w.getSprint().getProject().getTeam())) {
-			throw new HttpClientErrorException(HttpStatus.FORBIDDEN, "You do not own to the team of this workspace.");
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not own to the team of this workspace.");
 		}
 	}
-
+	public void flush() {
+		repository.flush();
+	}
 }

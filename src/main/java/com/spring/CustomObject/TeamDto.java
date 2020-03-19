@@ -1,10 +1,12 @@
-package com.spring.CustomObject;
+package com.spring.customobject;
 
 import lombok.Data;
 
 @Data
 public class TeamDto {
 	
-		private String name;
+	private Integer id;
+
+	private String name;
 
 }

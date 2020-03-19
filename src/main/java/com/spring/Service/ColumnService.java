@@ -1,8 +1,7 @@
-package com.spring.Service;
+package com.spring.service;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -11,10 +10,10 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.spring.Model.Column;
-import com.spring.Model.Task;
-import com.spring.Model.Workspace;
-import com.spring.Repository.ColumnRepository;
+import com.spring.model.Column;
+import com.spring.model.Task;
+import com.spring.model.Workspace;
+import com.spring.repository.ColumnRepository;
 
 @Service
 @Transactional
@@ -36,9 +35,7 @@ public class ColumnService extends AbstractService {
 		Column inProgress = new Column("In progress", workspace);
 		Column done = new Column("Done", workspace);
 
-		List<Column> saveTo = repository.saveAll(Arrays.asList(toDo, inProgress, done));
-
-		return saveTo;
+		return repository.saveAll(Arrays.asList(toDo, inProgress, done));
 	}
 
 	public Map<Column, Collection<Task>> findColumnsTasksByWorkspace(int workspace) {
@@ -53,6 +50,10 @@ public class ColumnService extends AbstractService {
 		if (!columns.isEmpty()) {
 			this.repository.deleteAll(columns);
 		}
+	}
+
+	public void flush() {
+		repository.flush();
 	}
 
 }

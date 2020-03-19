@@ -1,4 +1,4 @@
-package com.spring.Model;
+package com.spring.model;
 
 import java.util.Date;
 
@@ -11,18 +11,24 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-
+@EqualsAndHashCode(callSuper = true)
 public class Sprint extends BaseEntity {
 	
 	@NotNull
@@ -37,6 +43,7 @@ public class Sprint extends BaseEntity {
 	
 	@JsonProperty
 	@ManyToOne(fetch = FetchType.EAGER)
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "project")
 	private Project project;
 	

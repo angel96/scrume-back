@@ -1,11 +1,4 @@
-package com.spring.CustomObject;
-
-import java.util.Collection;
-import java.util.Map;
-
-import com.spring.Model.Column;
-import com.spring.Model.Task;
-import com.spring.Model.Workspace;
+package com.spring.customobject;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

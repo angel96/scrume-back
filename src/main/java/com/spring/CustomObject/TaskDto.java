@@ -1,11 +1,10 @@
-package com.spring.CustomObject;
+package com.spring.customobject;
 
-import java.util.List;
+import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.spring.Model.Column;
-import com.spring.Model.Project;
-import com.spring.Model.UserAccount;
+import com.spring.model.Column;
+import com.spring.model.Project;
+import com.spring.model.User;
 
 import lombok.Data;
 
@@ -16,11 +15,10 @@ public class TaskDto {
 
 	private String description;
 
-	private Integer points;
+	private int points;
 	private Project project;
 
-	@JsonIgnore
-	private List<UserAccount> users;
+	private Set<User> users;
 
 	private Column column;
 

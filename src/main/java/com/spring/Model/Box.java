@@ -1,4 +1,4 @@
-package com.spring.Model;
+package com.spring.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,7 +9,10 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
+import org.hibernate.validator.constraints.SafeHtml;
+
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,12 +23,14 @@ import lombok.Setter;
 @AllArgsConstructor
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@EqualsAndHashCode(callSuper = true)
 public class Box extends BaseEntity{
 	
 	@NotBlank
 	@NotNull
 	@Pattern(regexp = "BASIC|STANDARD|PRO")
 	@Column(name = "name", nullable = false)
+	@SafeHtml
     private String name;
  
 	@Min(0)

@@ -1,10 +1,12 @@
-package com.spring.CustomObject;
+package com.spring.customobject;
 
 import lombok.Data;
 
 @Data
 public class ChangeRolDto {
-
-		private Boolean admin;
+		
+	private Integer id;
+	
+	private Boolean admin;
 
 }

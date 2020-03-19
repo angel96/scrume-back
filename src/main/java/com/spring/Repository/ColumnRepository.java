@@ -1,12 +1,12 @@
-package com.spring.Repository;
+package com.spring.repository;
 
 import java.util.Collection;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.spring.Model.Column;
-import com.spring.Model.Task;
+import com.spring.model.Column;
+import com.spring.model.Task;
 
 @Repository
 public interface ColumnRepository extends AbstractRepository<Column> {

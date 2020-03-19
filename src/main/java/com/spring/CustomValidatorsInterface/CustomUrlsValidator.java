@@ -1,4 +1,4 @@
-package com.spring.CustomValidatorsInterface;
+package com.spring.customvalidatorsinterface;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -9,7 +9,7 @@ import java.lang.annotation.Target;
 import javax.validation.Constraint;
 import javax.validation.Payload;
 
-import com.spring.CustomValidatorsClass.CustomUrlsValidatorClass;
+import com.spring.customvalidatorsclass.CustomUrlsValidatorClass;
 
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

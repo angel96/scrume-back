@@ -1,14 +1,16 @@
-package com.spring.CustomObject;
+package com.spring.customobject;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class HistoryTaskDto {
 
-	public int origin;
-	public int destiny;
-	public int task;
+	private int id;
+	private int destiny;
+	private int task;
 
 }
