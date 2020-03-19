@@ -1,10 +1,7 @@
-package com.spring.Configuration;
+package com.spring.configuration;
 
 import org.jboss.logging.Logger;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-
-import com.spring.Security.UserAccountRepository;
 
 /**
  * 
@@ -18,12 +15,8 @@ public class InitialPopulator implements CommandLineRunner {
 
 	protected final Logger logger = Logger.getLogger(InitialPopulator.class);
 
-	@Autowired
-	private UserAccountRepository repositoryAccount;
-
-	@Override
 	public void run(String... args) throws Exception {
-
+		// Waiting for initial data
 	}
 
 }

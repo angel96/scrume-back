@@ -1,4 +1,4 @@
-package com.spring.Model;
+package com.spring.model;
 
 import java.util.Date;
 
@@ -17,15 +17,18 @@ import org.hibernate.annotations.OnDeleteAction;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Data
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-
+@EqualsAndHashCode(callSuper = true)
 public class Sprint extends BaseEntity {
 	
 	@NotNull

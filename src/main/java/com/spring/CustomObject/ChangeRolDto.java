@@ -1,4 +1,4 @@
-package com.spring.CustomObject;
+package com.spring.customobject;
 
 import lombok.Data;
 

@@ -1,4 +1,4 @@
-package com.spring.Model;
+package com.spring.model;
 
 import java.util.Date;
 
@@ -15,6 +15,7 @@ import org.hibernate.validator.constraints.SafeHtml;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -24,7 +25,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-
+@EqualsAndHashCode(callSuper = true)
 public class Invitation extends BaseEntity{
 
 	@NotBlank

@@ -1,11 +1,10 @@
-package com.spring.CustomObject;
+package com.spring.customobject;
 
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.spring.Model.Column;
-import com.spring.Model.Project;
-import com.spring.Model.User;
+import com.spring.model.Column;
+import com.spring.model.Project;
+import com.spring.model.User;
 
 import lombok.Data;
 
