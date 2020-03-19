@@ -1,4 +1,4 @@
-package com.spring.Service;
+package com.spring.service;
 
 import javax.transaction.Transactional;
 
@@ -8,11 +8,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.spring.CustomObject.TeamDto;
-import com.spring.Model.Team;
-import com.spring.Model.User;
-import com.spring.Model.UserRol;
-import com.spring.Repository.TeamRepository;
+import com.spring.customobject.TeamDto;
+import com.spring.model.Team;
+import com.spring.model.User;
+import com.spring.model.UserRol;
+import com.spring.repository.TeamRepository;
 
 @Service
 @Transactional
@@ -27,7 +27,7 @@ public class TeamService extends AbstractService {
 	@Autowired
 	private UserRolService userRolService;
 
-	public TeamDto save(TeamDto teamDto) throws Exception {
+	public TeamDto save(TeamDto teamDto) {
 		ModelMapper modelMapper = new ModelMapper();
 		User principal = this.userService.getUserByPrincipal();
 		this.validateUserPrincipal(principal);
@@ -64,41 +64,44 @@ public class TeamService extends AbstractService {
 		this.userRolService.delete(userRol);
 		this.teamRepository.delete(team);
 	}
-	
+
 	public void deleteVoid(Integer idTeam) {
 		this.teamRepository.deleteById(idTeam);
 	}
-	
 
 	public Team findOne(int teamId) {
 		return this.teamRepository.findById(teamId).orElse(null);
 	}
-	
+
 	private void validateEditPermission(User principal, Team team) {
-		if(!this.userRolService.isUserOnTeam(principal, team)) {
+		if (!this.userRolService.isUserOnTeam(principal, team)) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must belong to the team");
-		}	
-		if(!this.userRolService.isAdminOnTeam(principal, team)) {
+		}
+		if (!this.userRolService.isAdminOnTeam(principal, team)) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be an admin of the team");
 		}
 	}
-	
+
 	private void validateTeam(Team team) {
-		if(team == null) {
+		if (team == null) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "the team is not in the database");
 		}
 	}
 
-	private void validateUserPrincipal(User principal){
-		if(principal == null) {
+	private void validateUserPrincipal(User principal) {
+		if (principal == null) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
 		}
 	}
 
 	private void validateDeletePermission(Team team) {
-		if(this.userRolService.getNumberOfUsersOfTeam(team) != 1) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "To delete a team, the only member must be the administrator");
+		if (this.userRolService.getNumberOfUsersOfTeam(team) != 1) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"To delete a team, the only member must be the administrator");
 		}
 	}
 
+	public void flush() {
+		teamRepository.flush();
+	}
 }

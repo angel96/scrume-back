@@ -1,11 +1,11 @@
-package com.spring.Repository;
+package com.spring.repository;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.spring.Model.Team;
+import com.spring.model.Team;
 
 @Repository
 public interface TeamRepository extends AbstractRepository<Team> {

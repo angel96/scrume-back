@@ -1,4 +1,4 @@
-package com.spring.Model;
+package com.spring.model;
 
 import java.util.Set;
 
@@ -19,14 +19,18 @@ import org.hibernate.validator.constraints.SafeHtml;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
-import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@EqualsAndHashCode(callSuper = true)
 public class Task extends BaseEntity {
 
 	@JsonProperty

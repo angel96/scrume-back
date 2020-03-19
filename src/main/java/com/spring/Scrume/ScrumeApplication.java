@@ -1,4 +1,4 @@
-package com.spring.Scrume;
+package com.spring.scrume;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -10,8 +10,8 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @ComponentScan(basePackages = "com.spring")
-@EnableJpaRepositories(value = { "com.spring.Security", "com.spring.Repository" })
-@EntityScan(value = { "com.spring.Model" })
+@EnableJpaRepositories(value = { "com.spring.security", "com.spring.repository" })
+@EntityScan(value = { "com.spring.model" })
 @SpringBootApplication
 public class ScrumeApplication {
 

@@ -1,4 +1,4 @@
-package com.spring.Service;
+package com.spring.service;
 
 import java.util.List;
 
@@ -7,9 +7,9 @@ import javax.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.spring.Model.Box;
-import com.spring.Model.Team;
-import com.spring.Repository.BoxRepository;
+import com.spring.model.Box;
+import com.spring.model.Team;
+import com.spring.repository.BoxRepository;
 
 
 @Service
@@ -28,5 +28,9 @@ public class BoxService extends AbstractService {
 			res = null;
 		}
 		return res;
+	}
+	
+	public void flush() {
+		boxRepository.flush();
 	}
 }

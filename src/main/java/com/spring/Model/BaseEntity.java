@@ -1,4 +1,4 @@
-package com.spring.Model;
+package com.spring.model;
 
 import javax.persistence.Access;
 import javax.persistence.AccessType;
@@ -13,7 +13,6 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 @Data
 @MappedSuperclass
@@ -21,11 +20,6 @@ import lombok.experimental.SuperBuilder;
 @NoArgsConstructor
 @AllArgsConstructor
 public abstract class BaseEntity {
-
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 7683341959136831947L;
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)

@@ -18,11 +18,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.ResponseStatusException;
 
-import com.spring.Configuration.H2Testing;
-import com.spring.Security.UserAccountService;
-import com.spring.Utiles.Utiles;
+import com.spring.configuration.H2Testing;
+import com.spring.scrume.ScrumeApplication;
+import com.spring.security.UserAccountService;
+import com.spring.utiles.Utiles;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(classes = { ScrumeApplication.class, H2Testing.class })

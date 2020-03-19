@@ -1,4 +1,4 @@
-package com.spring.Service;
+package com.spring.service;
 
 import java.util.Collection;
 
@@ -9,16 +9,16 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.spring.CustomObject.WorkspaceDto;
-import com.spring.CustomObject.WorkspaceEditDto;
-import com.spring.Model.Sprint;
-import com.spring.Model.Team;
-import com.spring.Model.User;
-import com.spring.Model.UserAccount;
-import com.spring.Model.UserRol;
-import com.spring.Model.Workspace;
-import com.spring.Repository.WorkspaceRepository;
-import com.spring.Security.UserAccountService;
+import com.spring.customobject.WorkspaceDto;
+import com.spring.customobject.WorkspaceEditDto;
+import com.spring.model.Sprint;
+import com.spring.model.Team;
+import com.spring.model.User;
+import com.spring.model.UserAccount;
+import com.spring.model.UserRol;
+import com.spring.model.Workspace;
+import com.spring.repository.WorkspaceRepository;
+import com.spring.security.UserAccountService;
 
 @Service
 @Transactional
@@ -32,13 +32,13 @@ public class WorkspaceService extends AbstractService {
 
 	@Autowired
 	private SprintService serviceSprint;
-	
+
 	@Autowired
 	private UserRolService serviceUserRol;
-	
+
 	@Autowired
 	private TeamService serviceTeam;
-	
+
 	@Autowired
 	private UserService serviceUser;
 
@@ -63,7 +63,7 @@ public class WorkspaceService extends AbstractService {
 		return w;
 	}
 
-	public void saveDefaultWorkspace(Sprint sprint) throws Exception {
+	public void saveDefaultWorkspace(Sprint sprint) {
 
 		Workspace workspace = new Workspace();
 		workspace.setName("Default");
@@ -95,17 +95,14 @@ public class WorkspaceService extends AbstractService {
 		return saveTo;
 	}
 
-	public boolean delete(int workspace) {
+	public void delete(int workspace) {
 
-		Boolean check = this.repository.existsById(workspace);
-//
-//		if (check) {
+		boolean check = this.repository.existsById(workspace);
+		if (check) {
 //			checkAuthorityAdmin(workspace);
 //			this.serviceColumns.deleteColumns(workspace);
 			this.repository.deleteById(workspace);
-//		}
-
-		return check;
+		}
 	}
 
 	public void checkMembers(int teamId) {
@@ -130,5 +127,7 @@ public class WorkspaceService extends AbstractService {
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not own to the team of this workspace.");
 		}
 	}
-
+	public void flush() {
+		repository.flush();
+	}
 }

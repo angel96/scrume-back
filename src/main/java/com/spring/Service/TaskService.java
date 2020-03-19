@@ -1,4 +1,4 @@
-package com.spring.Service;
+package com.spring.service;
 
 import java.lang.reflect.Type;
 import java.util.HashSet;
@@ -15,17 +15,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.spring.CustomObject.ListAllTaskByProjectDto;
-import com.spring.CustomObject.TaskDto;
-import com.spring.CustomObject.TaskListDto;
-import com.spring.Model.Project;
-import com.spring.Model.Sprint;
-import com.spring.Model.Task;
-import com.spring.Model.Team;
-import com.spring.Model.User;
-import com.spring.Model.UserAccount;
-import com.spring.Repository.TaskRepository;
-import com.spring.Security.UserAccountService;
+import com.spring.customobject.ListAllTaskByProjectDto;
+import com.spring.customobject.TaskDto;
+import com.spring.customobject.TaskListDto;
+import com.spring.model.Project;
+import com.spring.model.Sprint;
+import com.spring.model.Task;
+import com.spring.model.Team;
+import com.spring.model.User;
+import com.spring.model.UserAccount;
+import com.spring.repository.TaskRepository;
+import com.spring.security.UserAccountService;
 
 @Service
 @Transactional
@@ -41,20 +41,19 @@ public class TaskService extends AbstractService {
 	private UserService userService;
 
 	public Task findOne(int id) {
-		return this.taskRepository.findById(id)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
-						"The requested task doesn´t exists"));
+		return this.taskRepository.findById(id).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested task doesn´t exists"));
 	}
 
 	public List<Task> findAll() {
 		return this.taskRepository.findAll();
 	}
-	
-	public List<Task> findBySprint(Sprint sprint){
+
+	public List<Task> findBySprint(Sprint sprint) {
 		return this.taskRepository.findBySprint(sprint);
 	}
-	
-	public List<Task> findCompleteTaskBySprint(Sprint sprint){
+
+	public List<Task> findCompleteTaskBySprint(Sprint sprint) {
 		return this.taskRepository.findCompleteTaskBySprint(sprint);
 	}
 
@@ -175,5 +174,9 @@ public class TaskService extends AbstractService {
 	private void checkUserLogged(UserAccount user) {
 		if (user == null)
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You must be logged");
+	}
+
+	public void flush() {
+		taskRepository.flush();
 	}
 }
