@@ -1,4 +1,4 @@
-package com.spring.Repository;
+package com.spring.repository;
 
 import java.util.Optional;
 
@@ -6,8 +6,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.NoRepositoryBean;
 
-import com.spring.Model.BaseEntity;
-import com.spring.Model.UserAccount;
+import com.spring.model.BaseEntity;
+import com.spring.model.UserAccount;
 
 @NoRepositoryBean
 public interface AbstractRepository<T extends BaseEntity> extends JpaRepository<T, Integer> {

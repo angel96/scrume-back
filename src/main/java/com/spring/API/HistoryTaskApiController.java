@@ -1,4 +1,4 @@
-package com.spring.API;
+package com.spring.api;
 
 import java.util.Collection;
 
@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.spring.CustomObject.HistoryTaskDto;
-import com.spring.Model.HistoryTask;
-import com.spring.Service.HistoryTaskService;
+import com.spring.customobject.HistoryTaskDto;
+import com.spring.model.HistoryTask;
+import com.spring.service.HistoryTaskService;
 
 @RestController
 @RequestMapping("/api/history-task")
@@ -24,12 +24,14 @@ public class HistoryTaskApiController extends AbstractApiController {
 
 	@GetMapping("/historical/{workspace}")
 	public Collection<HistoryTask> findHistoricalByWorkspace(@PathVariable int workspace) {
+		super.logger.info("GET /api/history-task/historical/" + workspace);
 		return this.serviceHistoryTask.findHistoricalByWorkspace(workspace);
 	}
 
 	@PostMapping("/move")
 	@ResponseBody
 	public HistoryTaskDto moveTask(@RequestBody HistoryTaskDto dto) {
+		super.logger.info("POST /api/history-task/move");
 		return serviceHistoryTask.save(dto);
 	}
 

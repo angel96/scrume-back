@@ -1,4 +1,4 @@
-package com.spring.Repository;
+package com.spring.repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,9 +6,9 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.spring.Model.Team;
-import com.spring.Model.User;
-import com.spring.Model.UserRol;
+import com.spring.model.Team;
+import com.spring.model.User;
+import com.spring.model.UserRol;
 
 @Repository
 public interface UserRolRepository extends AbstractRepository<UserRol> {
@@ -26,6 +26,6 @@ public interface UserRolRepository extends AbstractRepository<UserRol> {
 	@Query("select ur.user from UserRol ur where ur.user != ?1 and ur.team = ?2")
 	List<User> getAnotherUserNoAdmin(User user, Team team);
 	
-	@Query("select ur.team from UserRol ur where ur.user = principal")
+	@Query("select ur.team from UserRol ur where ur.user = ?1")
 	List<Team> findByUser(User principal);
 }

@@ -1,14 +1,15 @@
-package com.spring.CustomObject;
+package com.spring.customobject;
 
 import java.sql.Blob;
 import java.util.Date;
 
-import com.spring.Model.Box;
+import com.spring.model.Box;
 
 import lombok.Data;
 
 @Data
 public class UserDto {
+	private Integer id;
 	
 	private String username;
 	

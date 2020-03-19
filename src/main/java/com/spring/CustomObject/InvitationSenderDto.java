@@ -1,13 +1,15 @@
-package com.spring.CustomObject;
+package com.spring.customobject;
 
-import com.spring.Model.Team;
-import com.spring.Model.User;
+import com.spring.model.Team;
+import com.spring.model.User;
 
 import lombok.Data;
 
 @Data
 public class InvitationSenderDto {
 	
+	private Integer id;
+
     private String message;
  		
     private User recipient;

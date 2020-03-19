@@ -2,23 +2,30 @@ package com.spring.customobject;
 
 import java.util.Date;
 
+import com.spring.model.Project;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@AllArgsConstructor
 @NoArgsConstructor
-public class WorkspaceSprintEditDto {
+@AllArgsConstructor
+public class SprintStatisticsDto {
 
 	private Integer id;
-
-	private String name;
 	
 	private Date startDate;
 	
 	private Date endDate;
-
-	private Integer project;
 	
+	private Project project;
+	
+	private Integer totalTasks;
+	
+	private Integer completedTasks;
+	
+	private Integer totalHP;
+	
+	private Integer completedHP;
 }

@@ -1,13 +1,13 @@
-package com.spring.Repository;
+package com.spring.repository;
 
 import java.util.Collection;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.spring.Model.Team;
-import com.spring.Model.UserRol;
-import com.spring.Model.Workspace;
+import com.spring.model.Team;
+import com.spring.model.UserRol;
+import com.spring.model.Workspace;
 
 @Repository
 public interface WorkspaceRepository extends AbstractRepository<Workspace> {
