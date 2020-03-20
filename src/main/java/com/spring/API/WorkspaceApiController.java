@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.CustomObject.WorkspaceEditDto;
+import com.spring.CustomObject.WorkspaceWithColumnsDto;
 import com.spring.Model.Workspace;
 import com.spring.Service.WorkspaceService;
 
@@ -30,9 +31,9 @@ public class WorkspaceApiController extends AbstractApiController {
 	}
 
 	@GetMapping("/{workspace}")
-	public Workspace get(@PathVariable int workspace) {
+	public WorkspaceWithColumnsDto get(@PathVariable int workspace) {
 		super.logger.info("GET /api/workspace/" + workspace);
-		return this.serviceWorkspace.findOne(workspace);
+		return this.serviceWorkspace.findWorkspaceWithColumns(workspace);
 	}
 
 	@PostMapping

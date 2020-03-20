@@ -1,6 +1,7 @@
 package com.spring.Service;
 
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +25,7 @@ import com.spring.Model.Task;
 import com.spring.Model.Team;
 import com.spring.Model.User;
 import com.spring.Model.UserAccount;
+import com.spring.Model.Workspace;
 import com.spring.Repository.TaskRepository;
 import com.spring.Security.UserAccountService;
 
@@ -178,5 +180,9 @@ public class TaskService extends AbstractService {
 
 	public void flush() {
 		taskRepository.flush();
+	}
+
+	public Collection<Task> findByWorkspace(Workspace workspace) {
+		return this.taskRepository.findByWorkspace(workspace);
 	}
 }
