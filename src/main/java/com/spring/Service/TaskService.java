@@ -1,6 +1,7 @@
 package com.spring.Service;
 
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -24,6 +25,7 @@ import com.spring.Model.Task;
 import com.spring.Model.Team;
 import com.spring.Model.User;
 import com.spring.Model.UserAccount;
+import com.spring.Model.Workspace;
 import com.spring.Repository.TaskRepository;
 import com.spring.Security.UserAccountService;
 
@@ -41,20 +43,19 @@ public class TaskService extends AbstractService {
 	private UserService userService;
 
 	public Task findOne(int id) {
-		return this.taskRepository.findById(id)
-				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST,
-						"The requested task doesn´t exists"));
+		return this.taskRepository.findById(id).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested task doesn´t exists"));
 	}
 
 	public List<Task> findAll() {
 		return this.taskRepository.findAll();
 	}
-	
-	public List<Task> findBySprint(Sprint sprint){
+
+	public List<Task> findBySprint(Sprint sprint) {
 		return this.taskRepository.findBySprint(sprint);
 	}
-	
-	public List<Task> findCompleteTaskBySprint(Sprint sprint){
+
+	public List<Task> findCompleteTaskBySprint(Sprint sprint) {
 		return this.taskRepository.findCompleteTaskBySprint(sprint);
 	}
 
@@ -175,5 +176,13 @@ public class TaskService extends AbstractService {
 	private void checkUserLogged(UserAccount user) {
 		if (user == null)
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You must be logged");
+	}
+
+	public void flush() {
+		taskRepository.flush();
+	}
+
+	public Collection<Task> findByWorkspace(Workspace workspace) {
+		return this.taskRepository.findByWorkspace(workspace);
 	}
 }

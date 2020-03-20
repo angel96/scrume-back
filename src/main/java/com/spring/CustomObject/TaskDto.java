@@ -2,7 +2,6 @@ package com.spring.CustomObject;
 
 import java.util.Set;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.spring.Model.Column;
 import com.spring.Model.Project;
 import com.spring.Model.User;

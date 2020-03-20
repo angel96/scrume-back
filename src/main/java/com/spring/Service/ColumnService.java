@@ -2,7 +2,6 @@ package com.spring.Service;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -12,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.spring.Model.Column;
+import com.spring.Model.Project;
 import com.spring.Model.Task;
 import com.spring.Model.Workspace;
 import com.spring.Repository.ColumnRepository;
@@ -36,9 +36,7 @@ public class ColumnService extends AbstractService {
 		Column inProgress = new Column("In progress", workspace);
 		Column done = new Column("Done", workspace);
 
-		List<Column> saveTo = repository.saveAll(Arrays.asList(toDo, inProgress, done));
-
-		return saveTo;
+		return repository.saveAll(Arrays.asList(toDo, inProgress, done));
 	}
 
 	public Map<Column, Collection<Task>> findColumnsTasksByWorkspace(int workspace) {
@@ -53,6 +51,26 @@ public class ColumnService extends AbstractService {
 		if (!columns.isEmpty()) {
 			this.repository.deleteAll(columns);
 		}
+	}
+	
+	public void flush() {
+		repository.flush();
+	}
+
+	public Column findColumnTodoByWorkspace(Workspace workspace) {
+		return this.repository.findColumnToDoByWorkspace(workspace);
+	}
+	
+	public Column findColumnInprogressByWorkspace(Workspace workspace) {
+		return this.repository.findColumnInprogressByWorkspace(workspace);
+	}
+	
+	public Column findColumnDoneByWorkspace(Workspace workspace) {
+		return this.repository.findColumnDoneByWorkspace(workspace);
+	}
+	
+	public Collection<Column> findColumnTodoByProject(Project project) {
+		return this.repository.findColumnToDoByProject(project);
 	}
 
 }

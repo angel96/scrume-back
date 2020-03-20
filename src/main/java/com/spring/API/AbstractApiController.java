@@ -11,8 +11,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.spring.Security.Role;
 import com.spring.Security.UserAccountService;
@@ -23,10 +21,10 @@ public abstract class AbstractApiController extends ApiValidation {
 	@Autowired
 	private UserAccountService service;
 
-	protected final Logger logger = Logger.getLogger(AbstractApiController.class);
+	protected final Logger log = Logger.getLogger(AbstractApiController.class);
 
 	public boolean checkURL(final Collection<String> urls, final boolean optional) {
-		return urls.size() > 0 ? urls.stream().allMatch(x -> x.startsWith("http://") || x.startsWith("https://"))
+		return !urls.isEmpty() ? urls.stream().allMatch(x -> x.startsWith("http://") || x.startsWith("https://"))
 				: optional;
 	}
 
@@ -38,7 +36,7 @@ public abstract class AbstractApiController extends ApiValidation {
 		try {
 			return UserAccountService.getPrincipal().getAuthorities().stream()
 					.anyMatch(x -> x.equals(new SimpleGrantedAuthority(role.name())));
-		} catch (Throwable oops) {
+		} catch (Exception oops) {
 			return false;
 		}
 	}

@@ -18,9 +18,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.ResponseStatusException;
 
 import com.spring.Configuration.H2Testing;
+import com.spring.Scrume.ScrumeApplication;
 import com.spring.Security.UserAccountService;
 import com.spring.Utiles.Utiles;
 

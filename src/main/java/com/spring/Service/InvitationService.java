@@ -1,7 +1,9 @@
 package com.spring.Service;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 import javax.transaction.Transactional;
 
@@ -11,6 +13,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.spring.CustomObject.InvitationListDto;
 import com.spring.CustomObject.InvitationRecipientDto;
 import com.spring.CustomObject.InvitationSenderDto;
 import com.spring.Model.Invitation;
@@ -35,44 +38,39 @@ public class InvitationService extends AbstractService {
 	@Autowired
 	private TeamService teamService;
 
-	public InvitationSenderDto save(InvitationSenderDto invitationSenderDto) throws Exception {
-		ModelMapper modelMapper = new ModelMapper();
+	public void save(InvitationSenderDto invitationSenderDto) {
 		User principal = this.userService.getUserByPrincipal();
 		this.validateUserPrincipal(principal);
-		
-		User recipient = this.userService.findOne(invitationSenderDto.getRecipient().getId());
 
-		Team team = this.teamService.findOne(invitationSenderDto.getTeam().getId());
+		Team team = this.teamService.findOne(invitationSenderDto.getTeam());
 		this.validateTeam(team);
-		
+				
 		this.validateSender(principal, team);
-
-		this.validateRecipient(recipient, team);
-		
-		Invitation invitationEntity = modelMapper.map(invitationSenderDto, Invitation.class);
-		invitationEntity.setRecipient(recipient);
-		invitationEntity.setTeam(team);
 		
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(new Date());
 		calendar.add(Calendar.DAY_OF_YEAR, 30);
-		invitationEntity.setValidDate(calendar.getTime());
 		
-		invitationEntity.setSender(principal);
-		
-		Invitation invitationDB = this.invitationRepository.saveAndFlush(invitationEntity);
-		return modelMapper.map(invitationDB, InvitationSenderDto.class);
+		for (Integer i : invitationSenderDto.getRecipients()) {
+			User recipient = this.userService.findOne(i);
+			this.validateRecipient(recipient, team);
+			Invitation invitationEntity = new Invitation(invitationSenderDto.getMessage(),
+					calendar.getTime(), null, principal, recipient, team);
+			this.invitationRepository.saveAndFlush(invitationEntity);
+		}
 	}
 
 	private boolean existsActiveInvitation(User recipient, Team team) {
 		return this.invitationRepository.existsActiveInvitation(recipient, team) != 0;
 	}
 
-	public InvitationRecipientDto answerInvitation(InvitationRecipientDto invitationRecipientDto) throws Exception {
-
+	public void answerInvitation(InvitationRecipientDto invitationRecipientDto) {
+		User principal = this.userService.getUserByPrincipal();
+		this.validateUserPrincipal(principal);
 		this.validateIsAcceptedStatus(invitationRecipientDto.getIsAccepted());
 		Invitation invitationEntity = this.invitationRepository.findById(invitationRecipientDto.getId()).orElse(null);
 		this.validateInvitationEntityAnswer(invitationEntity);
+		this.validatePrincipalCanAnswer(principal, invitationEntity);
 		invitationEntity.setIsAccepted(invitationRecipientDto.getIsAccepted());
 		Invitation invitationDB = this.invitationRepository.saveAndFlush(invitationEntity);
 		if (invitationDB.getIsAccepted() != null && invitationDB.getIsAccepted()) {
@@ -82,53 +80,80 @@ public class InvitationService extends AbstractService {
 			userRol.setUser(invitationDB.getRecipient());
 			this.userRolService.save(userRol);
 		}
-		return new ModelMapper().map(invitationDB, InvitationRecipientDto.class);
 	}
 	
+	public List<InvitationListDto> listAllByPrincipal() {
+		User principal = this.userService.getUserByPrincipal();
+		this.validateUserPrincipal(principal);
+		List<InvitationListDto> res = new ArrayList<>();
+		for (Invitation invitation : this.invitationRepository.findActiveByRecipient(principal)) {
+			InvitationListDto invitationListDto = new InvitationListDto(invitation.getTeam().getName(), 
+					invitation.getSender().getNick(), invitation.getMessage());
+			res.add(invitationListDto);
+		}
+		return res;
+	}
+
+	private void validatePrincipalCanAnswer(User principal, Invitation invitation) {
+		if (invitation.getRecipient() != principal) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The invitation is not addressed to the logged-in user");
+		}		
+	}
+
 	private void validateInvitationEntityAnswer(Invitation invitationEntity) {
-		if(invitationEntity == null) {
+		if (invitationEntity == null) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The invitation is not in the database");
+		}
+		if(invitationEntity.getIsAccepted() != null) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The invitation has been accepted or rejected before");
 		}
 	}
 
 	private void validateIsAcceptedStatus(Boolean isAccepted) {
-		if(isAccepted == null) {
+		if (isAccepted == null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The invitation must be accepted or rejected");
 		}
 	}
 
-	private void validateUserPrincipal(User principal){
-		if(principal == null) {
+	private void validateUserPrincipal(User principal) {
+		if (principal == null) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
 		}
 	}
 
-	
-	private void validateTeam(Team team){
-		if(team == null) {
+	private void validateTeam(Team team) {
+		if (team == null) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The team is not in the database");
 		}
 	}
-	
-	private void validateSender(User sender, Team team){
-		if(!this.userRolService.isUserOnTeam(sender, team)) {
+
+	private void validateSender(User sender, Team team) {
+		if (!this.userRolService.isUserOnTeam(sender, team)) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The sender must belong to the team");
 		}
-		if(!this.userRolService.isAdminOnTeam(sender, team)) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The sender must be an administrator of the team");
-		}
-	}
-	
-	private void validateRecipient(User recipient, Team team){
-		if(recipient == null) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The recipient is not in the database");
-		}
-		if(this.userRolService.isUserOnTeam(recipient, team)) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The recipient must not belong to the team");
-		}
-		if(this.existsActiveInvitation(recipient, team)) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The recipient cannot have active invitations to the team");
+		if (!this.userRolService.isAdminOnTeam(sender, team)) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"The sender must be an administrator of the team");
 		}
 	}
 
+	private void validateRecipient(User recipient, Team team) {
+		if (recipient == null) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The recipient is not in the database");
+		}
+		if (this.userRolService.isUserOnTeam(recipient, team)) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The recipient must not belong to the team");
+		}
+		if (this.existsActiveInvitation(recipient, team)) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"The recipient cannot have active invitations to the team");
+		}
+	}
+
+	public void flush() {
+		invitationRepository.flush();
+	}
+
+
 }
+

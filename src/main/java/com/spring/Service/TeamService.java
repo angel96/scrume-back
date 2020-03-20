@@ -27,7 +27,7 @@ public class TeamService extends AbstractService {
 	@Autowired
 	private UserRolService userRolService;
 
-	public TeamDto save(TeamDto teamDto) throws Exception {
+	public TeamDto save(TeamDto teamDto) {
 		ModelMapper modelMapper = new ModelMapper();
 		User principal = this.userService.getUserByPrincipal();
 		this.validateUserPrincipal(principal);
@@ -64,41 +64,44 @@ public class TeamService extends AbstractService {
 		this.userRolService.delete(userRol);
 		this.teamRepository.delete(team);
 	}
-	
+
 	public void deleteVoid(Integer idTeam) {
 		this.teamRepository.deleteById(idTeam);
 	}
-	
 
 	public Team findOne(int teamId) {
 		return this.teamRepository.findById(teamId).orElse(null);
 	}
-	
+
 	private void validateEditPermission(User principal, Team team) {
-		if(!this.userRolService.isUserOnTeam(principal, team)) {
+		if (!this.userRolService.isUserOnTeam(principal, team)) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must belong to the team");
-		}	
-		if(!this.userRolService.isAdminOnTeam(principal, team)) {
+		}
+		if (!this.userRolService.isAdminOnTeam(principal, team)) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be an admin of the team");
 		}
 	}
-	
+
 	private void validateTeam(Team team) {
-		if(team == null) {
+		if (team == null) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "the team is not in the database");
 		}
 	}
 
-	private void validateUserPrincipal(User principal){
-		if(principal == null) {
+	private void validateUserPrincipal(User principal) {
+		if (principal == null) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
 		}
 	}
 
 	private void validateDeletePermission(Team team) {
-		if(this.userRolService.getNumberOfUsersOfTeam(team) != 1) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "To delete a team, the only member must be the administrator");
+		if (this.userRolService.getNumberOfUsersOfTeam(team) != 1) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"To delete a team, the only member must be the administrator");
 		}
 	}
 
+	public void flush() {
+		teamRepository.flush();
+	}
 }
