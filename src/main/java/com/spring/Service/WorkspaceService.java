@@ -179,4 +179,8 @@ public class WorkspaceService extends AbstractService {
 	public void flush() {
 		repository.flush();
 	}
+
+	public Collection<Workspace> findWorkspacesBySprint(int sprint) {
+		return this.repository.findWorkspacesBySprint(sprint);
+	}
 }

@@ -24,6 +24,12 @@ public class WorkspaceApiController extends AbstractApiController {
 	@Autowired
 	private WorkspaceService serviceWorkspace;
 
+	@GetMapping("/list/{sprint}")
+	public Collection<Workspace> listBySprint(@PathVariable int sprint) {
+		super.logger.info("GET /api/workspace/list/" + sprint);
+		return serviceWorkspace.findWorkspacesBySprint(sprint);
+	}
+	
 	@GetMapping("/list/{team}")
 	public Collection<Workspace> list(@PathVariable int team) {
 		super.logger.info("GET /api/workspace/list/" + team);
