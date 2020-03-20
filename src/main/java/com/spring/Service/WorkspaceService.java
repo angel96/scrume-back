@@ -3,6 +3,9 @@ package com.spring.Service;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.transaction.Transactional;
 
@@ -14,11 +17,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.ColumnDto;
+import com.spring.CustomObject.SprintWithWorkspacesDto;
 import com.spring.CustomObject.TaskForWorkspaceDto;
 import com.spring.CustomObject.UserForWorkspaceDto;
+import com.spring.CustomObject.WorkspaceAndColumnTodoDto;
 import com.spring.CustomObject.WorkspaceEditDto;
 import com.spring.CustomObject.WorkspaceWithColumnsDto;
 import com.spring.Model.Column;
+import com.spring.Model.Project;
 import com.spring.Model.Sprint;
 import com.spring.Model.Task;
 import com.spring.Model.Team;
@@ -53,6 +59,9 @@ public class WorkspaceService extends AbstractService {
 	
 	@Autowired
 	private UserService serviceUser;
+	
+	@Autowired
+	private ProjectService projectService;
 
 	public UserRol findUserRoleByUserAccountAndTeam(int userAccount, int team) {
 		return this.repository.findUserRoleByUserAccountAndTeam(userAccount, team);
@@ -120,6 +129,31 @@ public class WorkspaceService extends AbstractService {
 		Workspace saveTo = this.repository.saveAndFlush(workspace);
 		this.serviceColumns.saveDefaultColumns(saveTo);
 	}
+	
+	public Collection<SprintWithWorkspacesDto> listTodoColumnsOfAProject(Integer idProject) {
+		Project project = this.projectService.findOne(idProject);
+		Collection<Column> columns = this.serviceColumns.findColumnTodoByProject(project);
+		Collection<SprintWithWorkspacesDto> res = new ArrayList<>();
+		Map<Integer, Collection<WorkspaceAndColumnTodoDto>> sprints = new HashMap<Integer, Collection<WorkspaceAndColumnTodoDto>>();
+		for (Column column : columns) {
+			Workspace workspace = column.getWorkspace();
+			WorkspaceAndColumnTodoDto workspaceAndColumnTodoDto = 
+					new WorkspaceAndColumnTodoDto(workspace.getId(), workspace.getName(), column.getId());
+			if(sprints.containsKey(workspace.getSprint().getId())){
+				Collection<WorkspaceAndColumnTodoDto> aux = sprints.get(workspace.getSprint().getId());
+				aux.add(workspaceAndColumnTodoDto);
+				sprints.put(workspace.getSprint().getId(), aux);
+			}else {
+				Collection<WorkspaceAndColumnTodoDto> aux = new ArrayList<>();
+				aux.add(workspaceAndColumnTodoDto);
+				sprints.put(workspace.getSprint().getId(), aux);
+			}
+		}
+		for(Entry<Integer, Collection<WorkspaceAndColumnTodoDto>> entry : sprints.entrySet()) {
+			res.add(new SprintWithWorkspacesDto(entry.getKey(), entry.getValue()));
+		}
+		return res;
+	}
 
 	public Workspace save(int idWorkspace, WorkspaceEditDto workspaceDto) {
 
@@ -179,4 +213,9 @@ public class WorkspaceService extends AbstractService {
 	public void flush() {
 		repository.flush();
 	}
+
+	public Collection<Workspace> findWorkspacesBySprint(int sprint) {
+		return this.repository.findWorkspacesBySprint(sprint);
+	}
+
 }
