@@ -51,9 +51,21 @@ public class ColumnService extends AbstractService {
 			this.repository.deleteAll(columns);
 		}
 	}
-
+	
 	public void flush() {
 		repository.flush();
+	}
+
+	public Column findColumnTodoByWorkspace(Workspace workspace) {
+		return this.repository.findColumnToDoByWorkspace(workspace);
+	}
+	
+	public Column findColumnInprogressByWorkspace(Workspace workspace) {
+		return this.repository.findColumnInprogressByWorkspace(workspace);
+	}
+	
+	public Column findColumnDoneByWorkspace(Workspace workspace) {
+		return this.repository.findColumnDoneByWorkspace(workspace);
 	}
 
 }
