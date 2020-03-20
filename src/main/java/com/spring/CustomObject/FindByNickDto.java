@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class FindByNickDto {
 
-	private String string;
+	private String word;
 	private Integer team;
 	private Collection<Integer> users;
 }
