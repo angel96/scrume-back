@@ -1,5 +1,6 @@
 package com.spring.Repository;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
@@ -38,4 +39,7 @@ public interface TaskRepository extends AbstractRepository<Task> {
 	List<Task> findCompleteTaskBySprint(Sprint sprint);
 	
 	List<Task> findByProject(Project project);
+
+	@Query("select t from Task t join t.column c join c.workspace w where w = ?1")
+	Collection<Task> findByWorkspace(Workspace workspace);
 }
