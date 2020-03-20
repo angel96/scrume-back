@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.CustomObject.ChangeRolDto;
+import com.spring.CustomObject.InvitationListDto;
 import com.spring.CustomObject.InvitationRecipientDto;
 import com.spring.CustomObject.InvitationSenderDto;
 import com.spring.CustomObject.TeamDto;
@@ -78,17 +79,24 @@ public class TeamApiController extends AbstractApiController {
 	}
 
 	@PostMapping("/invite")
-	public InvitationSenderDto invite(@RequestBody InvitationSenderDto invitationSenderDto) {
+	public void invite(@RequestBody InvitationSenderDto invitationSenderDto) {
 		super.logger.info("POST /api/team/invite");
-		return this.invitationService.save(invitationSenderDto);
+		this.invitationService.save(invitationSenderDto);
 	}
 
 	@PutMapping("/answer-invitation/{idInvitation}")
-	public InvitationRecipientDto answerInvitation(@PathVariable Integer idInvitation,
+	public void answerInvitation(@PathVariable Integer idInvitation,
 			@RequestBody InvitationRecipientDto invitationRecipientDto) throws Exception {
 		invitationRecipientDto.setId(idInvitation);
 		super.logger.info("PUT /api/team/answer-invitation/" + idInvitation);
-		return this.invitationService.answerInvitation(invitationRecipientDto);
+		this.invitationService.answerInvitation(invitationRecipientDto);
 	}
+	
+	@GetMapping("/list-invitations")
+	public List<InvitationListDto> listInvitations() {
+		super.logger.info("GET /api/team/list-invitations");
+		return this.invitationService.listAllByPrincipal();
+	}
+	
 
 }

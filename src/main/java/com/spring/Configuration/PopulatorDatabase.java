@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import com.spring.Model.Box;
 import com.spring.Model.Column;
+import com.spring.Model.Invitation;
 import com.spring.Model.Project;
 import com.spring.Model.Sprint;
 import com.spring.Model.Task;
@@ -29,6 +30,7 @@ import com.spring.Model.UserRol;
 import com.spring.Model.Workspace;
 import com.spring.Repository.BoxRepository;
 import com.spring.Repository.ColumnRepository;
+import com.spring.Repository.InvitationRepository;
 import com.spring.Repository.ProjectRepository;
 import com.spring.Repository.SprintRepository;
 import com.spring.Repository.TaskRepository;
@@ -81,6 +83,9 @@ public class PopulatorDatabase implements CommandLineRunner {
 
 	@Autowired
 	private TaskRepository repositoryTask;
+	
+	@Autowired
+	private InvitationRepository invitationRepository;
 
 	@Override
 	public void run(String... args) throws Exception {
@@ -90,6 +95,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		SortedMap<String, Integer> entities = new TreeMap<>();
 		Utiles.escribeFichero(entities, properties);
 
+		invitationRepository.deleteAll();
 		repositoryTask.deleteAll();
 		repositoryUserRol.deleteAll();
 		repositoryColumn.deleteAll();
@@ -251,7 +257,12 @@ public class PopulatorDatabase implements CommandLineRunner {
 		Date localDate10 = Date.from(localDateTime10.atZone(ZoneId.systemDefault()).toInstant());
 		LocalDateTime localDateTime11 = LocalDateTime.of(2020, 8, 25, 10, 15);
 		Date localDate11 = Date.from(localDateTime11.atZone(ZoneId.systemDefault()).toInstant());
+		LocalDateTime localDateTime12 = LocalDateTime.of(2040, 8, 25, 10, 15);
+		Date localDate12 = Date.from(localDateTime12.atZone(ZoneId.systemDefault()).toInstant());
 
+		Invitation invitation1 = this.invitationRepository.save(new Invitation("Message 1", localDate12, null, user, user2, team1));
+		entities.put("invitation1", invitation1.getId());
+		
 		Sprint sprint1 = this.repositorySprint.save(new Sprint(localDate, localDate1, project1));
 		Sprint sprint2 = this.repositorySprint.save(new Sprint(localDate2, localDate3, project1));
 		Sprint sprint3 = this.repositorySprint.save(new Sprint(localDate4, localDate5, project1));
@@ -372,6 +383,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		userRepository.flush();
 		boxRepository.flush();
 		repositoryAccount.flush();
+		invitationRepository.flush();
 
 	}
 
