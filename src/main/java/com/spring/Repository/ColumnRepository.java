@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.spring.Model.Column;
+import com.spring.Model.Project;
 import com.spring.Model.Task;
 import com.spring.Model.Workspace;
 
@@ -26,4 +27,7 @@ public interface ColumnRepository extends AbstractRepository<Column> {
 	
 	@Query("select c from Column c where c.workspace = ?1 and c.name = 'Done'")
 	Column findColumnDoneByWorkspace(Workspace workspace);
+
+	@Query("select c from Column c where c.workspace.sprint.project = ?1 and c.name = 'To do'")
+	Collection<Column> findColumnToDoByProject(Project project);
 }
