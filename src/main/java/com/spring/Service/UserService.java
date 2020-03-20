@@ -46,7 +46,7 @@ public class UserService extends AbstractService {
 	}
 	
 	public Collection<UserForWorkspaceDto> findByNickStartsWith(FindByNickDto findByNickDto){
-		List<User> users = this.userRepository.findByNickStartsWith(findByNickDto.getString());
+		List<User> users = this.userRepository.findByNickStartsWith(findByNickDto.getWord());
 		Team team = this.teamService.findOne(findByNickDto.getTeam());
 		Collection<Integer> idUsers = findByNickDto.getUsers();
 		idUsers.addAll(this.userRolService.findIdUsersByTeam(team));
