@@ -1,8 +1,8 @@
-package com.spring.customobject;
+package com.spring.CustomObject;
 
 import java.util.Date;
 
-import com.spring.model.Project;
+import com.spring.Model.Project;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

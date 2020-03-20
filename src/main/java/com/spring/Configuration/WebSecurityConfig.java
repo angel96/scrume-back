@@ -1,4 +1,4 @@
-package com.spring.configuration;
+package com.spring.Configuration;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -10,7 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
-import com.spring.security.UserAccountService;
+import com.spring.Security.UserAccountService;
 
 import lombok.RequiredArgsConstructor;
 

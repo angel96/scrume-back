@@ -1,4 +1,4 @@
-package com.spring.service;
+package com.spring.Service;
 
 import java.lang.reflect.Type;
 import java.util.List;
@@ -12,11 +12,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.spring.customobject.ProjectDto;
-import com.spring.model.Project;
-import com.spring.model.Team;
-import com.spring.model.User;
-import com.spring.repository.ProjectRepository;
+import com.spring.CustomObject.ProjectDto;
+import com.spring.Model.Project;
+import com.spring.Model.Team;
+import com.spring.Model.User;
+import com.spring.Repository.ProjectRepository;
 
 @Service
 @Transactional

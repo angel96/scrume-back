@@ -1,12 +1,12 @@
-package com.spring.repository;
+package com.spring.Repository;
 
 import java.util.List;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.spring.model.Box;
-import com.spring.model.Team;
+import com.spring.Model.Box;
+import com.spring.Model.Team;
 
 @Repository
 public interface BoxRepository extends AbstractRepository<Box> {

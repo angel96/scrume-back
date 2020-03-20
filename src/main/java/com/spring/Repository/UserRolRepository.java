@@ -1,4 +1,4 @@
-package com.spring.repository;
+package com.spring.Repository;
 
 import java.util.List;
 import java.util.Optional;
@@ -6,9 +6,9 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.spring.model.Team;
-import com.spring.model.User;
-import com.spring.model.UserRol;
+import com.spring.Model.Team;
+import com.spring.Model.User;
+import com.spring.Model.UserRol;
 
 @Repository
 public interface UserRolRepository extends AbstractRepository<UserRol> {

@@ -1,11 +1,11 @@
-package com.spring.repository;
+package com.spring.Repository;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.spring.model.User;
+import com.spring.Model.User;
 
 @Repository
 public interface UserRepository extends AbstractRepository<User> {

@@ -1,4 +1,4 @@
-package com.spring.service;
+package com.spring.Service;
 
 import java.lang.reflect.Type;
 import java.util.HashSet;
@@ -15,17 +15,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.spring.customobject.ListAllTaskByProjectDto;
-import com.spring.customobject.TaskDto;
-import com.spring.customobject.TaskListDto;
-import com.spring.model.Project;
-import com.spring.model.Sprint;
-import com.spring.model.Task;
-import com.spring.model.Team;
-import com.spring.model.User;
-import com.spring.model.UserAccount;
-import com.spring.repository.TaskRepository;
-import com.spring.security.UserAccountService;
+import com.spring.CustomObject.ListAllTaskByProjectDto;
+import com.spring.CustomObject.TaskDto;
+import com.spring.CustomObject.TaskListDto;
+import com.spring.Model.Project;
+import com.spring.Model.Sprint;
+import com.spring.Model.Task;
+import com.spring.Model.Team;
+import com.spring.Model.User;
+import com.spring.Model.UserAccount;
+import com.spring.Repository.TaskRepository;
+import com.spring.Security.UserAccountService;
 
 @Service
 @Transactional

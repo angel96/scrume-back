@@ -1,4 +1,4 @@
-package com.spring.configuration;
+package com.spring.Configuration;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -17,28 +17,28 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
-import com.spring.model.Box;
-import com.spring.model.Column;
-import com.spring.model.Project;
-import com.spring.model.Sprint;
-import com.spring.model.Task;
-import com.spring.model.Team;
-import com.spring.model.User;
-import com.spring.model.UserAccount;
-import com.spring.model.UserRol;
-import com.spring.model.Workspace;
-import com.spring.repository.BoxRepository;
-import com.spring.repository.ColumnRepository;
-import com.spring.repository.ProjectRepository;
-import com.spring.repository.SprintRepository;
-import com.spring.repository.TaskRepository;
-import com.spring.repository.TeamRepository;
-import com.spring.repository.UserRepository;
-import com.spring.repository.UserRolRepository;
-import com.spring.repository.WorkspaceRepository;
-import com.spring.security.Role;
-import com.spring.security.UserAccountRepository;
-import com.spring.utiles.Utiles;
+import com.spring.Model.Box;
+import com.spring.Model.Column;
+import com.spring.Model.Project;
+import com.spring.Model.Sprint;
+import com.spring.Model.Task;
+import com.spring.Model.Team;
+import com.spring.Model.User;
+import com.spring.Model.UserAccount;
+import com.spring.Model.UserRol;
+import com.spring.Model.Workspace;
+import com.spring.Repository.BoxRepository;
+import com.spring.Repository.ColumnRepository;
+import com.spring.Repository.ProjectRepository;
+import com.spring.Repository.SprintRepository;
+import com.spring.Repository.TaskRepository;
+import com.spring.Repository.TeamRepository;
+import com.spring.Repository.UserRepository;
+import com.spring.Repository.UserRolRepository;
+import com.spring.Repository.WorkspaceRepository;
+import com.spring.Security.Role;
+import com.spring.Security.UserAccountRepository;
+import com.spring.Utiles.Utiles;
 
 /**
  * 
