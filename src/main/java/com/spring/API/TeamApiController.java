@@ -1,5 +1,6 @@
 package com.spring.API;
 
+import java.util.Collection;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,13 +14,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.CustomObject.ChangeRolDto;
+import com.spring.CustomObject.FindByNickDto;
 import com.spring.CustomObject.InvitationListDto;
 import com.spring.CustomObject.InvitationRecipientDto;
 import com.spring.CustomObject.InvitationSenderDto;
 import com.spring.CustomObject.TeamDto;
+import com.spring.CustomObject.UserForWorkspaceDto;
 import com.spring.Service.InvitationService;
 import com.spring.Service.TeamService;
 import com.spring.Service.UserRolService;
+import com.spring.Service.UserService;
 
 @RestController
 @RequestMapping("/api/team")
@@ -34,6 +38,9 @@ public class TeamApiController extends AbstractApiController {
 	@Autowired
 	private UserRolService userRolService;
 
+	@Autowired
+	private UserService userService;
+	
 	@PostMapping
 	public TeamDto save(@RequestBody TeamDto teamDto) throws Exception {
 		super.logger.info("POST /api/team");
@@ -98,5 +105,10 @@ public class TeamApiController extends AbstractApiController {
 		return this.invitationService.listAllByPrincipal();
 	}
 	
+	@GetMapping("/findByNick")
+	public Collection<UserForWorkspaceDto> findByNickStartsWith(@RequestBody FindByNickDto findByNickDto) {
+		super.logger.info("GET /api/team/findByNick");
+		return this.userService.findByNickStartsWith(findByNickDto);
+	}
 
 }
