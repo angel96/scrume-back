@@ -3,16 +3,16 @@ package com.spring.API;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.CustomObject.ListAllTaskByProjectDto;
 import com.spring.CustomObject.TaskDto;
-import com.spring.Model.Task;
+import com.spring.CustomObject.TaskEditDto;
 import com.spring.Service.TaskService;
 
 @RestController
@@ -21,28 +21,32 @@ public class TaskApiController extends AbstractApiController {
 	@Autowired
 	private TaskService taskService;
 	
-	@GetMapping("/show")
-	public Task show(@RequestParam(value = "id") int id) {
-		super.logger.info("GET /api/task/" + String.valueOf(id));
-		return this.taskService.findOne(id);
+	@GetMapping("/{idTask}")
+	public TaskDto show(@PathVariable int idTask) {
+		super.logger.info("GET /api/task/" + idTask);
+		return this.taskService.find(idTask);
 	}
 	
-	@PostMapping("/save")
-	public TaskDto save(@RequestParam(value = "id") int projectId, @RequestBody TaskDto task) {
-		return this.taskService.save(task, projectId);
+	@PostMapping("/{idProject}")
+	public TaskDto save(@PathVariable int idProject, @RequestBody TaskDto task) {
+		super.logger.info("POST /api/task/" + idProject);
+		return this.taskService.save(task, idProject);
 	}
-	@PutMapping("/update")
-	public TaskDto update(@RequestParam(value = "id") int taskId, @RequestBody TaskDto task) {
-		return this.taskService.update(task, taskId);
-	}
-	
-	@DeleteMapping("/delete")
-	public void delete(@RequestParam(value = "id") int taskId) {
-		this.taskService.delete(taskId);
+	@PutMapping("/{idTask}")
+	public TaskEditDto update(@PathVariable int idTask, @RequestBody TaskEditDto task) {
+		super.logger.info("PUT /api/task/" + idTask);
+		return this.taskService.update(task, idTask);
 	}
 	
-	@GetMapping("/list-by-project")
-	public ListAllTaskByProjectDto getAllTasksByProject(@RequestParam(value = "idProject") int idProject) {
+	@DeleteMapping("/{idTask}")
+	public void delete(@PathVariable int idTask) {
+		super.logger.info("DELETE /api/task/" + idTask);
+		this.taskService.delete(idTask);
+	}
+	
+	@GetMapping("/list-by-project/{idProject}")
+	public ListAllTaskByProjectDto getAllTasksByProject(@PathVariable int idProject) {
+		super.logger.info("GET /api/task/list-by-project/" + idProject);
 		return this.taskService.getAllTasksByProject(idProject);
 	}
 

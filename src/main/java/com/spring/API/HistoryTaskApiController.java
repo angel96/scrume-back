@@ -24,12 +24,14 @@ public class HistoryTaskApiController extends AbstractApiController {
 
 	@GetMapping("/historical/{workspace}")
 	public Collection<HistoryTask> findHistoricalByWorkspace(@PathVariable int workspace) {
+		super.logger.info("GET /api/history-task/historical/" + workspace);
 		return this.serviceHistoryTask.findHistoricalByWorkspace(workspace);
 	}
 
 	@PostMapping("/move")
 	@ResponseBody
 	public HistoryTaskDto moveTask(@RequestBody HistoryTaskDto dto) {
+		super.logger.info("POST /api/history-task/move");
 		return serviceHistoryTask.save(dto);
 	}
 

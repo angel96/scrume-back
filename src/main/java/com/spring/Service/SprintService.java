@@ -1,7 +1,5 @@
 package com.spring.Service;
 
-import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -9,11 +7,11 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
+
 import com.spring.CustomObject.SprintDto;
 import com.spring.CustomObject.SprintEditDto;
 import com.spring.CustomObject.SprintStatisticsDto;
@@ -38,17 +36,17 @@ public class SprintService extends AbstractService {
 
 	@Autowired
 	private UserRolService userRolService;
-	
+
 	@Autowired
 	private WorkspaceService workspaceService;
 
 	@Autowired
 	private TaskService taskService;
-	
+
 	public Sprint getOne(int id) {
 		return this.sprintRepository.findById(id).orElse(null);
 	}
-	
+
 	public SprintStatisticsDto getStatistics(Integer idSprint) {
 		User principal = this.userService.getUserByPrincipal();
 		SprintStatisticsDto res = new SprintStatisticsDto();
@@ -57,8 +55,8 @@ public class SprintService extends AbstractService {
 		this.validateUserPrincipal(principal, sprint.getProject());
 		List<Task> tasksOfSprint = this.taskService.findBySprint(sprint);
 		List<Task> completeTasksOfSprint = this.taskService.findCompleteTaskBySprint(sprint);
-		Integer totalHP = tasksOfSprint.stream().collect(Collectors.summingInt(x-> x.getPoints()));
-		Integer completedHP = completeTasksOfSprint.stream().collect(Collectors.summingInt(x-> x.getPoints()));
+		Integer totalHP = tasksOfSprint.stream().collect(Collectors.summingInt(Task::getPoints));
+		Integer completedHP = completeTasksOfSprint.stream().collect(Collectors.summingInt(Task::getPoints));
 		res.setId(sprint.getId());
 		res.setStartDate(sprint.getStartDate());
 		res.setEndDate(sprint.getEndDate());
@@ -70,7 +68,7 @@ public class SprintService extends AbstractService {
 		return res;
 	}
 
-	public SprintDto save(SprintDto sprintCreateDto) throws Exception {
+	public SprintDto save(SprintDto sprintCreateDto) {
 		ModelMapper modelMapper = new ModelMapper();
 		User principal = this.userService.getUserByPrincipal();
 		Sprint sprintEntity = modelMapper.map(sprintCreateDto, Sprint.class);
@@ -84,7 +82,7 @@ public class SprintService extends AbstractService {
 		return modelMapper.map(sprintDB, SprintDto.class);
 	}
 
-	public SprintEditDto update(SprintEditDto sprintEditDto) throws Exception {
+	public SprintEditDto update(SprintEditDto sprintEditDto) {
 		ModelMapper modelMapper = new ModelMapper();
 		User principal = this.userService.getUserByPrincipal();
 		Sprint sprintEntity = this.sprintRepository.findById(sprintEditDto.getId()).orElse(null);
@@ -102,66 +100,61 @@ public class SprintService extends AbstractService {
 		Project project = this.projectService.findOne(idProject);
 		this.validateProject(project);
 		this.validateUserToList(principal, project);
-		List<Integer> IdsSprints = this.sprintRepository.findBySprintsOrdered(project);
-		List<SprintStatisticsDto> res = new ArrayList<SprintStatisticsDto>();
-		for (Integer idSprint : IdsSprints) {
-			res.add(this.getStatistics(idSprint));
-		}
-		return res;
+		return this.sprintRepository.findBySprintsOrdered(project).stream().map(x -> this.getStatistics(x))
+				.collect(Collectors.toList());
 	}
 
 	private void validateUserToList(User principal, Project project) {
 		if (principal == null) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
 		}
 
 		if (!this.userRolService.isUserOnTeam(principal, project.getTeam())) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The user must belong to the team of the project");
 		}
 	}
 
 	private void validateUserPrincipal(User principal, Project project) {
 		if (principal == null) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
 		}
 
 		if (!this.userRolService.isUserOnTeam(principal, project.getTeam())) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The user must belong to the team of the project");
 		}
 		if (!this.userRolService.isAdminOnTeam(principal, project.getTeam())) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED, "The user must be an admin of the team");
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be an admin of the team");
 		}
 
 	}
 
 	private void validateProject(Project project) {
 		if (project == null) {
-			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "The project is not in the database");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The project is not in the database");
 		}
 	}
 
 	private void validateSprint(Sprint sprint) {
 		if (sprint == null) {
-			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "The sprint is not in the database");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The sprint is not in the database");
 		}
 	}
 
 	private void validateDates(Sprint sprint) {
 		if (sprint.getStartDate() == null) {
-			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "the start date cannot be null");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "the start date cannot be null");
 		}
 		if (sprint.getEndDate() == null) {
-			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR, "the end date cannot be null");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "the end date cannot be null");
 		}
 		if (sprint.getEndDate().before(sprint.getStartDate())) {
-			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 					"The end date of the sprint must be later than the start date");
 		}
 		if (!this.areValidDates(sprint.getStartDate(), sprint.getEndDate(), sprint.getProject(), sprint.getId())) {
-			throw new HttpClientErrorException(HttpStatus.INTERNAL_SERVER_ERROR,
-					"Sprint dates overlap with an existing sprint");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Sprint dates overlap with an existing sprint");
 		}
 
 	}
@@ -183,4 +176,7 @@ public class SprintService extends AbstractService {
 		return areValidDates(startDate, endDate, project, 0);
 	}
 
+	public void flush() {
+		sprintRepository.flush();
+	}
 }

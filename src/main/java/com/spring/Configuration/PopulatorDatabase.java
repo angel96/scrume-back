@@ -10,6 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,10 +27,8 @@ import com.spring.Model.User;
 import com.spring.Model.UserAccount;
 import com.spring.Model.UserRol;
 import com.spring.Model.Workspace;
-import com.spring.Repository.AdministratorRepository;
 import com.spring.Repository.BoxRepository;
 import com.spring.Repository.ColumnRepository;
-import com.spring.Repository.ProfileRepository;
 import com.spring.Repository.ProjectRepository;
 import com.spring.Repository.SprintRepository;
 import com.spring.Repository.TaskRepository;
@@ -48,21 +47,13 @@ import com.spring.Utiles.Utiles;
  *
  */
 
-@Component
+//@Component
 public class PopulatorDatabase implements CommandLineRunner {
 
-	private static final String file = "entities.properties";
-
-	protected final Logger logger = Logger.getLogger(PopulatorDatabase.class);
+	protected final Logger log = Logger.getLogger(PopulatorDatabase.class);
 
 	@Autowired
 	private UserAccountRepository repositoryAccount;
-
-	@Autowired
-	private AdministratorRepository repositoryAdmin;
-
-	@Autowired
-	private ProfileRepository repositoryProfile;
 
 	@Autowired
 	private BoxRepository boxRepository;
@@ -94,8 +85,10 @@ public class PopulatorDatabase implements CommandLineRunner {
 	@Override
 	public void run(String... args) throws Exception {
 
-		SortedMap<String, Integer> entities = new TreeMap<String, Integer>();
-		Utiles.escribeFichero(entities, file);
+		final String properties = "entities.properties";
+		
+		SortedMap<String, Integer> entities = new TreeMap<>();
+		Utiles.escribeFichero(entities, properties);
 
 		repositoryTask.deleteAll();
 		repositoryUserRol.deleteAll();
@@ -106,12 +99,10 @@ public class PopulatorDatabase implements CommandLineRunner {
 		repositoryTeam.deleteAll();
 		userRepository.deleteAll();
 		boxRepository.deleteAll();
-		repositoryProfile.deleteAll();
-		repositoryAdmin.deleteAll();
 		repositoryAccount.deleteAll();
 
 		UserAccount account = repositoryAccount
-				.save(new UserAccount("angdellun@gmail.com", Utiles.encryptedPassword("123456"), LocalDateTime.now(),
+				.save(new UserAccount("angdellun@gmail.com", Utiles.encryptedPassword("1234561"), LocalDateTime.now(),
 						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_ADMIN))));
 
 		entities.put("account", account.getId());
@@ -123,25 +114,25 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("account2", account2.getId());
 
 		UserAccount userAccount = repositoryAccount
-				.save(new UserAccount("testuser@gmail.com", Utiles.encryptedPassword("123456"), LocalDateTime.now(),
+				.save(new UserAccount("testuser@gmail.com", Utiles.encryptedPassword("1234563"), LocalDateTime.now(),
 						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_ADMIN))));
 
 		entities.put("userAccount", userAccount.getId());
 
 		UserAccount account3 = repositoryAccount
-				.save(new UserAccount("testuser2@gmail.com", Utiles.encryptedPassword("123456"), LocalDateTime.now(),
+				.save(new UserAccount("testuser2@gmail.com", Utiles.encryptedPassword("1234564"), LocalDateTime.now(),
 						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_ADMIN))));
 
 		entities.put("account3", account3.getId());
 
 		UserAccount account4 = repositoryAccount
-				.save(new UserAccount("testuser3@gmail.com", Utiles.encryptedPassword("123456"), LocalDateTime.now(),
+				.save(new UserAccount("testuser3@gmail.com", Utiles.encryptedPassword("1234565"), LocalDateTime.now(),
 						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_ADMIN))));
 
 		entities.put("account4", account4.getId());
 
 		UserAccount account5 = repositoryAccount
-				.save(new UserAccount("testuser4@gmail.com", Utiles.encryptedPassword("123456"), LocalDateTime.now(),
+				.save(new UserAccount("testuser4@gmail.com", Utiles.encryptedPassword("1234566"), LocalDateTime.now(),
 						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_ADMIN))));
 
 		entities.put("account5", account5.getId());
@@ -213,8 +204,8 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("team1", team1.getId());
 		entities.put("team2", team2.getId());
 		entities.put("team3", team3.getId());
-		entities.put("team4", team3.getId());
-		entities.put("team5", team3.getId());
+		entities.put("team4", team4.getId());
+		entities.put("team5", team5.getId());
 
 		UserRol rol1 = this.repositoryUserRol.save(new UserRol(true, user, team1));
 		UserRol rol2 = this.repositoryUserRol.save(new UserRol(true, user2, team2));
@@ -288,29 +279,33 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("workspace5", workspace5.getId());
 		entities.put("workspace6", workspace6.getId());
 
-		Column toDo = this.repositoryColumn.save(new Column("To Do", workspace1));
-		Column inProgress = this.repositoryColumn.save(new Column("In progress", workspace1));
-		Column done = this.repositoryColumn.save(new Column("Done", workspace1));
+		String toDoName = "To Do";
+		String inProgressName = "In progress";
+		String doneName = "Done";
+		
+		Column toDo = this.repositoryColumn.save(new Column(toDoName, workspace1));
+		Column inProgress = this.repositoryColumn.save(new Column(inProgressName, workspace1));
+		Column done = this.repositoryColumn.save(new Column(doneName, workspace1));
 
-		Column toDo2 = this.repositoryColumn.save(new Column("To Do", workspace2));
-		Column inProgress2 = this.repositoryColumn.save(new Column("In progress", workspace2));
-		Column done2 = this.repositoryColumn.save(new Column("Done", workspace2));
+		Column toDo2 = this.repositoryColumn.save(new Column(toDoName, workspace2));
+		Column inProgress2 = this.repositoryColumn.save(new Column(inProgressName, workspace2));
+		Column done2 = this.repositoryColumn.save(new Column(doneName, workspace2));
 
-		Column toDo3 = this.repositoryColumn.save(new Column("To Do", workspace3));
-		Column inProgress3 = this.repositoryColumn.save(new Column("In progress", workspace3));
-		Column done3 = this.repositoryColumn.save(new Column("Done", workspace3));
+		Column toDo3 = this.repositoryColumn.save(new Column(toDoName, workspace3));
+		Column inProgress3 = this.repositoryColumn.save(new Column(inProgressName, workspace3));
+		Column done3 = this.repositoryColumn.save(new Column(doneName, workspace3));
 
-		Column toDo4 = this.repositoryColumn.save(new Column("To Do", workspace4));
-		Column inProgress4 = this.repositoryColumn.save(new Column("In progress", workspace4));
-		Column done4 = this.repositoryColumn.save(new Column("Done", workspace4));
+		Column toDo4 = this.repositoryColumn.save(new Column(toDoName, workspace4));
+		Column inProgress4 = this.repositoryColumn.save(new Column(inProgressName, workspace4));
+		Column done4 = this.repositoryColumn.save(new Column(doneName, workspace4));
 
-		Column toDo5 = this.repositoryColumn.save(new Column("To Do", workspace5));
-		Column inProgress5 = this.repositoryColumn.save(new Column("In progress", workspace5));
-		Column done5 = this.repositoryColumn.save(new Column("Done", workspace5));
+		Column toDo5 = this.repositoryColumn.save(new Column(toDoName, workspace5));
+		Column inProgress5 = this.repositoryColumn.save(new Column(inProgressName, workspace5));
+		Column done5 = this.repositoryColumn.save(new Column(doneName, workspace5));
 
-		Column toDo6 = this.repositoryColumn.save(new Column("To Do", workspace6));
-		Column inProgress6 = this.repositoryColumn.save(new Column("In progress", workspace6));
-		Column done6 = this.repositoryColumn.save(new Column("Done", workspace6));
+		Column toDo6 = this.repositoryColumn.save(new Column(toDoName, workspace6));
+		Column inProgress6 = this.repositoryColumn.save(new Column(inProgressName, workspace6));
+		Column done6 = this.repositoryColumn.save(new Column(doneName, workspace6));
 
 		entities.put("toDo", toDo.getId());
 		entities.put("inProgress", inProgress.getId());
@@ -360,9 +355,12 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("task5", task5.getId());
 		entities.put("task6", task6.getId());
 
-		Utiles.escribeFichero(entities, file);
+		Utiles.escribeFichero(entities, properties);
 
-		System.out.println(entities);
+		log.info("The entities mapped are: \n" + entities.keySet().stream().map(x -> {
+			Integer value = entities.get(x);
+			return x + "=" + value + "\n";
+		}).collect(Collectors.joining()));
 
 		repositoryUserRol.flush();
 		repositoryColumn.flush();
@@ -373,8 +371,6 @@ public class PopulatorDatabase implements CommandLineRunner {
 		repositoryTeam.flush();
 		userRepository.flush();
 		boxRepository.flush();
-		repositoryProfile.flush();
-		repositoryAdmin.flush();
 		repositoryAccount.flush();
 
 	}

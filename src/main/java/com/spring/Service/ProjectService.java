@@ -10,7 +10,7 @@ import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.ProjectDto;
 import com.spring.Model.Project;
@@ -54,7 +54,7 @@ public class ProjectService extends AbstractService {
 	}
 
 	public Project findOne(Integer id) {
-		return repository.findById(id).orElse(null);
+		return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested project doesn´t exists"));
 	}
 
 	public ProjectDto getOne(Integer idProject) {
@@ -111,19 +111,19 @@ public class ProjectService extends AbstractService {
 
 	private void validateProject(Project project) {
 		if (project == null) {
-			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "the project is not in the database");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "the project is not in the database");
 		}
 	}
 
 	private void validateTeam(Team team) {
 		if (team == null) {
-			throw new HttpClientErrorException(HttpStatus.NOT_FOUND, "the team is not in the database");
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "the team is not in the database");
 		}
 	}
 
 	private void validateSeeProject(Team team, User principal) {
 		if (!this.userRolService.isUserOnTeam(principal, team)) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The user must belong to the team to see the project");
 
 		}
@@ -131,11 +131,11 @@ public class ProjectService extends AbstractService {
 
 	private void validateEditPermission(Team team, User principal) {
 		if (!this.userRolService.isUserOnTeam(principal, team)) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The user must belong to the team to edit the project");
 		}
 		if (!this.userRolService.isAdminOnTeam(principal, team)) {
-			throw new HttpClientErrorException(HttpStatus.UNAUTHORIZED,
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The user must be an admin of the team to edit the project");
 		}
 	}

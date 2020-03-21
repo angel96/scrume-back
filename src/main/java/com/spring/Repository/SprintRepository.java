@@ -6,7 +6,6 @@ import java.util.List;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.spring.CustomObject.SprintDto;
 import com.spring.Model.Project;
 import com.spring.Model.Sprint;
 

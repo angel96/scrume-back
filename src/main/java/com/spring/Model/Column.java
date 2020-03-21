@@ -13,13 +13,17 @@ import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.SafeHtml;
 
 import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @Table(name = "`column`")
+@EqualsAndHashCode(callSuper = true)
 public class Column extends BaseEntity {
 
 	@NotBlank

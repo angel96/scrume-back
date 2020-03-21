@@ -29,4 +29,8 @@ public class BoxService extends AbstractService {
 		}
 		return res;
 	}
+	
+	public void flush() {
+		boxRepository.flush();
+	}
 }

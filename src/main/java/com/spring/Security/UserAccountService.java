@@ -24,7 +24,7 @@ public class UserAccountService implements UserDetailsService {
 	protected final Logger logger = Logger.getLogger(UserAccountService.class);
 
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(String username) {
 		return repository.findByUserName(username)
 				.orElseThrow(() -> new UsernameNotFoundException(username + " no encontrado"));
 	}

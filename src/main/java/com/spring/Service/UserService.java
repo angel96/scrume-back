@@ -25,5 +25,7 @@ public class UserService extends AbstractService {
 	public User findOne(int userId) {
 		return this.userRepository.findById(userId).orElse(null);
 	}
-	
+	public void flush() {
+		userRepository.flush();
+	}
 }
