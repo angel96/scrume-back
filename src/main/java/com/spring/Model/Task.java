@@ -46,11 +46,13 @@ public class Task extends BaseEntity {
 	private Integer points;
 	
 	@ManyToOne
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JsonProperty
 	@NotNull
 	private Project project;
 
 	@ManyToMany
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JsonProperty
 	private Set<User> users;
 
