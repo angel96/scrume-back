@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.spring.CustomObject.SprintWithWorkspacesDto;
 import com.spring.CustomObject.WorkspaceEditDto;
 import com.spring.CustomObject.WorkspaceWithColumnsDto;
 import com.spring.Model.Workspace;
@@ -58,6 +59,12 @@ public class WorkspaceApiController extends AbstractApiController {
 	public void delete(@PathVariable int workspace) {
 		super.logger.info("DELETE /api/workspace/" + workspace);
 		this.serviceWorkspace.delete(workspace);
+	}
+	
+	@GetMapping("/list-todo-columns/{idProject}")
+	public Collection<SprintWithWorkspacesDto> listTodoColumnsOfAProject(@PathVariable Integer idProject) {
+		super.logger.info("GET /api/list-todo-columns/" + idProject);
+		return this.serviceWorkspace.listTodoColumnsOfAProject(idProject);
 	}
 
 }

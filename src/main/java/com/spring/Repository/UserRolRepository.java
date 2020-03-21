@@ -1,5 +1,6 @@
 package com.spring.Repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -28,4 +29,7 @@ public interface UserRolRepository extends AbstractRepository<UserRol> {
 	
 	@Query("select ur.team from UserRol ur where ur.user = ?1")
 	List<Team> findByUser(User principal);
+	
+	@Query("select ur.user.id from UserRol ur where ur.team = ?1")
+	Collection<Integer> findIdUsersByTeam(Team team);
 }

@@ -72,6 +72,7 @@ public class ProjectService extends AbstractService {
 		Project projectEntity = mapper.map(projectDto, Project.class);
 		validateProject(projectEntity);
 		Project projectDB = this.repository.getOne(idProject);
+		validateProject(projectDB);
 		Integer idTeam = projectEntity.getTeam().getId();
 		Team team = teamService.findOne(idTeam);
 		validateTeam(team);
@@ -98,15 +99,15 @@ public class ProjectService extends AbstractService {
 		return mapper.map(projectDB, ProjectDto.class);
 	}
 
-	public boolean delete(Integer id) {
+	public void delete(Integer id) {
 		User principal = this.userService.getUserByPrincipal();
 		boolean checkIfExists = this.repository.existsById(id);
 		Project projectDB = this.repository.getOne(id);
+		validateProject(projectDB);
 		validateEditPermission(projectDB.getTeam(), principal);
 		if (checkIfExists) {
 			repository.deleteById(id);
 		}
-		return checkIfExists;
 	}
 
 	private void validateProject(Project project) {

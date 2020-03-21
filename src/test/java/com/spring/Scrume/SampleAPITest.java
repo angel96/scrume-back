@@ -30,7 +30,7 @@ public class SampleAPITest extends AbstractTest {
 
 	protected void driverApiTest(String user, Integer entity, Class<?> expected) {
 		Class<?> caught = null;
-
+				
 		try {
 			super.authenticateOrUnauthenticate(user);
 			Team team = service.findOne(entity);
@@ -40,8 +40,8 @@ public class SampleAPITest extends AbstractTest {
 			super.authenticateOrUnauthenticate(null);
 		} catch (Exception oops) {
 			caught = oops.getClass();
-			super.checkExceptions(expected, caught);
 		}
+		super.checkExceptions(expected, caught);
 
 	}
 }

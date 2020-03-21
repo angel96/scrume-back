@@ -1,5 +1,7 @@
 package com.spring.Repository;
 
+import java.util.List;
+
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -12,5 +14,8 @@ public interface InvitationRepository extends AbstractRepository<Invitation> {
 
 	@Query("select Count(i) from Invitation i where i.recipient = ?1 and i.team = ?2 and i.isAccepted is null and i.validDate > CURRENT_DATE")
 	Integer existsActiveInvitation(User recipient, Team team);
+
+	@Query("select i from Invitation i where i.recipient = ?1 and i.validDate > CURRENT_DATE")
+	List<Invitation> findActiveByRecipient(User principal);
 
 }

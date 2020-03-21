@@ -77,6 +77,7 @@ public class SprintService extends AbstractService {
 		sprintEntity.setProject(project);
 		this.validateDates(sprintEntity);
 		this.validateUserPrincipal(principal, sprintEntity.getProject());
+		this.validateUserPrincipalIsAdmin(principal, sprintEntity.getProject());
 		Sprint sprintDB = this.sprintRepository.saveAndFlush(sprintEntity);
 		this.workspaceService.saveDefaultWorkspace(sprintDB);
 		return modelMapper.map(sprintDB, SprintDto.class);
@@ -88,6 +89,8 @@ public class SprintService extends AbstractService {
 		Sprint sprintEntity = this.sprintRepository.findById(sprintEditDto.getId()).orElse(null);
 		this.validateSprint(sprintEntity);
 		this.validateUserPrincipal(principal, sprintEntity.getProject());
+		this.validateUserPrincipalIsAdmin(principal, sprintEntity.getProject());
+
 		sprintEntity.setStartDate(sprintEditDto.getStartDate());
 		sprintEntity.setEndDate(sprintEditDto.getEndDate());
 		this.validateDates(sprintEntity);
@@ -99,20 +102,9 @@ public class SprintService extends AbstractService {
 		User principal = this.userService.getUserByPrincipal();
 		Project project = this.projectService.findOne(idProject);
 		this.validateProject(project);
-		this.validateUserToList(principal, project);
+		this.validateUserPrincipal(principal, project);
 		return this.sprintRepository.findBySprintsOrdered(project).stream().map(x -> this.getStatistics(x))
 				.collect(Collectors.toList());
-	}
-
-	private void validateUserToList(User principal, Project project) {
-		if (principal == null) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
-		}
-
-		if (!this.userRolService.isUserOnTeam(principal, project.getTeam())) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
-					"The user must belong to the team of the project");
-		}
 	}
 
 	private void validateUserPrincipal(User principal, Project project) {
@@ -124,11 +116,14 @@ public class SprintService extends AbstractService {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The user must belong to the team of the project");
 		}
+	}
+	
+	private void validateUserPrincipalIsAdmin(User principal, Project project) {
 		if (!this.userRolService.isAdminOnTeam(principal, project.getTeam())) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be an admin of the team");
 		}
-
 	}
+
 
 	private void validateProject(Project project) {
 		if (project == null) {
@@ -161,6 +156,9 @@ public class SprintService extends AbstractService {
 
 	public boolean areValidDates(Date startDate, Date endDate, Project project, Integer idSprint) {
 		boolean res;
+		if(idSprint == null) {
+			idSprint = 0;
+		}
 		if (this.sprintRepository.areValidDates(startDate, endDate, project, idSprint) == 0) {
 			res = true;
 		} else {
@@ -170,9 +168,12 @@ public class SprintService extends AbstractService {
 	}
 
 	public boolean areValidDates(SprintDto sprintDto) {
+		User principal = this.userService.getUserByPrincipal();
 		Date startDate = sprintDto.getStartDate();
 		Date endDate = sprintDto.getEndDate();
 		Project project = this.projectService.findOne(sprintDto.getProject().getId());
+		this.validateProject(project);
+		this.validateUserPrincipal(principal, project);
 		return areValidDates(startDate, endDate, project, 0);
 	}
 
