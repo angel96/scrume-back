@@ -15,7 +15,7 @@ import com.spring.Model.Project;
 import com.spring.Service.ProjectService;
 import com.spring.Service.SprintService;
 
-public class SprintAPITest extends AbstractTest {
+public class SprintServiceTest extends AbstractTest {
 
 	@Autowired
 	private SprintService sprintService;
@@ -24,14 +24,14 @@ public class SprintAPITest extends AbstractTest {
 	private ProjectService projectService;
 	
 	@Test
-	public void SprintApiGetStatisticsTest() throws Exception {
+	public void SprintServiceGetStatisticsTest() throws Exception {
 		Object[][] objects = {
 				{"testuser@gmail.com", super.entities().get("sprint1"), null}, {"angdellun2@gmail.com", super.entities().get("sprint1"), ResponseStatusException.class}, {"testuser3@gmail.com", super.entities().get("sprint1"), ResponseStatusException.class}};
 
-		Stream.of(objects).forEach(x -> driverSprintApiGetStatisticsTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
+		Stream.of(objects).forEach(x -> driverSprintServiceGetStatisticsTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}
 
-	protected void driverSprintApiGetStatisticsTest(String user, Integer idSprint, Class<?> expected) {
+	protected void driverSprintServiceGetStatisticsTest(String user, Integer idSprint, Class<?> expected) {
 		Class<?> caught = null;
 		try {
 			super.authenticateOrUnauthenticate(user);
@@ -46,14 +46,14 @@ public class SprintAPITest extends AbstractTest {
 	}
 	
 	@Test
-	public void SprintApiListByProjectTest() throws Exception {
+	public void SprintServiceListByProjectTest() throws Exception {
 		Object[][] objects = {
 				{"testuser@gmail.com", super.entities().get("project1"), null}, {"angdellun2@gmail.com", super.entities().get("project1"), ResponseStatusException.class}, {"testuser@gmail.com", 123456765, ResponseStatusException.class}};
 
-		Stream.of(objects).forEach(x -> driverSprintApiListByProjectTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
+		Stream.of(objects).forEach(x -> driverSprintServiceListByProjectTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}
 
-	protected void driverSprintApiListByProjectTest(String user, Integer idProject, Class<?> expected) {
+	protected void driverSprintServiceListByProjectTest(String user, Integer idProject, Class<?> expected) {
 		Class<?> caught = null;
 		try {
 			super.authenticateOrUnauthenticate(user);
@@ -68,7 +68,7 @@ public class SprintAPITest extends AbstractTest {
 	}
 	
 	@Test
-	public void SprintApiSaveTest() throws Exception {
+	public void SprintServiceSaveTest() throws Exception {
 		SprintDto sprintDto1 = new SprintDto();
 		sprintDto1.setProject(this.projectService.findOne(super.entities().get("project1")));
 		LocalDateTime localDateTime =  LocalDateTime.of(2022, 7, 03, 10, 15);
@@ -113,10 +113,10 @@ public class SprintAPITest extends AbstractTest {
 		Object[][] objects = {
 				{"testuser@gmail.com", sprintDto1, null}, {"testuser2@gmail.com", sprintDto1, ResponseStatusException.class}, {"testuser@gmail.com", sprintDto2, ResponseStatusException.class}, {"testuser@gmail.com", sprintDto3, ResponseStatusException.class}, {"testuser@gmail.com", sprintDto4, ResponseStatusException.class}, {"testuser@gmail.com", sprintDto5, ResponseStatusException.class}, {"testuser@gmail.com", sprintDto6, ResponseStatusException.class}};
 
-		Stream.of(objects).forEach(x -> driverSprintApiSaveTest((String) x[0], (SprintDto) x[1], (Class<?>) x[2]));
+		Stream.of(objects).forEach(x -> driverSprintServiceSaveTest((String) x[0], (SprintDto) x[1], (Class<?>) x[2]));
 	}
 
-	protected void driverSprintApiSaveTest(String user, SprintDto sprintDto, Class<?> expected) {
+	protected void driverSprintServiceSaveTest(String user, SprintDto sprintDto, Class<?> expected) {
 		Class<?> caught = null;
 		try {
 			super.authenticateOrUnauthenticate(user);
@@ -131,7 +131,7 @@ public class SprintAPITest extends AbstractTest {
 	}
 	
 	@Test
-	public void SprintApiUpdateTest() throws Exception {
+	public void SprintServiceUpdateTest() throws Exception {
 		LocalDateTime localDateTime =  LocalDateTime.of(2022, 7, 03, 10, 15);
 		Date startDate1 = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 		LocalDateTime localDateTime1 = LocalDateTime.of(2022, 8, 03, 10, 15);
@@ -179,10 +179,10 @@ public class SprintAPITest extends AbstractTest {
 		Object[][] objects = {
 				{"testuser@gmail.com", sprintDto1, null}, {"testuser2@gmail.com", sprintDto1, ResponseStatusException.class}, {"testuser@gmail.com", sprintDto2, ResponseStatusException.class}, {"testuser@gmail.com", sprintDto3, ResponseStatusException.class}, {"testuser@gmail.com", sprintDto4, ResponseStatusException.class}, {"testuser@gmail.com", sprintDto5, ResponseStatusException.class}, {"testuser@gmail.com", sprintDto6, ResponseStatusException.class}};
 
-		Stream.of(objects).forEach(x -> driverSprintApiUpdateTest((String) x[0], (SprintEditDto) x[1], (Class<?>) x[2]));
+		Stream.of(objects).forEach(x -> driverSprintServiceUpdateTest((String) x[0], (SprintEditDto) x[1], (Class<?>) x[2]));
 	}
 
-	protected void driverSprintApiUpdateTest(String user, SprintEditDto sprintDto, Class<?> expected) {
+	protected void driverSprintServiceUpdateTest(String user, SprintEditDto sprintDto, Class<?> expected) {
 		Class<?> caught = null;
 		try {
 			super.authenticateOrUnauthenticate(user);
@@ -197,7 +197,7 @@ public class SprintAPITest extends AbstractTest {
 	}
 	
 	@Test
-	public void SprintApiAreValidDatesTest() throws Exception {
+	public void SprintServiceAreValidDatesTest() throws Exception {
 		LocalDateTime localDateTime =  LocalDateTime.of(2022, 7, 03, 10, 15);
 		Date startDate1 = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
 		LocalDateTime localDateTime1 = LocalDateTime.of(2022, 8, 03, 10, 15);
@@ -212,10 +212,10 @@ public class SprintAPITest extends AbstractTest {
 		Object[][] objects = {
 				{"testuser@gmail.com", sprintDto1, null}};
 
-		Stream.of(objects).forEach(x -> driverSprintApiAreValidDatesTest((String) x[0], (SprintDto) x[1], (Class<?>) x[2]));
+		Stream.of(objects).forEach(x -> driverSprintServiceAreValidDatesTest((String) x[0], (SprintDto) x[1], (Class<?>) x[2]));
 	}
 	
-	protected void driverSprintApiAreValidDatesTest(String user, SprintDto sprintDto, Class<?> expected) {
+	protected void driverSprintServiceAreValidDatesTest(String user, SprintDto sprintDto, Class<?> expected) {
 		Class<?> caught = null;
 		try {
 			super.authenticateOrUnauthenticate(user);
