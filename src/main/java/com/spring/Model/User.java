@@ -55,7 +55,7 @@ public class User extends Actor{
 	
 	@Lob
 	@Column(name = "photo", columnDefinition="BLOB")
-	private Blob photo;
+	private String photo;
 	
 	@DateTimeFormat
 	@NotNull
