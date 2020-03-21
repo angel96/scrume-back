@@ -349,10 +349,10 @@ public class PopulatorDatabase implements CommandLineRunner {
 		list1.add(user2);
 
 		Set<User> list2 = new HashSet<>();
-		list1.add(user2);
+		list2.add(user2);
 
 		Set<User> list3 = new HashSet<>();
-		list1.add(user3);
+		list3.add(user3);
 
 		Task task1 = this.repositoryTask.save(new Task("Tarea1", "Descripcion1", 10, project1, list1, toDo));
 		Task task2 = this.repositoryTask.save(new Task("Tarea2", "Descripcion2", 8, project1, list1, inProgress));
