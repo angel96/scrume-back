@@ -5,11 +5,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class HistoryTaskDto {
+@NoArgsConstructor
+public class WorkspaceSprintListDto {
 
-	private int destiny;
-	private int task;
+	private Integer id;
+
+	private String name;
 
 }

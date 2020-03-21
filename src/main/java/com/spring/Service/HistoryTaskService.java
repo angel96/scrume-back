@@ -61,7 +61,7 @@ public class HistoryTaskService extends AbstractService {
 
 			HistoryTask saveTo = this.repository.saveAndFlush(historyTask);
 
-			dtoToReturn = new HistoryTaskDto(saveTo.getId(), saveTo.getDestiny().getId(), saveTo.getTask().getId());
+			dtoToReturn = new HistoryTaskDto(saveTo.getDestiny().getId(), saveTo.getTask().getId());
 
 			task.setColumn(destiny);
 		}
