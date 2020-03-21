@@ -4,8 +4,10 @@ import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -22,6 +24,7 @@ import com.spring.CustomObject.TaskForWorkspaceDto;
 import com.spring.CustomObject.UserForWorkspaceDto;
 import com.spring.CustomObject.WorkspaceAndColumnTodoDto;
 import com.spring.CustomObject.WorkspaceEditDto;
+import com.spring.CustomObject.WorkspaceSprintListDto;
 import com.spring.CustomObject.WorkspaceWithColumnsDto;
 import com.spring.Model.Column;
 import com.spring.Model.Project;
@@ -56,10 +59,10 @@ public class WorkspaceService extends AbstractService {
 
 	@Autowired
 	private TaskService taskService;
-	
+
 	@Autowired
 	private UserService serviceUser;
-	
+
 	@Autowired
 	private ProjectService projectService;
 
@@ -71,38 +74,39 @@ public class WorkspaceService extends AbstractService {
 		ModelMapper modelMapper = new ModelMapper();
 		Workspace workspace = this.findOne(id);
 		Collection<Task> tasks = this.taskService.findByWorkspace(workspace);
-		
+
 		Collection<TaskForWorkspaceDto> tasksDtoTodo = new ArrayList<>();
 		Collection<TaskForWorkspaceDto> tasksDtoInProgress = new ArrayList<>();
 		Collection<TaskForWorkspaceDto> tasksDtoDone = new ArrayList<>();
 
 		for (Task task : tasks) {
 			Collection<User> users = task.getUsers();
-			Type collectionUsersDto = new TypeToken<Collection<UserForWorkspaceDto>>() {}.getType();
+			Type collectionUsersDto = new TypeToken<Collection<UserForWorkspaceDto>>() {
+			}.getType();
 			Collection<UserForWorkspaceDto> usersDto = modelMapper.map(users, collectionUsersDto);
-			TaskForWorkspaceDto taskDto = new TaskForWorkspaceDto(task.getId(), task.getTitle(), task.getDescription(), task.getPoints(), usersDto);
-			if(task.getColumn().getName() == "To do") {
+			TaskForWorkspaceDto taskDto = new TaskForWorkspaceDto(task.getId(), task.getTitle(), task.getDescription(),
+					task.getPoints(), usersDto);
+			if (task.getColumn().getName() == "To do") {
 				tasksDtoTodo.add(taskDto);
-			}
-			else if(task.getColumn().getName() == "In progress") {
+			} else if (task.getColumn().getName() == "In progress") {
 				tasksDtoInProgress.add(taskDto);
-			}
-			else {
+			} else {
 				tasksDtoDone.add(taskDto);
 			}
 		}
-		
+
 		Column columnTodo = this.serviceColumns.findColumnTodoByWorkspace(workspace);
 		ColumnDto columnTodoDto = new ColumnDto(columnTodo.getId(), columnTodo.getName(), tasksDtoTodo);
-		
+
 		Column columnInProgress = this.serviceColumns.findColumnInprogressByWorkspace(workspace);
-		ColumnDto columnInProgressDto = new ColumnDto(columnInProgress.getId(), columnInProgress.getName(), tasksDtoInProgress);
+		ColumnDto columnInProgressDto = new ColumnDto(columnInProgress.getId(), columnInProgress.getName(),
+				tasksDtoInProgress);
 
 		Column columnDone = this.serviceColumns.findColumnDoneByWorkspace(workspace);
 		ColumnDto columnDoneDto = new ColumnDto(columnDone.getId(), columnDone.getName(), tasksDtoDone);
 
 		Collection<ColumnDto> columnsDto = new ArrayList<>();
-		
+
 		columnsDto.add(columnTodoDto);
 		columnsDto.add(columnInProgressDto);
 		columnsDto.add(columnDoneDto);
@@ -114,7 +118,7 @@ public class WorkspaceService extends AbstractService {
 	}
 
 	public Workspace findOne(int id) {
-		
+
 		Workspace w = this.repository.findById(id).orElseThrow(
 				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The workspace requested does not exists"));
 		checkMembers(w.getSprint().getProject().getTeam().getId());
@@ -129,7 +133,7 @@ public class WorkspaceService extends AbstractService {
 		Workspace saveTo = this.repository.saveAndFlush(workspace);
 		this.serviceColumns.saveDefaultColumns(saveTo);
 	}
-	
+
 	public Collection<SprintWithWorkspacesDto> listTodoColumnsOfAProject(Integer idProject) {
 		Project project = this.projectService.findOne(idProject);
 		Collection<Column> columns = this.serviceColumns.findColumnTodoByProject(project);
@@ -137,19 +141,19 @@ public class WorkspaceService extends AbstractService {
 		Map<Integer, Collection<WorkspaceAndColumnTodoDto>> sprints = new HashMap<Integer, Collection<WorkspaceAndColumnTodoDto>>();
 		for (Column column : columns) {
 			Workspace workspace = column.getWorkspace();
-			WorkspaceAndColumnTodoDto workspaceAndColumnTodoDto = 
-					new WorkspaceAndColumnTodoDto(workspace.getId(), workspace.getName(), column.getId());
-			if(sprints.containsKey(workspace.getSprint().getId())){
+			WorkspaceAndColumnTodoDto workspaceAndColumnTodoDto = new WorkspaceAndColumnTodoDto(workspace.getId(),
+					workspace.getName(), column.getId());
+			if (sprints.containsKey(workspace.getSprint().getId())) {
 				Collection<WorkspaceAndColumnTodoDto> aux = sprints.get(workspace.getSprint().getId());
 				aux.add(workspaceAndColumnTodoDto);
 				sprints.put(workspace.getSprint().getId(), aux);
-			}else {
+			} else {
 				Collection<WorkspaceAndColumnTodoDto> aux = new ArrayList<>();
 				aux.add(workspaceAndColumnTodoDto);
 				sprints.put(workspace.getSprint().getId(), aux);
 			}
 		}
-		for(Entry<Integer, Collection<WorkspaceAndColumnTodoDto>> entry : sprints.entrySet()) {
+		for (Entry<Integer, Collection<WorkspaceAndColumnTodoDto>> entry : sprints.entrySet()) {
 			res.add(new SprintWithWorkspacesDto(entry.getKey(), entry.getValue()));
 		}
 		return res;
@@ -210,12 +214,14 @@ public class WorkspaceService extends AbstractService {
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not own to the team of this workspace.");
 		}
 	}
+
 	public void flush() {
 		repository.flush();
 	}
 
-	public Collection<Workspace> findWorkspacesBySprint(int sprint) {
-		return this.repository.findWorkspacesBySprint(sprint);
+	public List<WorkspaceSprintListDto> findWorkspacesBySprint(int sprint) {
+		return this.repository.findWorkspacesBySprint(sprint).stream()
+				.map(x -> new WorkspaceSprintListDto(x.getId(), x.getName())).collect(Collectors.toList());
 	}
 
 }
