@@ -54,20 +54,29 @@ public class HistoryTaskService extends AbstractService {
 
 		HistoryTaskDto dtoToReturn = null;
 
-		if (!(columns.contains(origin) && columns.contains(destiny))) {
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This access is ilegal");
+		if (origin == null) {
+			if (!columns.contains(destiny)) {
+				throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This access is ilegal");
+			} else {
+				task.setColumn(destiny);
+			}
 		} else {
-			HistoryTask historyTask = new HistoryTask(LocalDateTime.now(), origin, destiny, task);
+			if (!(columns.contains(origin) && columns.contains(destiny))) {
+				throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This access is ilegal");
+			} else {
+				HistoryTask historyTask = new HistoryTask(LocalDateTime.now(), origin, destiny, task);
 
-			HistoryTask saveTo = this.repository.saveAndFlush(historyTask);
+				HistoryTask saveTo = this.repository.saveAndFlush(historyTask);
 
-			dtoToReturn = new HistoryTaskDto(saveTo.getDestiny().getId(), saveTo.getTask().getId());
+				dtoToReturn = new HistoryTaskDto(saveTo.getDestiny().getId(), saveTo.getTask().getId());
 
-			task.setColumn(destiny);
+				task.setColumn(destiny);
+			}
 		}
 
 		return dtoToReturn;
 	}
+
 	public void flush() {
 		repository.flush();
 	}
