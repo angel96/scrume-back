@@ -1,6 +1,7 @@
 package com.spring.API;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.CustomObject.SprintWithWorkspacesDto;
 import com.spring.CustomObject.WorkspaceEditDto;
+import com.spring.CustomObject.WorkspaceSprintListDto;
 import com.spring.CustomObject.WorkspaceWithColumnsDto;
 import com.spring.Model.Workspace;
 import com.spring.Service.WorkspaceService;
@@ -25,8 +27,8 @@ public class WorkspaceApiController extends AbstractApiController {
 	@Autowired
 	private WorkspaceService serviceWorkspace;
 
-	@GetMapping("/list/{sprint}")
-	public Collection<Workspace> listBySprint(@PathVariable int sprint) {
+	@GetMapping("/list/sprint/{sprint}")
+	public List<WorkspaceSprintListDto> listBySprint(@PathVariable int sprint) {
 		super.logger.info("GET /api/workspace/list/" + sprint);
 		return serviceWorkspace.findWorkspacesBySprint(sprint);
 	}
