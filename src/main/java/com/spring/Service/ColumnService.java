@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.spring.Model.Column;
+import com.spring.Model.Project;
 import com.spring.Model.Task;
 import com.spring.Model.Workspace;
 import com.spring.Repository.ColumnRepository;
@@ -51,9 +52,25 @@ public class ColumnService extends AbstractService {
 			this.repository.deleteAll(columns);
 		}
 	}
-
+	
 	public void flush() {
 		repository.flush();
+	}
+
+	public Column findColumnTodoByWorkspace(Workspace workspace) {
+		return this.repository.findColumnToDoByWorkspace(workspace);
+	}
+	
+	public Column findColumnInprogressByWorkspace(Workspace workspace) {
+		return this.repository.findColumnInprogressByWorkspace(workspace);
+	}
+	
+	public Column findColumnDoneByWorkspace(Workspace workspace) {
+		return this.repository.findColumnDoneByWorkspace(workspace);
+	}
+	
+	public Collection<Column> findColumnTodoByProject(Project project) {
+		return this.repository.findColumnToDoByProject(project);
 	}
 
 }

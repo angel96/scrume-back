@@ -54,7 +54,7 @@ public class ProjectService extends AbstractService {
 	}
 
 	public Project findOne(Integer id) {
-		return repository.findById(id).orElse(null);
+		return repository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested project doesn´t exists"));
 	}
 
 	public ProjectDto getOne(Integer idProject) {

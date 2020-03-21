@@ -7,9 +7,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class HistoryTaskDto {
+public class InvitationListDto {
+	
+	private String team;
 
-	private int destiny;
-	private int task;
-
+	private String from;
+	
+    private String message;
+ 		
+	
 }

@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.CustomObject.ListAllTaskByProjectDto;
 import com.spring.CustomObject.TaskDto;
-import com.spring.Model.Task;
+import com.spring.CustomObject.TaskEditDto;
 import com.spring.Service.TaskService;
 
 @RestController
@@ -22,9 +22,9 @@ public class TaskApiController extends AbstractApiController {
 	private TaskService taskService;
 	
 	@GetMapping("/{idTask}")
-	public Task show(@PathVariable int idTask) {
+	public TaskDto show(@PathVariable int idTask) {
 		super.logger.info("GET /api/task/" + idTask);
-		return this.taskService.findOne(idTask);
+		return this.taskService.find(idTask);
 	}
 	
 	@PostMapping("/{idProject}")
@@ -33,7 +33,7 @@ public class TaskApiController extends AbstractApiController {
 		return this.taskService.save(task, idProject);
 	}
 	@PutMapping("/{idTask}")
-	public TaskDto update(@PathVariable int idTask, @RequestBody TaskDto task) {
+	public TaskEditDto update(@PathVariable int idTask, @RequestBody TaskEditDto task) {
 		super.logger.info("PUT /api/task/" + idTask);
 		return this.taskService.update(task, idTask);
 	}

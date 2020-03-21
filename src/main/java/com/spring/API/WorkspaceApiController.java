@@ -1,6 +1,7 @@
 package com.spring.API;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -12,7 +13,10 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.spring.CustomObject.SprintWithWorkspacesDto;
 import com.spring.CustomObject.WorkspaceEditDto;
+import com.spring.CustomObject.WorkspaceSprintListDto;
+import com.spring.CustomObject.WorkspaceWithColumnsDto;
 import com.spring.Model.Workspace;
 import com.spring.Service.WorkspaceService;
 
@@ -23,6 +27,12 @@ public class WorkspaceApiController extends AbstractApiController {
 	@Autowired
 	private WorkspaceService serviceWorkspace;
 
+	@GetMapping("/list/sprint/{sprint}")
+	public List<WorkspaceSprintListDto> listBySprint(@PathVariable int sprint) {
+		super.logger.info("GET /api/workspace/list/" + sprint);
+		return serviceWorkspace.findWorkspacesBySprint(sprint);
+	}
+	
 	@GetMapping("/list/{team}")
 	public Collection<Workspace> list(@PathVariable int team) {
 		super.logger.info("GET /api/workspace/list/" + team);
@@ -30,9 +40,9 @@ public class WorkspaceApiController extends AbstractApiController {
 	}
 
 	@GetMapping("/{workspace}")
-	public Workspace get(@PathVariable int workspace) {
+	public WorkspaceWithColumnsDto get(@PathVariable int workspace) {
 		super.logger.info("GET /api/workspace/" + workspace);
-		return this.serviceWorkspace.findOne(workspace);
+		return this.serviceWorkspace.findWorkspaceWithColumns(workspace);
 	}
 
 	@PostMapping
@@ -51,6 +61,12 @@ public class WorkspaceApiController extends AbstractApiController {
 	public void delete(@PathVariable int workspace) {
 		super.logger.info("DELETE /api/workspace/" + workspace);
 		this.serviceWorkspace.delete(workspace);
+	}
+	
+	@GetMapping("/list-todo-columns/{idProject}")
+	public Collection<SprintWithWorkspacesDto> listTodoColumnsOfAProject(@PathVariable Integer idProject) {
+		super.logger.info("GET /api/list-todo-columns/" + idProject);
+		return this.serviceWorkspace.listTodoColumnsOfAProject(idProject);
 	}
 
 }

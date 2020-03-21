@@ -1,6 +1,7 @@
 package com.spring.Service;
 
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -123,6 +124,10 @@ public class UserRolService extends AbstractService {
 	public void delete(UserRol userRol) {
 		this.userRolRepository.delete(userRol);
 	}
+	
+	public Collection<Integer> findIdUsersByTeam(Team team) {
+		return this.userRolRepository.findIdUsersByTeam(team);
+	}
 
 	public List<TeamDto> listAllTeamsOfAnUser() {
 		ModelMapper modelMapper = new ModelMapper();
@@ -180,4 +185,5 @@ public class UserRolService extends AbstractService {
 	public void flush() {
 		userRolRepository.flush();
 	}
+
 }
