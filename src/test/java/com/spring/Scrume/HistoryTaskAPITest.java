@@ -11,7 +11,7 @@ import com.spring.CustomObject.TeamDto;
 import com.spring.Model.Team;
 import com.spring.Service.TeamService;
 
-public class SampleAPITest extends AbstractTest {
+public class HistoryTaskAPITest extends AbstractTest {
 
 	@Autowired
 	private TeamService service;
