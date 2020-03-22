@@ -38,7 +38,7 @@ public interface TaskRepository extends AbstractRepository<Task> {
 	@Query("select t from Task t join t.column c join c.workspace w join w.sprint s where s = ?1 and c.name = 'Done'")
 	List<Task> findCompleteTaskBySprint(Sprint sprint);
 	
-	@Query("select t from Task t join t.column c join c.workspace w join w.sprint s where s.project = ?1")
+	@Query("select t from Task t where t.project = ?1")
 	List<Task> findByProject(Project project);
 
 	@Query("select t from Task t join t.column c join c.workspace w where w = ?1")
