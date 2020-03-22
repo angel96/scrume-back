@@ -66,45 +66,50 @@ public class WorkspaceService extends AbstractService {
 	@Autowired
 	private ProjectService projectService;
 
+	public boolean checksIfExists(int workspace) {
+		return this.repository.existsById(workspace);
+	}
+
 	public UserRol findUserRoleByUserAccountAndTeam(int userAccount, int team) {
 		return this.repository.findUserRoleByUserAccountAndTeam(userAccount, team);
 	}
 
-		public WorkspaceWithColumnsDto findWorkspaceWithColumns(int id) {
+	public WorkspaceWithColumnsDto findWorkspaceWithColumns(int id) {
 		ModelMapper modelMapper = new ModelMapper();
 		Workspace workspace = this.findOne(id);
 		Collection<Task> tasks = this.taskService.findByWorkspace(workspace);
-		
+
 		Collection<TaskForWorkspaceDto> tasksDtoTodo = new ArrayList<>();
 		Collection<TaskForWorkspaceDto> tasksDtoInProgress = new ArrayList<>();
 		Collection<TaskForWorkspaceDto> tasksDtoDone = new ArrayList<>();
 
 		for (Task task : tasks) {
 			Collection<User> users = task.getUsers();
-			Type collectionUsersDto = new TypeToken<Collection<UserForWorkspaceDto>>() {}.getType();
+			Type collectionUsersDto = new TypeToken<Collection<UserForWorkspaceDto>>() {
+			}.getType();
 			Collection<UserForWorkspaceDto> usersDto = modelMapper.map(users, collectionUsersDto);
-			TaskForWorkspaceDto taskDto = new TaskForWorkspaceDto(task.getId(), task.getTitle(), task.getDescription(), task.getPoints(), usersDto);
-			if(task.getColumn().getName().compareTo("To Do") == 0) {
+			TaskForWorkspaceDto taskDto = new TaskForWorkspaceDto(task.getId(), task.getTitle(), task.getDescription(),
+					task.getPoints(), usersDto);
+			if (task.getColumn().getName().compareTo("To Do") == 0) {
 				tasksDtoTodo.add(taskDto);
-			}
-			else if(task.getColumn().getName().compareTo("In progress") == 0) {
+			} else if (task.getColumn().getName().compareTo("In progress") == 0) {
 				tasksDtoInProgress.add(taskDto);
-			}
-			else {
+			} else {
 				tasksDtoDone.add(taskDto);
 			}
 		}
 		Column columnTodo = this.serviceColumns.findColumnTodoByWorkspace(workspace);
 		ColumnDto columnTodoDto = new ColumnDto(columnTodo.getId(), columnTodo.getName(), tasksDtoTodo);
-		
+
 		Column columnInProgress = this.serviceColumns.findColumnInprogressByWorkspace(workspace);
-		ColumnDto columnInProgressDto = new ColumnDto(columnInProgress.getId(), columnInProgress.getName(), tasksDtoInProgress);
+		ColumnDto columnInProgressDto = new ColumnDto(columnInProgress.getId(), columnInProgress.getName(),
+				tasksDtoInProgress);
 
 		Column columnDone = this.serviceColumns.findColumnDoneByWorkspace(workspace);
 		ColumnDto columnDoneDto = new ColumnDto(columnDone.getId(), columnDone.getName(), tasksDtoDone);
 
 		Collection<ColumnDto> columnsDto = new ArrayList<>();
-		
+
 		columnsDto.add(columnTodoDto);
 		columnsDto.add(columnInProgressDto);
 		columnsDto.add(columnDoneDto);

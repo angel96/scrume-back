@@ -7,7 +7,7 @@ import javax.annotation.PostConstruct;
 import org.junit.After;
 import org.junit.Test;
 
-public class WorkspaceAPITest extends AbstractTest {
+public class WorkspaceServiceTest extends AbstractTest {
 
 	@PostConstruct
 	public void initBefore() {

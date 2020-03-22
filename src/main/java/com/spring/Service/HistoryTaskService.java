@@ -1,6 +1,7 @@
 package com.spring.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 
 import javax.transaction.Transactional;
@@ -13,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.spring.CustomObject.HistoryTaskDto;
 import com.spring.Model.Column;
 import com.spring.Model.HistoryTask;
+import com.spring.Model.Project;
 import com.spring.Model.Task;
 import com.spring.Model.Workspace;
 import com.spring.Repository.HistoryTaskRepository;
@@ -35,11 +37,15 @@ public class HistoryTaskService extends AbstractService {
 
 	public Collection<HistoryTask> findHistoricalByWorkspace(int workspace) {
 
-		Workspace w = serviceWorkspace.findOne(workspace);
+		Collection<HistoryTask> result = null;
 
-		serviceWorkspace.checkMembers(w.getSprint().getProject().getTeam().getId());
-
-		Collection<HistoryTask> result = this.repository.findHistoricalByWorkspace(workspace);
+		if (this.serviceWorkspace.checksIfExists(workspace)) {
+			Workspace w = serviceWorkspace.findOne(workspace);
+			serviceWorkspace.checkMembers(w.getSprint().getProject().getTeam().getId());
+			result = this.repository.findHistoricalByWorkspace(workspace);
+		} else {
+			result = new ArrayList<>();
+		}
 
 		return result;
 	}
@@ -52,17 +58,27 @@ public class HistoryTaskService extends AbstractService {
 
 		Collection<Column> columns = this.repository.findColumnsByTeamId(task.getProject().getTeam().getId());
 
+		Project projectColumnDestiny = destiny.getWorkspace().getSprint().getProject();
+		Project taskProject = task.getProject();
+		
+		if(!projectColumnDestiny.getId().equals(taskProject.getId())) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+					"Tasks from different projects can not be moved");
+		}
+		
 		HistoryTaskDto dtoToReturn = null;
 
 		if (origin == null) {
 			if (!columns.contains(destiny)) {
-				throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This access is ilegal");
+				throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+						"The task assigned to this workspace can not be moved. You are not member of this team");
 			} else {
 				task.setColumn(destiny);
 			}
 		} else {
 			if (!(columns.contains(origin) && columns.contains(destiny))) {
-				throw new ResponseStatusException(HttpStatus.FORBIDDEN, "This access is ilegal");
+				throw new ResponseStatusException(HttpStatus.FORBIDDEN,
+						"The task assigned to this workspace can not be moved. You are not member of this team");
 			} else {
 				HistoryTask historyTask = new HistoryTask(LocalDateTime.now(), origin, destiny, task);
 
