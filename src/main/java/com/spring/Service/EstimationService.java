@@ -50,7 +50,7 @@ public class EstimationService extends AbstractService {
 	}
 	
 	private void validateTask(Task task) {
-		if(task.getPoints() != null) {
+		if(task.getPoints() != 0) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The task is already estimated");
 		}
 	}
