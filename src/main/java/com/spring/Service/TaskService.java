@@ -1,6 +1,6 @@
 package com.spring.Service;
 
-import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.modelmapper.internal.util.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -148,21 +147,25 @@ public class TaskService extends AbstractService {
 	}
 
 	public ListAllTaskByProjectDto getAllTasksByProject(int idProject) {
-		ModelMapper modelMapper = new ModelMapper();
 		User principal = this.userService.getUserByPrincipal();
 		Project project = this.projectService.findOne(idProject);
 		this.validateProject(project);
 		this.validateUserToList(principal, project);
-		List<Task> tasks = this.taskRepository.findByProject(project);
-		Type listType = new TypeToken<List<TaskListDto>>() {
-		}.getType();
-		List<TaskListDto> taskListDto = modelMapper.map(tasks, listType);
-		ListAllTaskByProjectDto res = new ListAllTaskByProjectDto();
-		res.setId(project.getId());
-		res.setName(project.getName());
-		res.setDescription(project.getDescription());
-		res.setTasks(taskListDto);
-		return res;
+		List<Object[]> tasks = this.taskRepository.findByProject(project);
+		List<TaskListDto> taskListDto = new ArrayList<>();
+		for (Object[] object : tasks) {
+			Task task = (Task) object[0];
+			Integer finalPoints = task.getPoints();
+			if(finalPoints == null) {
+				finalPoints = 0;
+			}
+			Integer estimatedPoints = (Integer) object[1];
+			if(estimatedPoints == null) {
+				finalPoints = 0;
+			}
+			taskListDto.add(new TaskListDto(task.getId(), task.getTitle(), task.getDescription(), finalPoints, estimatedPoints, task.getColumn()));
+		}		
+		return  new ListAllTaskByProjectDto(project.getId(), project.getName(), project.getTeam(), project.getDescription(), taskListDto);
 	}
 
 	private void validateProject(Project project) {
@@ -200,5 +203,10 @@ public class TaskService extends AbstractService {
 
 	public Collection<Task> findByWorkspace(Workspace workspace) {
 		return this.taskRepository.findByWorkspace(workspace);
+	}
+
+	public void saveEstimation(Task task, Integer points) {
+		task.setPoints(points);
+		this.taskRepository.save(task);
 	}
 }

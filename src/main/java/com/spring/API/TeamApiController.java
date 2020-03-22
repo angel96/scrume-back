@@ -105,9 +105,9 @@ public class TeamApiController extends AbstractApiController {
 		return this.invitationService.listAllByPrincipal();
 	}
 	
-	@GetMapping("/findByNick")
+	@PostMapping("/findByNick")
 	public Collection<UserForWorkspaceDto> findByNickStartsWith(@RequestBody FindByNickDto findByNickDto) {
-		super.logger.info("GET /api/team/findByNick");
+		super.logger.info("POST /api/team/findByNick");
 		return this.userService.findByNickStartsWith(findByNickDto);
 	}
 
