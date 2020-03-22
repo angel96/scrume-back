@@ -20,6 +20,7 @@ import com.spring.CustomObject.ListAllTaskByProjectDto;
 import com.spring.CustomObject.TaskDto;
 import com.spring.CustomObject.TaskEditDto;
 import com.spring.CustomObject.TaskListDto;
+import com.spring.Model.Estimation;
 import com.spring.Model.Project;
 import com.spring.Model.Sprint;
 import com.spring.Model.Task;
@@ -43,7 +44,9 @@ public class TaskService extends AbstractService {
 	private UserRolService userRolService;
 	@Autowired
 	private UserService userService;
-
+	@Autowired
+	private EstimationService estimationService;
+	
 	public Task findOne(int id) {
 		return this.taskRepository.findById(id).orElseThrow(
 				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested task doesn´t exists"));
@@ -151,17 +154,19 @@ public class TaskService extends AbstractService {
 		Project project = this.projectService.findOne(idProject);
 		this.validateProject(project);
 		this.validateUserToList(principal, project);
-		List<Object[]> tasks = this.taskRepository.findByProject(project);
+		List<Task> tasks = this.taskRepository.findByProject(project);
 		List<TaskListDto> taskListDto = new ArrayList<>();
-		for (Object[] object : tasks) {
-			Task task = (Task) object[0];
+		for (Task task : tasks) {
 			Integer finalPoints = task.getPoints();
 			if(finalPoints == null) {
 				finalPoints = 0;
 			}
-			Integer estimatedPoints = (Integer) object[1];
-			if(estimatedPoints == null) {
-				finalPoints = 0;
+			Estimation estimation = this.estimationService.findByTask(task);
+			Integer estimatedPoints;
+			if(estimation == null) {
+				estimatedPoints = 0;
+			}else {
+				estimatedPoints = estimation.getPoints();
 			}
 			taskListDto.add(new TaskListDto(task.getId(), task.getTitle(), task.getDescription(), finalPoints, estimatedPoints, task.getColumn()));
 		}		

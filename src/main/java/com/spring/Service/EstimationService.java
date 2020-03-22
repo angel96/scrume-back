@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.EstimationDto;
+import com.spring.CustomObject.TaskDto;
 import com.spring.Model.Estimation;
 import com.spring.Model.Task;
 import com.spring.Model.Team;
@@ -49,7 +50,7 @@ public class EstimationService extends AbstractService {
 	}
 	
 	private void validateTask(Task task) {
-		if(task.getPoints() != null) {
+		if(task.getPoints() != 0) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The task is already estimated");
 		}
 	}
@@ -74,5 +75,9 @@ public class EstimationService extends AbstractService {
 	
 	public void flush() {
 		estimationRepository.flush();
+	}
+
+	public Estimation findByTask(Task task) {
+		return this.estimationRepository.findByTask(task).orElse(null);
 	}
 }

@@ -1,6 +1,7 @@
 package com.spring.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -22,5 +23,7 @@ public interface EstimationRepository extends AbstractRepository<Estimation> {
 	Integer getNumberOfEstimatesOfAnUser(User principal, Task task);
 
 	List<Estimation> findByUser(User principal);
+
+	Optional<Estimation> findByTask(Task task);
 
 }
