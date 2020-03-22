@@ -87,7 +87,7 @@ public class InvitationService extends AbstractService {
 		this.validateUserPrincipal(principal);
 		List<InvitationListDto> res = new ArrayList<>();
 		for (Invitation invitation : this.invitationRepository.findActiveByRecipient(principal)) {
-			InvitationListDto invitationListDto = new InvitationListDto(invitation.getTeam().getName(), 
+			InvitationListDto invitationListDto = new InvitationListDto(invitation.getId(), invitation.getTeam().getName(), 
 					invitation.getSender().getNick(), invitation.getSender().getPhoto(), invitation.getMessage());
 			res.add(invitationListDto);
 		}

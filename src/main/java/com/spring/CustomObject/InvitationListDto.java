@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class InvitationListDto {
 	
+	private Integer id;
+	
 	private String team;
 
 	private String from;
