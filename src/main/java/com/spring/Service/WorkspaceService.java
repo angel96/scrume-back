@@ -32,11 +32,9 @@ import com.spring.Model.Sprint;
 import com.spring.Model.Task;
 import com.spring.Model.Team;
 import com.spring.Model.User;
-import com.spring.Model.UserAccount;
 import com.spring.Model.UserRol;
 import com.spring.Model.Workspace;
 import com.spring.Repository.WorkspaceRepository;
-import com.spring.Security.UserAccountService;
 
 @Service
 @Transactional
@@ -175,7 +173,7 @@ public class WorkspaceService extends AbstractService {
 			if (workspaceDto.getSprint() != 0) {
 				workspace.setSprint(this.serviceSprint.getOne(workspaceDto.getSprint()));
 			}
-			saveTo = this.repository.save(workspace);
+			saveTo = this.repository.saveAndFlush(workspace);
 		} else {
 			workspace = new Workspace(workspaceDto.getName(), this.serviceSprint.getOne(workspaceDto.getSprint()));
 			saveTo = this.repository.saveAndFlush(workspace);
@@ -187,16 +185,19 @@ public class WorkspaceService extends AbstractService {
 
 	public void delete(int workspace) {
 
+		// 1. Existe
 		boolean check = this.repository.existsById(workspace);
+
 		if (check) {
-//			checkAuthorityAdmin(workspace);
-//			this.serviceColumns.deleteColumns(workspace);
+			// 2. Es administrador y pertenece
+			checkAuthorityAdmin(workspace);
 			this.repository.deleteById(workspace);
 		}
 	}
 
 	public void checkMembers(int teamId) {
 		User user = this.serviceUser.getUserByPrincipal();
+
 		Team team = this.serviceTeam.findOne(teamId);
 		if (user == null) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
@@ -208,23 +209,26 @@ public class WorkspaceService extends AbstractService {
 	}
 
 	private void checkAuthorityAdmin(int workspace) {
-		UserAccount userAccount = UserAccountService.getPrincipal();
 
-		Collection<Team> teams = this.repository.findAllTeamsByUserAccountAdmin(userAccount.getId());
-		Workspace w = this.repository.findById(workspace).orElseThrow(
-				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The workspace requested does not exists"));
-		if (!teams.contains(w.getSprint().getProject().getTeam())) {
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You do not own to the team of this workspace.");
+		User u = this.serviceUser.getUserByPrincipal();
+
+		boolean uRol = this.serviceUserRol.isAdminOnTeam(u, this.findOne(workspace).getSprint().getProject().getTeam());
+
+		if (!uRol) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"The user must be an administrator for this action");
 		}
+
+	}
+
+	public List<WorkspaceSprintListDto> findWorkspacesBySprint(int sprint) {
+		Team team = this.serviceSprint.getOne(sprint).getProject().getTeam();
+		checkMembers(team.getId());
+		return this.repository.findWorkspacesBySprint(sprint).stream()
+				.map(x -> new WorkspaceSprintListDto(x.getId(), x.getName())).collect(Collectors.toList());
 	}
 
 	public void flush() {
 		repository.flush();
 	}
-
-	public List<WorkspaceSprintListDto> findWorkspacesBySprint(int sprint) {
-		return this.repository.findWorkspacesBySprint(sprint).stream()
-				.map(x -> new WorkspaceSprintListDto(x.getId(), x.getName())).collect(Collectors.toList());
-	}
-
 }
