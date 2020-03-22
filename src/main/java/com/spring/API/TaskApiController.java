@@ -10,16 +10,23 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.spring.CustomObject.EstimationDto;
 import com.spring.CustomObject.ListAllTaskByProjectDto;
 import com.spring.CustomObject.TaskDto;
 import com.spring.CustomObject.TaskEditDto;
+import com.spring.Service.EstimationService;
 import com.spring.Service.TaskService;
+
+import antlr.collections.List;
 
 @RestController
 @RequestMapping("api/task")
 public class TaskApiController extends AbstractApiController {
 	@Autowired
 	private TaskService taskService;
+	
+	@Autowired
+	private EstimationService estimationService;
 	
 	@GetMapping("/{idTask}")
 	public TaskDto show(@PathVariable int idTask) {
@@ -50,4 +57,11 @@ public class TaskApiController extends AbstractApiController {
 		return this.taskService.getAllTasksByProject(idProject);
 	}
 
+	@PostMapping("/estimate/{idTask}")
+	public EstimationDto estimateTask(@PathVariable int idTask, @RequestBody EstimationDto estimationDto) {
+		estimationDto.setTask(idTask);
+		super.logger.info("POST /api/task/estimate/" + idTask);
+		return this.estimationService.save(estimationDto);
+	}
+	
 }

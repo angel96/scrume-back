@@ -15,6 +15,8 @@ public class ListAllTaskByProjectDto {
 		
 		private String name;
 		
+		private String team;
+		
 		private String description;
 		
 		private List<TaskListDto> tasks;
