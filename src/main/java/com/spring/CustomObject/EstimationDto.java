@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EstimationDto {
+	
+	private Integer id;
 		
 	private Integer points;
 	
