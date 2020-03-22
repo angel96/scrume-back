@@ -17,5 +17,4 @@ public class AbstractService {
 
 		return s;
 	}
-
 }
