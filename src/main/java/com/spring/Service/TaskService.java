@@ -43,9 +43,7 @@ public class TaskService extends AbstractService {
 	private UserRolService userRolService;
 	@Autowired
 	private UserService userService;
-	@Autowired
-	private EstimationService estimationService;
-	
+
 	public Task findOne(int id) {
 		return this.taskRepository.findById(id).orElseThrow(
 				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested task doesn´t exists"));
@@ -167,7 +165,7 @@ public class TaskService extends AbstractService {
 			}
 			taskListDto.add(new TaskListDto(task.getId(), task.getTitle(), task.getDescription(), finalPoints, estimatedPoints, task.getColumn()));
 		}		
-		return  new ListAllTaskByProjectDto(project.getId(), project.getName(), project.getTeam().getName(), project.getDescription(), taskListDto);
+		return  new ListAllTaskByProjectDto(project.getId(), project.getName(), project.getTeam(), project.getDescription(), taskListDto);
 	}
 
 	private void validateProject(Project project) {
