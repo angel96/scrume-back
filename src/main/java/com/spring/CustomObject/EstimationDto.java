@@ -7,15 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class InvitationListDto {
+public class EstimationDto {
 	
-	private String team;
-
-	private String from;
+	private Integer id;
+		
+	private Integer points;
 	
-	private String photo;
-
-	private String message;
- 	
-	
+	private Integer task;
 }

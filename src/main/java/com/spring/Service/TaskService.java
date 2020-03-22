@@ -1,6 +1,6 @@
 package com.spring.Service;
 
-import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.modelmapper.internal.util.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -21,6 +20,7 @@ import com.spring.CustomObject.ListAllTaskByProjectDto;
 import com.spring.CustomObject.TaskDto;
 import com.spring.CustomObject.TaskEditDto;
 import com.spring.CustomObject.TaskListDto;
+import com.spring.Model.Estimation;
 import com.spring.Model.Project;
 import com.spring.Model.Sprint;
 import com.spring.Model.Task;
@@ -44,7 +44,9 @@ public class TaskService extends AbstractService {
 	private UserRolService userRolService;
 	@Autowired
 	private UserService userService;
-
+	@Autowired
+	private EstimationService estimationService;
+	
 	public Task findOne(int id) {
 		return this.taskRepository.findById(id).orElseThrow(
 				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested task doesn´t exists"));
@@ -148,21 +150,27 @@ public class TaskService extends AbstractService {
 	}
 
 	public ListAllTaskByProjectDto getAllTasksByProject(int idProject) {
-		ModelMapper modelMapper = new ModelMapper();
 		User principal = this.userService.getUserByPrincipal();
 		Project project = this.projectService.findOne(idProject);
 		this.validateProject(project);
 		this.validateUserToList(principal, project);
 		List<Task> tasks = this.taskRepository.findByProject(project);
-		Type listType = new TypeToken<List<TaskListDto>>() {
-		}.getType();
-		List<TaskListDto> taskListDto = modelMapper.map(tasks, listType);
-		ListAllTaskByProjectDto res = new ListAllTaskByProjectDto();
-		res.setId(project.getId());
-		res.setName(project.getName());
-		res.setDescription(project.getDescription());
-		res.setTasks(taskListDto);
-		return res;
+		List<TaskListDto> taskListDto = new ArrayList<>();
+		for (Task task : tasks) {
+			Integer finalPoints = task.getPoints();
+			if(finalPoints == null) {
+				finalPoints = 0;
+			}
+			Estimation estimation = this.estimationService.findByTask(task);
+			Integer estimatedPoints;
+			if(estimation == null) {
+				estimatedPoints = 0;
+			}else {
+				estimatedPoints = estimation.getPoints();
+			}
+			taskListDto.add(new TaskListDto(task.getId(), task.getTitle(), task.getDescription(), finalPoints, estimatedPoints, task.getColumn()));
+		}		
+		return  new ListAllTaskByProjectDto(project.getId(), project.getName(), project.getTeam(), project.getDescription(), taskListDto);
 	}
 
 	private void validateProject(Project project) {
@@ -200,5 +208,10 @@ public class TaskService extends AbstractService {
 
 	public Collection<Task> findByWorkspace(Workspace workspace) {
 		return this.taskRepository.findByWorkspace(workspace);
+	}
+
+	public void saveEstimation(Task task, Integer points) {
+		task.setPoints(points);
+		this.taskRepository.save(task);
 	}
 }
