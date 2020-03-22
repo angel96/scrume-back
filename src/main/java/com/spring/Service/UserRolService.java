@@ -15,6 +15,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.ChangeRolDto;
 import com.spring.CustomObject.TeamDto;
+import com.spring.CustomObject.UserOfATeamByWorspaceDto;
 import com.spring.Model.Team;
 import com.spring.Model.User;
 import com.spring.Model.UserRol;
@@ -184,6 +185,10 @@ public class UserRolService extends AbstractService {
 
 	public void flush() {
 		userRolRepository.flush();
+	}
+
+	public Collection<User> findUsersByTeam(Team team) {
+		return this.userRolRepository.findUsersByTeam(team);
 	}
 
 }
