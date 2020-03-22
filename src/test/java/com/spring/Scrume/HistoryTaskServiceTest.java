@@ -34,8 +34,8 @@ public class HistoryTaskServiceTest extends AbstractTest {
 		Object[][] objects = { { "angdellun@gmail.com", super.entities().get(""), null },
 				{ "angdellun@gmail.com", super.entities().get(""), ResponseStatusException.class } };
 
-		Stream.of(objects)
-				.forEach(x -> driverFindHistoricalByWorkspace((String) x[0], (Integer) x[1], (Class<?>) x[2]));
+		//Stream.of(objects)
+				//.forEach(x -> driverFindHistoricalByWorkspace((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}
 
 	protected void driverFindHistoricalByWorkspace(String user, Integer entity, Class<?> expected) {
