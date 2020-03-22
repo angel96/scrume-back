@@ -68,10 +68,6 @@ public class WorkspaceService extends AbstractService {
 		return this.repository.existsById(workspace);
 	}
 
-	public UserRol findUserRoleByUserAccountAndTeam(int userAccount, int team) {
-		return this.repository.findUserRoleByUserAccountAndTeam(userAccount, team);
-	}
-
 	public WorkspaceWithColumnsDto findWorkspaceWithColumns(int id) {
 		ModelMapper modelMapper = new ModelMapper();
 		Workspace workspace = this.findOne(id);

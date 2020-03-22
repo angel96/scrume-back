@@ -9,33 +9,25 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.HistoryTaskDto;
 import com.spring.Model.HistoryTask;
+import com.spring.Model.Task;
 import com.spring.Service.HistoryTaskService;
+import com.spring.Service.TaskService;
 
 public class HistoryTaskServiceTest extends AbstractTest {
 
 	@Autowired
-	private HistoryTaskService service;
+	private HistoryTaskService serviceHistoryTask;
+	@Autowired
+	private TaskService serviceTask;
 
 	@Test
 	public void testFindHistoricalByWorkspace() throws Exception {
+		Object[][] objects = { { "testuser@gmail.com", super.entities().get("workspace1"), null },
+				{ "testuser@gmail.com", 0, null },
+				{ "angdellun@gmail.com", super.entities().get("workspace1"), ResponseStatusException.class } };
 
-		/**
-		 * Positivo
-		 * 
-		 * + Listar el historico de un workspace del usuario loggeado
-		 * 
-		 * Negativo
-		 * 
-		 * - Listar el workspace de un usuario no loggeado - Listar el workspace de un
-		 * usuario que no es el loggeado.
-		 * 
-		 */
-
-		Object[][] objects = { { "angdellun@gmail.com", super.entities().get(""), null },
-				{ "angdellun@gmail.com", super.entities().get(""), ResponseStatusException.class } };
-
-		//Stream.of(objects)
-				//.forEach(x -> driverFindHistoricalByWorkspace((String) x[0], (Integer) x[1], (Class<?>) x[2]));
+		Stream.of(objects)
+				.forEach(x -> driverFindHistoricalByWorkspace((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}
 
 	protected void driverFindHistoricalByWorkspace(String user, Integer entity, Class<?> expected) {
@@ -43,50 +35,59 @@ public class HistoryTaskServiceTest extends AbstractTest {
 
 		try {
 			super.authenticateOrUnauthenticate(user);
-			Collection<HistoryTask> historical = this.service.findHistoricalByWorkspace(entity);
-			this.service.flush();
+			Collection<HistoryTask> historical = this.serviceHistoryTask.findHistoricalByWorkspace(entity);
+			this.serviceHistoryTask.flush();
 			super.authenticateOrUnauthenticate(null);
 		} catch (Exception oops) {
 			caught = oops.getClass();
+
 		}
 		super.checkExceptions(expected, caught);
 	}
 
 	@Test
-	public void testSave() throws Exception {
+	public void testSaveBacklog() {
+		Task task = this.serviceTask.findOne(super.entities().get("task1"));
+		task.setColumn(null);
 
-		/**
-		 * Positivo
-		 * 
-		 * + Mover una tarea entre columnas del mismo workspace. 
-		 * + Mover una tarea del backlog de un proyecto
-		 * 
-		 * Negativo
-		 * 
-		 * - Mover una tarea de un proyecto al que el usuario logegado no pertenece.
-		 * - Mover una tarea de un equipo al que el usuario no pertenece.
-		 */
+		Object[][] objects = {
+				{ "testuser@gmail.com", super.entities().get("task1"), super.entities().get("toDo"), null },
+				{ "testuser@gmail.com", super.entities().get("task1"), super.entities().get("toDo5"),
+						ResponseStatusException.class } };
 
-		Object[][] objects = { { "angdellun@gmail.com", super.entities().get(""), null },
-				{ "angdellun@gmail.com", super.entities().get(""), ResponseStatusException.class } };
+		Stream.of(objects).forEach(x ->
 
-		// Stream.of(objects)
-		// .forEach(x -> driverFindHistoricalByWorkspace((String) x[0], (Integer) x[1],
-		// (Class<?>) x[2]));
+		driverSave((String) x[0], (Integer) x[1], (Integer) x[2], (Class<?>) x[3]));
 	}
 
-	protected void driverSave(String user, Integer entity, Class<?> expected) {
+	@Test
+	public void testSave() throws Exception {
+
+		Object[][] objects = {
+				{ "testuser@gmail.com", super.entities().get("task1"), super.entities().get("inProgress"), null },
+				{ "angdellun@gmail.com", super.entities().get("task1"), super.entities().get("inProgress"),
+						ResponseStatusException.class },
+				{ "testuser@gmail.com", super.entities().get("task1"), super.entities().get("inProgress6"),
+						ResponseStatusException.class },
+				{ "testuser@gmail.com", super.entities().get("task1"), super.entities().get("inProgress6"),
+						ResponseStatusException.class } };
+
+		Stream.of(objects).forEach(x ->
+
+		driverSave((String) x[0], (Integer) x[1], (Integer) x[2], (Class<?>) x[3]));
+	}
+
+	protected void driverSave(String user, Integer entity, Integer destiny, Class<?> expected) {
 		Class<?> caught = null;
 
 		try {
 			super.authenticateOrUnauthenticate(user);
-
-			HistoryTaskDto saveTo = new HistoryTaskDto();
-
-			this.service.flush();
+			this.serviceHistoryTask.save(new HistoryTaskDto(destiny, entity));
+			this.serviceHistoryTask.flush();
 			super.authenticateOrUnauthenticate(null);
 		} catch (Exception oops) {
 			caught = oops.getClass();
+			System.out.println(caught);
 		}
 		super.checkExceptions(expected, caught);
 	}
