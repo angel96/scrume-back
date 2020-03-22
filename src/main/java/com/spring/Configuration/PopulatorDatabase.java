@@ -83,7 +83,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 
 	@Autowired
 	private TaskRepository repositoryTask;
-	
+
 	@Autowired
 	private InvitationRepository invitationRepository;
 
@@ -91,7 +91,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 	public void run(String... args) throws Exception {
 
 		final String properties = "entities.properties";
-		
+
 		SortedMap<String, Integer> entities = new TreeMap<>();
 		Utiles.escribeFichero(entities, properties);
 
@@ -262,11 +262,12 @@ public class PopulatorDatabase implements CommandLineRunner {
 		LocalDateTime localDateTime12 = LocalDateTime.of(2040, 8, 25, 10, 15);
 		Date localDate12 = Date.from(localDateTime12.atZone(ZoneId.systemDefault()).toInstant());
 
-		Invitation invitation1 = this.invitationRepository.save(new Invitation("Message 1", localDate12, null, user, user2, team1));
+		Invitation invitation1 = this.invitationRepository
+				.save(new Invitation("Message 1", localDate12, null, user, user2, team1));
 		entities.put("invitation1", invitation1.getId());
-		
+
 		Sprint sprint1 = this.repositorySprint.save(new Sprint(localDate, localDate1, project1));
-		Sprint sprint2 = this.repositorySprint.save(new Sprint(localDate2, localDate3, project1));
+		Sprint sprint2 = this.repositorySprint.save(new Sprint(localDate2, localDate3, project2));
 		Sprint sprint3 = this.repositorySprint.save(new Sprint(localDate4, localDate5, project1));
 		Sprint sprint4 = this.repositorySprint.save(new Sprint(localDate6, localDate7, project2));
 		Sprint sprint5 = this.repositorySprint.save(new Sprint(localDate8, localDate9, project2));
@@ -278,7 +279,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("sprint4", sprint4.getId());
 		entities.put("sprint5", sprint5.getId());
 
-		Workspace workspace1 = this.repositoryWorkspace.save(new Workspace("Este es el workspace de prueba", sprint1));
+		Workspace workspace1 = this.repositoryWorkspace.save(new Workspace("Workspace 1", sprint1));
 		Workspace workspace2 = this.repositoryWorkspace.save(new Workspace("Workspace 2", sprint2));
 		Workspace workspace3 = this.repositoryWorkspace.save(new Workspace("Workspace 3", sprint3));
 		Workspace workspace4 = this.repositoryWorkspace.save(new Workspace("Workspace 4", sprint4));
@@ -295,7 +296,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		String toDoName = "To Do";
 		String inProgressName = "In progress";
 		String doneName = "Done";
-		
+
 		Column toDo = this.repositoryColumn.save(new Column(toDoName, workspace1));
 		Column inProgress = this.repositoryColumn.save(new Column(inProgressName, workspace1));
 		Column done = this.repositoryColumn.save(new Column(doneName, workspace1));
@@ -356,10 +357,11 @@ public class PopulatorDatabase implements CommandLineRunner {
 
 		Task task1 = this.repositoryTask.save(new Task("Tarea1", "Descripcion1", 10, project1, list1, toDo));
 		Task task2 = this.repositoryTask.save(new Task("Tarea2", "Descripcion2", 8, project1, list1, inProgress));
-		Task task3 = this.repositoryTask.save(new Task("Tarea3", "Descripcion3", 7, project2, list2, toDo2));
-		Task task4 = this.repositoryTask.save(new Task("Tarea4", "Descripcion4", 18, project3, list3, inProgress3));
-		Task task5 = this.repositoryTask.save(new Task("Tarea5", "Descripcion5", 2, project2, list1, inProgress2));
-		Task task6 = this.repositoryTask.save(new Task("Tarea6", "Descripcion6", 17, project3, list3, done3));
+		Task task3 = this.repositoryTask.save(new Task("Tarea3", "Descripcion3", 18, project1, list3, inProgress));
+		Task task4 = this.repositoryTask.save(new Task("Tarea4", "Descripcion4", 17, project1, list3, done));
+		Task task5 = this.repositoryTask.save(new Task("Tarea5", "Descripcion5", 7, project2, list2, toDo2));
+		Task task6 = this.repositoryTask.save(new Task("Tarea6", "Descripcion6", 2, project2, list1, inProgress2));
+		
 
 		entities.put("task1", task1.getId());
 		entities.put("task2", task2.getId());
