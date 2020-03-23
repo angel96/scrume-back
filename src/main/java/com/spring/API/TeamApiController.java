@@ -42,7 +42,7 @@ public class TeamApiController extends AbstractApiController {
 	private UserService userService;
 	
 	@PostMapping
-	public TeamDto save(@RequestBody TeamDto teamDto) throws Exception {
+	public TeamDto save(@RequestBody TeamDto teamDto) {
 		super.logger.info("POST /api/team");
 		return this.teamService.save(teamDto);
 	}
@@ -93,7 +93,7 @@ public class TeamApiController extends AbstractApiController {
 
 	@PutMapping("/answer-invitation/{idInvitation}")
 	public void answerInvitation(@PathVariable Integer idInvitation,
-			@RequestBody InvitationRecipientDto invitationRecipientDto) throws Exception {
+			@RequestBody InvitationRecipientDto invitationRecipientDto) {
 		invitationRecipientDto.setId(idInvitation);
 		super.logger.info("PUT /api/team/answer-invitation/" + idInvitation);
 		this.invitationService.answerInvitation(invitationRecipientDto);
@@ -105,9 +105,9 @@ public class TeamApiController extends AbstractApiController {
 		return this.invitationService.listAllByPrincipal();
 	}
 	
-	@GetMapping("/findByNick")
+	@PostMapping("/findByNick")
 	public Collection<UserForWorkspaceDto> findByNickStartsWith(@RequestBody FindByNickDto findByNickDto) {
-		super.logger.info("GET /api/team/findByNick");
+		super.logger.info("POST /api/team/findByNick");
 		return this.userService.findByNickStartsWith(findByNickDto);
 	}
 

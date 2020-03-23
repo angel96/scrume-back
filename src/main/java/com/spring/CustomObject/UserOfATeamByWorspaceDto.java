@@ -7,17 +7,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class InvitationListDto {
+public class UserOfATeamByWorspaceDto {
 	
 	private Integer id;
 	
-	private String team;
+    private String nick;
+    
+    private String photo;
 
-	private String from;
-	
-	private String photo;
-
-	private String message;
- 	
-	
 }

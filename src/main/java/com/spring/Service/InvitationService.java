@@ -7,7 +7,6 @@ import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -87,7 +86,7 @@ public class InvitationService extends AbstractService {
 		this.validateUserPrincipal(principal);
 		List<InvitationListDto> res = new ArrayList<>();
 		for (Invitation invitation : this.invitationRepository.findActiveByRecipient(principal)) {
-			InvitationListDto invitationListDto = new InvitationListDto(invitation.getTeam().getName(), 
+			InvitationListDto invitationListDto = new InvitationListDto(invitation.getId(), invitation.getTeam().getName(), 
 					invitation.getSender().getNick(), invitation.getSender().getPhoto(), invitation.getMessage());
 			res.add(invitationListDto);
 		}
