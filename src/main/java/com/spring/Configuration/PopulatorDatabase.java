@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import com.spring.Model.Box;
 import com.spring.Model.Column;
+import com.spring.Model.HistoryTask;
 import com.spring.Model.Invitation;
 import com.spring.Model.Project;
 import com.spring.Model.Sprint;
@@ -30,6 +31,7 @@ import com.spring.Model.UserRol;
 import com.spring.Model.Workspace;
 import com.spring.Repository.BoxRepository;
 import com.spring.Repository.ColumnRepository;
+import com.spring.Repository.HistoryTaskRepository;
 import com.spring.Repository.InvitationRepository;
 import com.spring.Repository.ProjectRepository;
 import com.spring.Repository.SprintRepository;
@@ -142,10 +144,10 @@ public class PopulatorDatabase implements CommandLineRunner {
 						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_ADMIN))));
 
 		entities.put("account5", account5.getId());
-		
-		UserAccount taskTest = repositoryAccount.save(new UserAccount("taskTest@gmail.com",Utiles.encryptedPassword("1234567"),LocalDateTime.now(),
-				LocalDateTime.now(), new HashSet<>()));
-		
+
+		UserAccount taskTest = repositoryAccount.save(new UserAccount("taskTest@gmail.com",
+				Utiles.encryptedPassword("1234567"), LocalDateTime.now(), LocalDateTime.now(), new HashSet<>()));
+
 		entities.put("taskTest", taskTest.getId());
 
 		Box basicBox = new Box();
@@ -183,7 +185,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 
 		User taskTestUser = new User();
 		taskTestUser.setBox(basicBox);
-		
+
 		user.setEndingBoxDate(date);
 		user.setName("Name");
 		user.setNick("nick");
@@ -204,7 +206,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		user3.setSurnames("surnames3");
 		user3.setUserAccount(account3);
 		user3 = userRepository.save(user3);
-		
+
 		taskTestUser.setEndingBoxDate(date3);
 		taskTestUser.setName("TestTask");
 		taskTestUser.setNick("nickTest");
@@ -234,7 +236,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		UserRol rol3 = this.repositoryUserRol.save(new UserRol(true, user3, team3));
 		UserRol rol4 = this.repositoryUserRol.save(new UserRol(false, user3, team1));
 		UserRol rolTaskTest = this.repositoryUserRol.save(new UserRol(false, taskTestUser, team1));
-		
+
 		entities.put("rol1", rol1.getId());
 		entities.put("rol2", rol2.getId());
 		entities.put("rol3", rol3.getId());
@@ -380,7 +382,6 @@ public class PopulatorDatabase implements CommandLineRunner {
 		Task task4 = this.repositoryTask.save(new Task("Tarea4", "Descripcion4", 17, project1, list3, done));
 		Task task5 = this.repositoryTask.save(new Task("Tarea5", "Descripcion5", 7, project2, list2, toDo2));
 		Task task6 = this.repositoryTask.save(new Task("Tarea6", "Descripcion6", 2, project2, list1, inProgress2));
-		
 
 		entities.put("task1", task1.getId());
 		entities.put("task2", task2.getId());
