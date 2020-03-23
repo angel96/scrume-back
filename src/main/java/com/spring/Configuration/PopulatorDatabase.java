@@ -296,6 +296,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("sprint3", sprint3.getId());
 		entities.put("sprint4", sprint4.getId());
 		entities.put("sprint5", sprint5.getId());
+		entities.put("sprint6", sprint6.getId());
 
 		Workspace workspace1 = this.repositoryWorkspace.save(new Workspace("Workspace 1", sprint1));
 		Workspace workspace2 = this.repositoryWorkspace.save(new Workspace("Workspace 2", sprint2));
@@ -311,7 +312,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("workspace5", workspace5.getId());
 		entities.put("workspace6", workspace6.getId());
 
-		String toDoName = "To Do";
+		String toDoName = "To do";
 		String inProgressName = "In progress";
 		String doneName = "Done";
 

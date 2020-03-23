@@ -110,6 +110,7 @@ public class WorkspaceService extends AbstractService {
 	}
 
 	public Collection<Workspace> findWorkspacesByTeam(int team) {
+		checkMembers(team);
 		return this.repository.findWorkspacesByTeam(team);
 	}
 
@@ -122,7 +123,6 @@ public class WorkspaceService extends AbstractService {
 	}
 
 	public void saveDefaultWorkspace(Sprint sprint) {
-
 		Workspace workspace = new Workspace();
 		workspace.setName("Default");
 		workspace.setSprint(sprint);
@@ -132,9 +132,10 @@ public class WorkspaceService extends AbstractService {
 
 	public Collection<SprintWithWorkspacesDto> listTodoColumnsOfAProject(Integer idProject) {
 		Project project = this.projectService.findOne(idProject);
+		checkMembers(project.getTeam().getId());
 		Collection<Column> columns = this.serviceColumns.findColumnTodoByProject(project);
 		Collection<SprintWithWorkspacesDto> res = new ArrayList<>();
-		Map<Integer, Collection<WorkspaceAndColumnTodoDto>> sprints = new HashMap<Integer, Collection<WorkspaceAndColumnTodoDto>>();
+		Map<Integer, Collection<WorkspaceAndColumnTodoDto>> sprints = new HashMap<>();
 		for (Column column : columns) {
 			Workspace workspace = column.getWorkspace();
 			WorkspaceAndColumnTodoDto workspaceAndColumnTodoDto = new WorkspaceAndColumnTodoDto(workspace.getId(),
@@ -163,7 +164,7 @@ public class WorkspaceService extends AbstractService {
 
 		if (idWorkspace != 0) {
 			checkAuthorityAdmin(idWorkspace);
-			workspace = this.repository.getOne(idWorkspace);
+			workspace = this.findOne(idWorkspace);
 			workspace.setName(workspaceDto.getName());
 			if (workspaceDto.getSprint() != 0) {
 				workspace.setSprint(this.serviceSprint.getOne(workspaceDto.getSprint()));
@@ -181,10 +182,11 @@ public class WorkspaceService extends AbstractService {
 	public void delete(int workspace) {
 
 		// 1. Existe
-		boolean check = this.repository.existsById(workspace);
+		boolean check = this.checksIfExists(workspace);
 
 		if (check) {
 			// 2. Es administrador y pertenece
+			this.findOne(workspace);
 			checkAuthorityAdmin(workspace);
 			this.repository.deleteById(workspace);
 		}
