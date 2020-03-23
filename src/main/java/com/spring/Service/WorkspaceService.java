@@ -32,7 +32,6 @@ import com.spring.Model.Sprint;
 import com.spring.Model.Task;
 import com.spring.Model.Team;
 import com.spring.Model.User;
-import com.spring.Model.UserRol;
 import com.spring.Model.Workspace;
 import com.spring.Repository.WorkspaceRepository;
 
@@ -66,10 +65,6 @@ public class WorkspaceService extends AbstractService {
 
 	public boolean checksIfExists(int workspace) {
 		return this.repository.existsById(workspace);
-	}
-
-	public UserRol findUserRoleByUserAccountAndTeam(int userAccount, int team) {
-		return this.repository.findUserRoleByUserAccountAndTeam(userAccount, team);
 	}
 
 	public WorkspaceWithColumnsDto findWorkspaceWithColumns(int id) {

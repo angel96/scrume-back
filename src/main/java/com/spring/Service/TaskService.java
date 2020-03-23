@@ -46,8 +46,9 @@ public class TaskService extends AbstractService {
 	private UserService userService;
 	@Autowired
 	private EstimationService estimationService;
-	
+
 	public Task findOne(int id) {
+//		checkUserLogged(UserAccountService.getPrincipal());
 		return this.taskRepository.findById(id).orElseThrow(
 				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested task doesn´t exists"));
 	}
@@ -61,10 +62,9 @@ public class TaskService extends AbstractService {
 				task.getColumn() == null ? null : task.getColumn().getId());
 	}
 
-	public List<Task> findAll() {
-		return this.taskRepository.findAll();
-	}
-
+	/*
+	 * public List<Task> findAll() { return this.taskRepository.findAll(); }
+	 */
 	public List<Task> findBySprint(Sprint sprint) {
 		return this.taskRepository.findBySprint(sprint);
 	}
@@ -75,29 +75,29 @@ public class TaskService extends AbstractService {
 
 	public TaskDto save(TaskDto task, int projectId) {
 		Project project = this.projectService.findOne(projectId);
+		validateProject(project);
 		checkUserLogged(UserAccountService.getPrincipal());
 		checkUserOnTeam(UserAccountService.getPrincipal(), project.getTeam());
 		ModelMapper mapper = new ModelMapper();
 		Task taskEntity = mapper.map(task, Task.class);
 		Task taskDB = new Task();
-		taskDB.setDescription(taskEntity.getDescription());
-		taskDB.setPoints(taskEntity.getPoints());
-		taskDB.setProject(project);
 		taskDB.setTitle(taskEntity.getTitle());
-		if (taskEntity.getUsers() == null || taskEntity.getUsers().isEmpty()) {
-			Set<User> usuarios = new HashSet<>();
-			taskDB.setUsers(usuarios);
-		} else {
-			Set<User> userAux = taskEntity.getUsers().stream().filter(x -> x.getId() > 0)
-					.map(x -> this.userService.findOne(x.getId())).collect(Collectors.toSet());
-			userAux.stream().forEach(x -> checkUserOnTeam(x.getUserAccount(), project.getTeam()));
-			taskDB.setUsers(userAux);
-		}
-
+		taskDB.setDescription(taskEntity.getDescription());
+//		taskDB.setPoints(taskEntity.getPoints());
+		taskDB.setProject(project);
+		/*
+		 * if (taskEntity.getUsers() == null || taskEntity.getUsers().isEmpty()) {
+		 * Set<User> usuarios = new HashSet<>(); taskDB.setUsers(usuarios); } else {
+		 * Set<User> userAux = task.getUsers().stream().filter(x -> x <= 0) .map(x ->
+		 * this.userService.findOne(x)).collect(Collectors.toSet());
+		 * userAux.stream().forEach(x -> checkUserOnTeam(x.getUserAccount(),
+		 * project.getTeam())); taskDB.setUsers(userAux); }
+		 */
 		taskDB = taskRepository.saveAndFlush(taskDB);
-		Set<Integer> users = taskDB.getUsers().stream().map(User::getId).collect(Collectors.toSet());
-		return new TaskDto(taskDB.getTitle(), taskDB.getDescription(), taskDB.getPoints(), taskDB.getProject().getId(),
-				users, taskDB.getColumn() == null ? null : taskDB.getColumn().getId());
+//		Set<Integer> users = taskEntity.getUsers().stream().filter(x -> x.getId()<=0).map(User::getId).collect(Collectors.toSet());
+		return new TaskDto(taskDB.getTitle(), taskDB.getDescription(), taskDB.getPoints(),
+				/* taskDB.getProject().getId() */ projectId, new HashSet<>(),
+				null/* taskDB.getColumn() == null ? null : taskDB.getColumn().getId() */);
 	}
 
 	public TaskEditDto update(TaskEditDto task, int taskId) {
@@ -119,7 +119,7 @@ public class TaskService extends AbstractService {
 			taskDB.getUsers().retainAll(userAux);
 		}
 		taskDB.setDescription(taskEntity.getDescription());
-		taskDB.setPoints(taskEntity.getPoints());
+//		taskDB.setPoints(taskEntity.getPoints());
 		taskDB.setProject(project);
 		taskDB.setTitle(taskEntity.getTitle());
 
@@ -131,29 +131,30 @@ public class TaskService extends AbstractService {
 		 * taskDB.setColumn(c); }
 		 */
 		taskDB = taskRepository.saveAndFlush(taskDB);
+		Set<Integer> users = taskDB.getUsers().stream().filter(x -> x.getId() < 0).map(User::getId)
+				.collect(Collectors.toSet());
 
-		return new TaskEditDto(taskDB.getId(), taskDB.getTitle(), taskDB.getDescription(), taskDB.getPoints());
+		return new TaskEditDto(taskDB.getId(), taskDB.getTitle(), taskDB.getDescription(), users);
 	}
 
 	public void delete(int taskId) {
 		try {
-//		if (this.taskRepository.existsById(taskId)) {
 			Task task = this.findOne(taskId);
 			checkUserLogged(UserAccountService.getPrincipal());
 			Project project = task.getProject();
 			checkUserOnTeam(UserAccountService.getPrincipal(), project.getTeam());
 			Assert.isTrue(UserAccountService.getPrincipal().getRoles().contains(Role.ROLE_ADMIN));
 			taskRepository.deleteById(taskId);
-		} catch(Throwable t) {
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "The Task with id=" + taskId + " doesn´t exist");
+		} catch (IllegalArgumentException t) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You`re not an admin");
 		}
 	}
 
 	public ListAllTaskByProjectDto getAllTasksByProject(int idProject) {
-		User principal = this.userService.getUserByPrincipal();
 		Project project = this.projectService.findOne(idProject);
 		this.validateProject(project);
-		this.validateUserToList(principal, project);
+		checkUserLogged(UserAccountService.getPrincipal());
+		checkUserOnTeam(UserAccountService.getPrincipal(), project.getTeam());
 		List<Task> tasks = this.taskRepository.findByProject(project);
 		List<TaskListDto> taskListDto = new ArrayList<>();
 		for (Task task : tasks) {
@@ -173,20 +174,10 @@ public class TaskService extends AbstractService {
 		return  new ListAllTaskByProjectDto(project.getId(), project.getName(), project.getTeam(), project.getDescription(), taskListDto);
 	}
 
+
 	private void validateProject(Project project) {
 		if (project == null) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The project is not in the database");
-		}
-	}
-
-	private void validateUserToList(User principal, Project project) {
-		if (principal == null) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
-		}
-
-		if (!this.userRolService.isUserOnTeam(principal, project.getTeam())) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
-					"The user must belong to the team of the project");
 		}
 	}
 
@@ -209,7 +200,7 @@ public class TaskService extends AbstractService {
 	public Collection<Task> findByWorkspace(Workspace workspace) {
 		return this.taskRepository.findByWorkspace(workspace);
 	}
-
+	
 	public void saveEstimation(Task task, Integer points) {
 		task.setPoints(points);
 		this.taskRepository.save(task);

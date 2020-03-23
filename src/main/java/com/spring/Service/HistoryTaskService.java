@@ -6,6 +6,7 @@ import java.util.Collection;
 
 import javax.transaction.Transactional;
 
+import org.jboss.logging.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -22,6 +23,8 @@ import com.spring.Repository.HistoryTaskRepository;
 @Service
 @Transactional
 public class HistoryTaskService extends AbstractService {
+
+	protected final Logger log = Logger.getLogger(HistoryTaskService.class);
 
 	@Autowired
 	private HistoryTaskRepository repository;
@@ -55,19 +58,16 @@ public class HistoryTaskService extends AbstractService {
 		Column destiny = this.serviceColumn.findOne(dto.getDestiny());
 		Task task = serviceTask.findOne(dto.getTask());
 		Column origin = task.getColumn();
-
-		Collection<Column> columns = this.repository.findColumnsByTeamId(task.getProject().getTeam().getId());
-
 		Project projectColumnDestiny = destiny.getWorkspace().getSprint().getProject();
 		Project taskProject = task.getProject();
-		
-		if(!projectColumnDestiny.getId().equals(taskProject.getId())) {
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-					"Tasks from different projects can not be moved");
-		}
-		
-		HistoryTaskDto dtoToReturn = null;
+		this.serviceWorkspace.checkMembers(taskProject.getTeam().getId());
 
+		if (!projectColumnDestiny.getId().equals(taskProject.getId())) {
+			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Tasks from different projects can not be moved");
+		}
+
+		Collection<Column> columns = this.repository.findColumnsByTeamId(task.getProject().getTeam().getId());
+		HistoryTaskDto dtoToReturn = null;
 		if (origin == null) {
 			if (!columns.contains(destiny)) {
 				throw new ResponseStatusException(HttpStatus.FORBIDDEN,
@@ -76,7 +76,7 @@ public class HistoryTaskService extends AbstractService {
 				task.setColumn(destiny);
 			}
 		} else {
-			if (!(columns.contains(origin) && columns.contains(destiny))) {
+			if (!columns.contains(destiny)) {
 				throw new ResponseStatusException(HttpStatus.FORBIDDEN,
 						"The task assigned to this workspace can not be moved. You are not member of this team");
 			} else {
