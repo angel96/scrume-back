@@ -1,10 +1,14 @@
 package com.spring.CustomObject;
 
+import java.util.Set;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 public class TaskEditDto {
 	
 	private int id;
@@ -12,6 +16,7 @@ public class TaskEditDto {
 	private String title;
 
 	private String description;
-
-	private int points;
+	
+	private Set<Integer> users;
+	
 }

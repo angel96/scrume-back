@@ -13,7 +13,7 @@ public class TaskDto {
 
 	private String description;
 
-	private int points;
+	private Integer points;
 	private Integer project;
 
 	private Set<Integer> users;
