@@ -142,6 +142,11 @@ public class PopulatorDatabase implements CommandLineRunner {
 						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_ADMIN))));
 
 		entities.put("account5", account5.getId());
+		
+		UserAccount taskTest = repositoryAccount.save(new UserAccount("taskTest@gmail.com",Utiles.encryptedPassword("1234567"),LocalDateTime.now(),
+				LocalDateTime.now(), new HashSet<>()));
+		
+		entities.put("taskTest", taskTest.getId());
 
 		Box basicBox = new Box();
 		basicBox.setName("BASIC");
@@ -176,6 +181,9 @@ public class PopulatorDatabase implements CommandLineRunner {
 		user3.setBox(basicBox);
 		Date date3 = new GregorianCalendar(2020, Calendar.DECEMBER, 28).getTime();
 
+		User taskTestUser = new User();
+		taskTestUser.setBox(basicBox);
+		
 		user.setEndingBoxDate(date);
 		user.setName("Name");
 		user.setNick("nick");
@@ -196,10 +204,18 @@ public class PopulatorDatabase implements CommandLineRunner {
 		user3.setSurnames("surnames3");
 		user3.setUserAccount(account3);
 		user3 = userRepository.save(user3);
+		
+		taskTestUser.setEndingBoxDate(date3);
+		taskTestUser.setName("TestTask");
+		taskTestUser.setNick("nickTest");
+		taskTestUser.setSurnames("surnames4");
+		taskTestUser.setUserAccount(taskTest);
+		taskTestUser = userRepository.save(taskTestUser);
 
 		entities.put("user", user.getId());
 		entities.put("user2", user2.getId());
 		entities.put("user3", user3.getId());
+		entities.put("taskTestUser", taskTestUser.getId());
 
 		Team team1 = repositoryTeam.save(new Team("Equipo 1"));
 		Team team2 = repositoryTeam.save(new Team("Equipo 2"));
@@ -217,11 +233,13 @@ public class PopulatorDatabase implements CommandLineRunner {
 		UserRol rol2 = this.repositoryUserRol.save(new UserRol(true, user2, team2));
 		UserRol rol3 = this.repositoryUserRol.save(new UserRol(true, user3, team3));
 		UserRol rol4 = this.repositoryUserRol.save(new UserRol(false, user3, team1));
-
+		UserRol rolTaskTest = this.repositoryUserRol.save(new UserRol(false, taskTestUser, team1));
+		
 		entities.put("rol1", rol1.getId());
 		entities.put("rol2", rol2.getId());
 		entities.put("rol3", rol3.getId());
 		entities.put("rol4", rol4.getId());
+		entities.put("rolTaskTest", rolTaskTest.getId());
 
 		Project project1 = repositoryProject.save(new Project("Proyecto 1", "Proyecto 1", team1));
 		Project project2 = repositoryProject.save(new Project("Proyecto 2", "Proyecto 2", team1));
