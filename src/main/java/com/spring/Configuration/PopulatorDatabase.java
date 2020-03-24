@@ -1,11 +1,10 @@
 package com.spring.Configuration;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedMap;
@@ -20,6 +19,7 @@ import org.springframework.stereotype.Component;
 import com.spring.Model.Box;
 import com.spring.Model.Column;
 import com.spring.Model.Invitation;
+import com.spring.Model.Payment;
 import com.spring.Model.Project;
 import com.spring.Model.Sprint;
 import com.spring.Model.Task;
@@ -31,6 +31,7 @@ import com.spring.Model.Workspace;
 import com.spring.Repository.BoxRepository;
 import com.spring.Repository.ColumnRepository;
 import com.spring.Repository.InvitationRepository;
+import com.spring.Repository.PaymentRepository;
 import com.spring.Repository.ProjectRepository;
 import com.spring.Repository.SprintRepository;
 import com.spring.Repository.TaskRepository;
@@ -83,18 +84,22 @@ public class PopulatorDatabase implements CommandLineRunner {
 
 	@Autowired
 	private TaskRepository repositoryTask;
-	
+
 	@Autowired
 	private InvitationRepository invitationRepository;
+
+	@Autowired
+	private PaymentRepository repositoryPayment;
 
 	@Override
 	public void run(String... args) throws Exception {
 
 		final String properties = "entities.properties";
-		
+
 		SortedMap<String, Integer> entities = new TreeMap<>();
 		Utiles.escribeFichero(entities, properties);
 
+		repositoryPayment.deleteAll();
 		invitationRepository.deleteAll();
 		repositoryTask.deleteAll();
 		repositoryUserRol.deleteAll();
@@ -143,6 +148,11 @@ public class PopulatorDatabase implements CommandLineRunner {
 
 		entities.put("account5", account5.getId());
 
+		UserAccount taskTest = repositoryAccount.save(new UserAccount("taskTest@gmail.com",
+				Utiles.encryptedPassword("1234567"), LocalDateTime.now(), LocalDateTime.now(), new HashSet<>()));
+
+		entities.put("taskTest", taskTest.getId());
+
 		Box basicBox = new Box();
 		basicBox.setName("BASIC");
 		basicBox.setPrice(0.0);
@@ -165,41 +175,58 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("proBox", proBox.getId());
 
 		User user = new User();
-		user.setBox(proBox);
-		Date date = new GregorianCalendar(2020, Calendar.DECEMBER, 30).getTime();
 
 		User user2 = new User();
-		user2.setBox(basicBox);
-		Date date2 = new GregorianCalendar(2020, Calendar.DECEMBER, 29).getTime();
 
 		User user3 = new User();
-		user3.setBox(basicBox);
-		Date date3 = new GregorianCalendar(2020, Calendar.DECEMBER, 28).getTime();
 
-		user.setEndingBoxDate(date);
+		User taskTestUser = new User();
+
 		user.setName("Name");
 		user.setNick("nick");
 		user.setSurnames("surnames");
 		user.setUserAccount(userAccount);
 		user = userRepository.save(user);
 
-		user2.setEndingBoxDate(date2);
 		user2.setName("Name2");
 		user2.setNick("nick2");
 		user2.setSurnames("surnames2");
 		user2.setUserAccount(account2);
 		user2 = userRepository.save(user2);
 
-		user3.setEndingBoxDate(date3);
 		user3.setName("Name3");
 		user3.setNick("nick3");
 		user3.setSurnames("surnames3");
 		user3.setUserAccount(account3);
 		user3 = userRepository.save(user3);
 
+		taskTestUser.setName("TestTask");
+		taskTestUser.setNick("nickTest");
+		taskTestUser.setSurnames("surnames4");
+		taskTestUser.setUserAccount(taskTest);
+		taskTestUser = userRepository.save(taskTestUser);
+
 		entities.put("user", user.getId());
 		entities.put("user2", user2.getId());
 		entities.put("user3", user3.getId());
+		entities.put("taskTestUser", taskTestUser.getId());
+
+		Payment payment0 = repositoryPayment.save(new Payment(LocalDate.of(2020, 02, 24), basicBox, user, null));
+		Payment payment1 = repositoryPayment
+				.save(new Payment(LocalDate.of(2020, 02, 24), standardBox, user, LocalDate.of(2020, 03, 24)));
+		Payment paymentTaskTestUser = repositoryPayment
+				.save(new Payment(LocalDate.of(2020, 02, 24), standardBox, taskTestUser, LocalDate.of(2020, 03, 24)));
+
+		Payment payment2 = repositoryPayment
+				.save(new Payment(LocalDate.of(2020, 02, 24), basicBox, user2, LocalDate.of(2021, 02, 24)));
+		Payment payment3 = repositoryPayment
+				.save(new Payment(LocalDate.of(2020, 02, 24), basicBox, user3, LocalDate.of(2021, 02, 24)));
+
+		entities.put("payment0", payment0.getId());
+		entities.put("payment1", payment1.getId());
+		entities.put("payment2", payment2.getId());
+		entities.put("payment3", payment3.getId());
+		entities.put("paymentTaskTestUser", paymentTaskTestUser.getId());
 
 		Team team1 = repositoryTeam.save(new Team("Equipo 1"));
 		Team team2 = repositoryTeam.save(new Team("Equipo 2"));
@@ -217,11 +244,13 @@ public class PopulatorDatabase implements CommandLineRunner {
 		UserRol rol2 = this.repositoryUserRol.save(new UserRol(true, user2, team2));
 		UserRol rol3 = this.repositoryUserRol.save(new UserRol(true, user3, team3));
 		UserRol rol4 = this.repositoryUserRol.save(new UserRol(false, user3, team1));
+		UserRol rolTaskTest = this.repositoryUserRol.save(new UserRol(false, taskTestUser, team1));
 
 		entities.put("rol1", rol1.getId());
 		entities.put("rol2", rol2.getId());
 		entities.put("rol3", rol3.getId());
 		entities.put("rol4", rol4.getId());
+		entities.put("rolTaskTest", rolTaskTest.getId());
 
 		Project project1 = repositoryProject.save(new Project("Proyecto 1", "Proyecto 1", team1));
 		Project project2 = repositoryProject.save(new Project("Proyecto 2", "Proyecto 2", team1));
@@ -262,11 +291,12 @@ public class PopulatorDatabase implements CommandLineRunner {
 		LocalDateTime localDateTime12 = LocalDateTime.of(2040, 8, 25, 10, 15);
 		Date localDate12 = Date.from(localDateTime12.atZone(ZoneId.systemDefault()).toInstant());
 
-		Invitation invitation1 = this.invitationRepository.save(new Invitation("Message 1", localDate12, null, user, user2, team1));
+		Invitation invitation1 = this.invitationRepository
+				.save(new Invitation("Message 1", localDate12, null, user, user2, team1));
 		entities.put("invitation1", invitation1.getId());
-		
+
 		Sprint sprint1 = this.repositorySprint.save(new Sprint(localDate, localDate1, project1));
-		Sprint sprint2 = this.repositorySprint.save(new Sprint(localDate2, localDate3, project1));
+		Sprint sprint2 = this.repositorySprint.save(new Sprint(localDate2, localDate3, project2));
 		Sprint sprint3 = this.repositorySprint.save(new Sprint(localDate4, localDate5, project1));
 		Sprint sprint4 = this.repositorySprint.save(new Sprint(localDate6, localDate7, project2));
 		Sprint sprint5 = this.repositorySprint.save(new Sprint(localDate8, localDate9, project2));
@@ -277,8 +307,9 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("sprint3", sprint3.getId());
 		entities.put("sprint4", sprint4.getId());
 		entities.put("sprint5", sprint5.getId());
+		entities.put("sprint6", sprint6.getId());
 
-		Workspace workspace1 = this.repositoryWorkspace.save(new Workspace("Este es el workspace de prueba", sprint1));
+		Workspace workspace1 = this.repositoryWorkspace.save(new Workspace("Workspace 1", sprint1));
 		Workspace workspace2 = this.repositoryWorkspace.save(new Workspace("Workspace 2", sprint2));
 		Workspace workspace3 = this.repositoryWorkspace.save(new Workspace("Workspace 3", sprint3));
 		Workspace workspace4 = this.repositoryWorkspace.save(new Workspace("Workspace 4", sprint4));
@@ -292,10 +323,10 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("workspace5", workspace5.getId());
 		entities.put("workspace6", workspace6.getId());
 
-		String toDoName = "To Do";
+		String toDoName = "To do";
 		String inProgressName = "In progress";
 		String doneName = "Done";
-		
+
 		Column toDo = this.repositoryColumn.save(new Column(toDoName, workspace1));
 		Column inProgress = this.repositoryColumn.save(new Column(inProgressName, workspace1));
 		Column done = this.repositoryColumn.save(new Column(doneName, workspace1));
@@ -356,10 +387,10 @@ public class PopulatorDatabase implements CommandLineRunner {
 
 		Task task1 = this.repositoryTask.save(new Task("Tarea1", "Descripcion1", 10, project1, list1, toDo));
 		Task task2 = this.repositoryTask.save(new Task("Tarea2", "Descripcion2", 8, project1, list1, inProgress));
-		Task task3 = this.repositoryTask.save(new Task("Tarea3", "Descripcion3", 7, project2, list2, toDo2));
-		Task task4 = this.repositoryTask.save(new Task("Tarea4", "Descripcion4", 18, project3, list3, inProgress3));
-		Task task5 = this.repositoryTask.save(new Task("Tarea5", "Descripcion5", 2, project2, list1, inProgress2));
-		Task task6 = this.repositoryTask.save(new Task("Tarea6", "Descripcion6", 17, project3, list3, done3));
+		Task task3 = this.repositoryTask.save(new Task("Tarea3", "Descripcion3", 18, project1, list3, inProgress));
+		Task task4 = this.repositoryTask.save(new Task("Tarea4", "Descripcion4", 17, project1, list3, done));
+		Task task5 = this.repositoryTask.save(new Task("Tarea5", "Descripcion5", 7, project2, list2, toDo2));
+		Task task6 = this.repositoryTask.save(new Task("Tarea6", "Descripcion6", 2, project2, list1, inProgress2));
 
 		entities.put("task1", task1.getId());
 		entities.put("task2", task2.getId());
