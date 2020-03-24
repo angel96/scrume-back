@@ -1,5 +1,6 @@
 package com.spring.Scrume;
 
+import java.time.LocalDate;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -44,7 +45,7 @@ public class PaymentServiceTest extends AbstractTest {
 
 		try {
 			super.authenticateOrUnauthenticate(user);
-			PaymentEditDto payment = new PaymentEditDto(0, super.entities().get("proBox"));
+			PaymentEditDto payment = new PaymentEditDto(0, super.entities().get("proBox"), LocalDate.of(2020, 04, 24));
 			this.service.save(payment);
 			service.flush();
 			super.authenticateOrUnauthenticate(null);
