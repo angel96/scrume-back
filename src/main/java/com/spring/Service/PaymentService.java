@@ -1,6 +1,6 @@
 package com.spring.Service;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
@@ -30,9 +30,8 @@ public class PaymentService extends AbstractService {
 
 	public Collection<PaymentListDto> findPaymentsByUserLogged() {
 		User user = this.serviceUser.getUserByPrincipal();
-		return repository.findPaymentsByUser(user.getId()).stream()
-				.map(x -> new PaymentListDto(x.getPaymentDate(), x.getBox().getName(), x.getBox().getPrice()))
-				.collect(Collectors.toList());
+		return repository.findPaymentsByUser(user.getId()).stream().map(x -> new PaymentListDto(x.getExpiredDate(),
+				x.getPaymentDate(), x.getBox().getName(), x.getBox().getPrice())).collect(Collectors.toList());
 	}
 
 	public PaymentEditDto save(PaymentEditDto payment) {
@@ -40,10 +39,8 @@ public class PaymentService extends AbstractService {
 		Payment saveTo = null;
 
 		if (payment.getId() == 0) {
-			saveTo = new Payment(LocalDateTime.now(), this.serviceBox.getOne(payment.getBox()),
-					this.serviceUser.getUserByPrincipal());
-			System.out.println(payment.getBox());
-			System.out.println(payment.getId());
+			saveTo = new Payment(LocalDate.now(), this.serviceBox.getOne(payment.getBox()),
+					this.serviceUser.getUserByPrincipal(), payment.getExpiredDate());
 			saveTo = repository.saveAndFlush(saveTo);
 			payment.setId(saveTo.getId());
 		}

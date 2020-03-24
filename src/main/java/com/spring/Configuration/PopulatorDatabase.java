@@ -1,11 +1,10 @@
 package com.spring.Configuration;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.SortedMap;
@@ -212,13 +211,19 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("user3", user3.getId());
 		entities.put("taskTestUser", taskTestUser.getId());
 
-		Payment payment = repositoryPayment.save(new Payment(LocalDateTime.of(2020, 03, 29, 10, 30), proBox, user));
-		Payment payment2 = repositoryPayment.save(new Payment(LocalDateTime.of(2020, 03, 29, 11, 30), basicBox, user2));
-		Payment payment3 = repositoryPayment.save(new Payment(LocalDateTime.of(2020, 03, 29, 12, 30), basicBox, user3));
+		Payment payment0 = repositoryPayment.save(new Payment(LocalDate.of(2020, 02, 24), basicBox, user, null));
+		Payment payment1 = repositoryPayment
+				.save(new Payment(LocalDate.of(2020, 02, 24), standardBox, user, LocalDate.of(2020, 03, 24)));
 		Payment paymentTaskTestUser = repositoryPayment
-				.save(new Payment(LocalDateTime.of(2020, 04, 29, 22, 30), basicBox, taskTestUser));
+				.save(new Payment(LocalDate.of(2020, 02, 24), standardBox, taskTestUser, LocalDate.of(2020, 03, 24)));
 
-		entities.put("payment", payment.getId());
+		Payment payment2 = repositoryPayment
+				.save(new Payment(LocalDate.of(2020, 02, 24), basicBox, user2, LocalDate.of(2021, 02, 24)));
+		Payment payment3 = repositoryPayment
+				.save(new Payment(LocalDate.of(2020, 02, 24), basicBox, user3, LocalDate.of(2021, 02, 24)));
+
+		entities.put("payment0", payment0.getId());
+		entities.put("payment1", payment1.getId());
 		entities.put("payment2", payment2.getId());
 		entities.put("payment3", payment3.getId());
 		entities.put("paymentTaskTestUser", paymentTaskTestUser.getId());
