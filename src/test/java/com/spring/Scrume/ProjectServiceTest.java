@@ -5,16 +5,11 @@ import java.util.stream.Stream;
 import javax.persistence.EntityNotFoundException;
 
 import org.junit.jupiter.api.Test;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.ProjectDto;
-import com.spring.CustomObject.TeamDto;
-import com.spring.Model.Project;
-import com.spring.Model.Team;
-import com.spring.Repository.ProjectRepository;
 import com.spring.Service.ProjectService;
 import com.spring.Service.TeamService;
 

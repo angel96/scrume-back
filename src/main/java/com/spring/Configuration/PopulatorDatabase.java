@@ -19,8 +19,8 @@ import org.springframework.stereotype.Component;
 
 import com.spring.Model.Box;
 import com.spring.Model.Column;
-import com.spring.Model.HistoryTask;
 import com.spring.Model.Invitation;
+import com.spring.Model.Payment;
 import com.spring.Model.Project;
 import com.spring.Model.Sprint;
 import com.spring.Model.Task;
@@ -31,8 +31,8 @@ import com.spring.Model.UserRol;
 import com.spring.Model.Workspace;
 import com.spring.Repository.BoxRepository;
 import com.spring.Repository.ColumnRepository;
-import com.spring.Repository.HistoryTaskRepository;
 import com.spring.Repository.InvitationRepository;
+import com.spring.Repository.PaymentRepository;
 import com.spring.Repository.ProjectRepository;
 import com.spring.Repository.SprintRepository;
 import com.spring.Repository.TaskRepository;
@@ -89,6 +89,9 @@ public class PopulatorDatabase implements CommandLineRunner {
 	@Autowired
 	private InvitationRepository invitationRepository;
 
+	@Autowired
+	private PaymentRepository repositoryPayment;
+
 	@Override
 	public void run(String... args) throws Exception {
 
@@ -97,6 +100,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		SortedMap<String, Integer> entities = new TreeMap<>();
 		Utiles.escribeFichero(entities, properties);
 
+		repositoryPayment.deleteAll();
 		invitationRepository.deleteAll();
 		repositoryTask.deleteAll();
 		repositoryUserRol.deleteAll();
@@ -172,42 +176,31 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("proBox", proBox.getId());
 
 		User user = new User();
-		user.setBox(proBox);
-		Date date = new GregorianCalendar(2020, Calendar.DECEMBER, 30).getTime();
 
 		User user2 = new User();
-		user2.setBox(basicBox);
-		Date date2 = new GregorianCalendar(2020, Calendar.DECEMBER, 29).getTime();
 
 		User user3 = new User();
-		user3.setBox(basicBox);
-		Date date3 = new GregorianCalendar(2020, Calendar.DECEMBER, 28).getTime();
 
 		User taskTestUser = new User();
-		taskTestUser.setBox(basicBox);
 
-		user.setEndingBoxDate(date);
 		user.setName("Name");
 		user.setNick("nick");
 		user.setSurnames("surnames");
 		user.setUserAccount(userAccount);
 		user = userRepository.save(user);
 
-		user2.setEndingBoxDate(date2);
 		user2.setName("Name2");
 		user2.setNick("nick2");
 		user2.setSurnames("surnames2");
 		user2.setUserAccount(account2);
 		user2 = userRepository.save(user2);
 
-		user3.setEndingBoxDate(date3);
 		user3.setName("Name3");
 		user3.setNick("nick3");
 		user3.setSurnames("surnames3");
 		user3.setUserAccount(account3);
 		user3 = userRepository.save(user3);
 
-		taskTestUser.setEndingBoxDate(date3);
 		taskTestUser.setName("TestTask");
 		taskTestUser.setNick("nickTest");
 		taskTestUser.setSurnames("surnames4");
@@ -218,6 +211,17 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("user2", user2.getId());
 		entities.put("user3", user3.getId());
 		entities.put("taskTestUser", taskTestUser.getId());
+
+		Payment payment = repositoryPayment.save(new Payment(LocalDateTime.of(2020, 03, 29, 10, 30), proBox, user));
+		Payment payment2 = repositoryPayment.save(new Payment(LocalDateTime.of(2020, 03, 29, 11, 30), basicBox, user2));
+		Payment payment3 = repositoryPayment.save(new Payment(LocalDateTime.of(2020, 03, 29, 12, 30), basicBox, user3));
+		Payment paymentTaskTestUser = repositoryPayment
+				.save(new Payment(LocalDateTime.of(2020, 04, 29, 22, 30), basicBox, taskTestUser));
+
+		entities.put("payment", payment.getId());
+		entities.put("payment2", payment2.getId());
+		entities.put("payment3", payment3.getId());
+		entities.put("paymentTaskTestUser", paymentTaskTestUser.getId());
 
 		Team team1 = repositoryTeam.save(new Team("Equipo 1"));
 		Team team2 = repositoryTeam.save(new Team("Equipo 2"));
