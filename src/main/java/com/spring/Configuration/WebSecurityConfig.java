@@ -37,10 +37,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.disable();
 
 		http.cors().and().httpBasic().authenticationEntryPoint(customBasicAuthenticationEntryPoint).and()
-				.authorizeRequests().antMatchers("/api/team/*").authenticated().antMatchers("/api/sprint/*").authenticated()
-				.antMatchers("/api/login/roles").authenticated().antMatchers("/api/project/**").authenticated()
-				.antMatchers("/api/workspace/**").authenticated().antMatchers("/api/history-task/**").authenticated()
-				.antMatchers("/api/task/**").authenticated();
+				.authorizeRequests().antMatchers("/api/team/*").authenticated().antMatchers("/api/sprint/*")
+				.authenticated().antMatchers("/api/login/roles").authenticated().antMatchers("/api/project/**")
+				.authenticated().antMatchers("/api/workspace/**").authenticated().antMatchers("/api/history-task/**")
+				.authenticated().antMatchers("/api/task/**").authenticated().antMatchers("/api/payment/**")
+				.authenticated().antMatchers("/api/box/**").authenticated();
 	}
 
 	@Bean

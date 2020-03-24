@@ -57,13 +57,4 @@ public class User extends Actor{
 	@Column(name = "photo", columnDefinition="BLOB")
 	private String photo;
 	
-	@DateTimeFormat
-	@NotNull
-	@Column(name = "endingBoxDate", nullable = false)
-    private Date endingBoxDate;
-	
-	@ManyToOne
-	@NotNull
-	@JoinColumn(name = "box", nullable = false)
-    private Box box;
 }

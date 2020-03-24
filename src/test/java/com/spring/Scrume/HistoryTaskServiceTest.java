@@ -1,6 +1,5 @@
 package com.spring.Scrume;
 
-import java.util.Collection;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -8,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.HistoryTaskDto;
-import com.spring.Model.HistoryTask;
 import com.spring.Model.Task;
 import com.spring.Service.HistoryTaskService;
 import com.spring.Service.TaskService;
@@ -35,7 +33,7 @@ public class HistoryTaskServiceTest extends AbstractTest {
 
 		try {
 			super.authenticateOrUnauthenticate(user);
-			Collection<HistoryTask> historical = this.serviceHistoryTask.findHistoricalByWorkspace(entity);
+			this.serviceHistoryTask.findHistoricalByWorkspace(entity);
 			this.serviceHistoryTask.flush();
 			super.authenticateOrUnauthenticate(null);
 		} catch (Exception oops) {
