@@ -32,7 +32,7 @@ public class WorkspaceApiController extends AbstractApiController {
 		super.logger.info("GET /api/workspace/list/" + sprint);
 		return serviceWorkspace.findWorkspacesBySprint(sprint);
 	}
-	
+
 	@GetMapping("/list/{team}")
 	public Collection<Workspace> list(@PathVariable int team) {
 		super.logger.info("GET /api/workspace/list/" + team);
@@ -62,11 +62,17 @@ public class WorkspaceApiController extends AbstractApiController {
 		super.logger.info("DELETE /api/workspace/" + workspace);
 		this.serviceWorkspace.delete(workspace);
 	}
-	
+
 	@GetMapping("/list-todo-columns/{idProject}")
 	public Collection<SprintWithWorkspacesDto> listTodoColumnsOfAProject(@PathVariable Integer idProject) {
 		super.logger.info("GET /api/list-todo-columns/" + idProject);
 		return this.serviceWorkspace.listTodoColumnsOfAProject(idProject);
+	}
+
+	@GetMapping("/last-by-project/{project}")
+	public WorkspaceSprintListDto lastWorkspaceModified(@PathVariable Integer project) {
+		super.logger.info("GET /api/last-by-project/" + project);
+		return this.serviceWorkspace.findWorkspaceLastModifiedByProject(project);
 	}
 
 }
