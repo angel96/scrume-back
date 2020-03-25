@@ -53,6 +53,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	// For public urls
 	@Override
 	public void configure(WebSecurity web) {
+		
 		web.ignoring().antMatchers("/api/login/**");
 		web.ignoring().antMatchers("/api/user/find-by-authorization");
 	}
