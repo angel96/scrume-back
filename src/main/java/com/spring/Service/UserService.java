@@ -110,7 +110,7 @@ public class UserService extends AbstractService {
 			auth = string.split(" ")[1];
 			decodedAuth = new String(dec.decode(auth));
 			username = decodedAuth.split(":")[0];
-			res = this.userRepository.findUserByUserName(username).orElseThrow();
+			res = this.userRepository.findUserByUserName(username).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authorized"));
 		}catch (Exception e) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user has not been found");
 		}
