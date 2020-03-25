@@ -10,7 +10,7 @@ import com.spring.Model.Box;
 @Repository
 public interface BoxRepository extends AbstractRepository<Box> {
 
-	@Query("select p.box from Payment p, UserRol ur where ur.team.id = ?1 and p.user = ur.user and p.expiredDate >= CURRENT_DATE")
+	@Query("select p.box from Payment p, UserRol ur where ur.team.id = ?1 and p.userAccount = ur.user.userAccount and p.expiredDate >= CURRENT_DATE")
 	List<Box> getBoxMoreRecently(int team);
 
 }
