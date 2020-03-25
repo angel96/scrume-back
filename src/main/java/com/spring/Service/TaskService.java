@@ -95,7 +95,7 @@ public class TaskService extends AbstractService {
 		 */
 		taskDB = taskRepository.saveAndFlush(taskDB);
 //		Set<Integer> users = taskEntity.getUsers().stream().filter(x -> x.getId()<=0).map(User::getId).collect(Collectors.toSet());
-		return new TaskDto(taskDB.getTitle(), taskDB.getDescription(), taskDB.getPoints(),
+		return new TaskDto(taskDB.getTitle(), taskDB.getDescription(), 0,
 				/* taskDB.getProject().getId() */ projectId, new HashSet<>(),
 				null/* taskDB.getColumn() == null ? null : taskDB.getColumn().getId() */);
 	}
