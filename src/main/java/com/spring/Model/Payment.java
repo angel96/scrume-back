@@ -9,6 +9,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.OnDelete;
+import org.hibernate.annotations.OnDeleteAction;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.AllArgsConstructor;
@@ -27,13 +29,15 @@ public class Payment extends BaseEntity {
 	@Builder.Default
 	private LocalDate paymentDate = LocalDate.now();
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@NotNull
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "box", nullable = false)
 	private Box box;
 
-	@ManyToOne
+	@ManyToOne(optional = false)
 	@NotNull
+	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JoinColumn(name = "user", nullable = false)
 	private UserAccount userAccount;
 
