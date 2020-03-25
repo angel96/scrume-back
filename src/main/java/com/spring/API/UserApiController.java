@@ -26,7 +26,7 @@ public class UserApiController extends AbstractApiController {
 		return this.userService.listUsersOfATeamByWorkspace(idWorkspace);
 	}
 	
-	@GetMapping("find-by-authorization")
+	@GetMapping("/find-by-authorization")
 	public User getUserByAuthorization(@RequestHeader("authorization") String auth) {
 		super.logger.info("GET /api/login/isAValidUser");
 		return userService.getByAuthorization(auth);
