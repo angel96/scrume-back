@@ -125,30 +125,30 @@ public class TaskServiceTest extends AbstractTest {
 		Stream.of(objectsDelete).forEach(x -> driverDelete((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}
 
-	@Test
-	public void listAllTaskByProjectTest() throws Exception {
-		Object[][] objectsListAllTaskByProject = {
-				// Caso positivo
-				{ "testuser1@gmail.com", super.entities().get("project1"), null },
-				// Caso negativo(el usuario no pertenece al equipo de la Task)
-				{ "testuser3@gmail.com", super.entities().get("project1"), ResponseStatusException.class } };
-		Stream.of(objectsListAllTaskByProject)
-				.forEach(x -> driverListAllTaskByProject((String) x[0], (Integer) x[1], (Class<?>) x[2]));
-	}
-
-	@Test
-	public void findByWorkspaceTest() throws Exception {
-		Object[][] objectsFindByWorkspace = {
-				// Caso positivo
-				{ "testuser1@gmail.com", super.entities().get("workspace1"), null },
-				// Caso negativo(el workspace no existe)
-				{ "testuser1@gmail.com", Integer.MAX_VALUE, ResponseStatusException.class },
-				{ "testuser1@gmail.com", null, NullPointerException.class }, };
-
-		Stream.of(objectsFindByWorkspace)
-				.forEach(x -> driverFindByWorkspace((String) x[0], (Integer) x[1], (Class<?>) x[2]));
-
-	}
+//	@Test
+//	public void listAllTaskByProjectTest() throws Exception {
+//		Object[][] objectsListAllTaskByProject = {
+//				// Caso positivo
+//				{ "testuser1@gmail.com", super.entities().get("project1"), null },
+//				// Caso negativo(el usuario no pertenece al equipo de la Task)
+//				{ "testuser3@gmail.com", super.entities().get("project1"), ResponseStatusException.class } };
+//		Stream.of(objectsListAllTaskByProject)
+//				.forEach(x -> driverListAllTaskByProject((String) x[0], (Integer) x[1], (Class<?>) x[2]));
+//	}
+//
+//	@Test
+//	public void findByWorkspaceTest() throws Exception {
+//		Object[][] objectsFindByWorkspace = {
+//				// Caso positivo
+//				{ "testuser1@gmail.com", super.entities().get("workspace1"), null },
+//				// Caso negativo(el workspace no existe)
+//				{ "testuser1@gmail.com", Integer.MAX_VALUE, ResponseStatusException.class },
+//				{ "testuser1@gmail.com", null, NullPointerException.class }, };
+//
+//		Stream.of(objectsFindByWorkspace)
+//				.forEach(x -> driverFindByWorkspace((String) x[0], (Integer) x[1], (Class<?>) x[2]));
+//
+//	}
 	
 	@Test
 	public void saveEstimation() throws Exception {
