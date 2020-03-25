@@ -49,6 +49,11 @@ public class BoxService extends AbstractService {
 				.orElse(null);
 	}
 
+	
+	public Box findOne(Integer idBox) {
+		return boxRepository.findById(idBox).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested box doesn´t exists"));
+	}
+	
 	public void flush() {
 		boxRepository.flush();
 	}
