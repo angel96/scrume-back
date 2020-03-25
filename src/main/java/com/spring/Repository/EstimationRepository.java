@@ -24,6 +24,7 @@ public interface EstimationRepository extends AbstractRepository<Estimation> {
 
 	List<Estimation> findByUser(User principal);
 
-	Optional<Estimation> findByTask(Task task);
+	@Query("select e from Estimation e where e.task = ?1 and e.user = ?2")
+	Optional<Estimation> findByTask(Task task, User user);
 
 }
