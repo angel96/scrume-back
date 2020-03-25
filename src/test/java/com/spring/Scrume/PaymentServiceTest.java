@@ -16,7 +16,7 @@ public class PaymentServiceTest extends AbstractTest {
 
 	@Test
 	public void testFindAllPaymentsByUserLogged() {
-		Object[][] objects = { { "testuser@gmail.com", null }, { null, AssertionError.class } };
+		Object[][] objects = { { "testuser1@gmail.com", null }, { null, AssertionError.class } };
 		Stream.of(objects).forEach(x -> driverFindAllPaymentsByUserLogged((String) x[0], (Class<?>) x[1]));
 	}
 
@@ -36,7 +36,7 @@ public class PaymentServiceTest extends AbstractTest {
 
 	@Test
 	public void testPago() {
-		Object[][] objects = { { "testuser@gmail.com", null }, { null, AssertionError.class } };
+		Object[][] objects = { { "testuser1@gmail.com", null }, { null, AssertionError.class } };
 		Stream.of(objects).forEach(x -> driverPago((String) x[0], (Class<?>) x[1]));
 	}
 
