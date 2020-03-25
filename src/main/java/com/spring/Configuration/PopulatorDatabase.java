@@ -19,6 +19,8 @@ import org.springframework.stereotype.Component;
 
 import com.spring.Model.Box;
 import com.spring.Model.Column;
+import com.spring.Model.Document;
+import com.spring.Model.DocumentType;
 import com.spring.Model.HistoryTask;
 import com.spring.Model.Invitation;
 import com.spring.Model.Project;
@@ -31,6 +33,7 @@ import com.spring.Model.UserRol;
 import com.spring.Model.Workspace;
 import com.spring.Repository.BoxRepository;
 import com.spring.Repository.ColumnRepository;
+import com.spring.Repository.DocumentRepository;
 import com.spring.Repository.HistoryTaskRepository;
 import com.spring.Repository.InvitationRepository;
 import com.spring.Repository.ProjectRepository;
@@ -88,6 +91,9 @@ public class PopulatorDatabase implements CommandLineRunner {
 
 	@Autowired
 	private InvitationRepository invitationRepository;
+	
+	@Autowired
+	private DocumentRepository documentRepository;
 
 	@Override
 	public void run(String... args) throws Exception {
@@ -108,6 +114,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		userRepository.deleteAll();
 		boxRepository.deleteAll();
 		repositoryAccount.deleteAll();
+		documentRepository.deleteAll();
 
 		UserAccount account = repositoryAccount
 				.save(new UserAccount("angdellun@gmail.com", Utiles.encryptedPassword("1234561"), LocalDateTime.now(),
@@ -389,6 +396,16 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("task4", task4.getId());
 		entities.put("task5", task5.getId());
 		entities.put("task6", task6.getId());
+		
+		Document doc1 = this.documentRepository.save(new Document(DocumentType.DAILY,"illo",sprint1));
+		Document doc2 = this.documentRepository.save(new Document(DocumentType.PLANNING_MEETING,"illo2",sprint1));
+		Document doc3 = this.documentRepository.save(new Document(DocumentType.REVIEW,"illo3",sprint1));
+		Document doc4 = this.documentRepository.save(new Document(DocumentType.RETROSPECTIVE,"illo4",sprint1));
+		
+		entities.put("doc1", doc1.getId());
+		entities.put("doc2", doc2.getId());
+		entities.put("doc3", doc3.getId());
+		entities.put("doc4", doc4.getId());
 
 		Utiles.escribeFichero(entities, properties);
 
@@ -408,6 +425,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		boxRepository.flush();
 		repositoryAccount.flush();
 		invitationRepository.flush();
+		documentRepository.flush();
 
 	}
 
