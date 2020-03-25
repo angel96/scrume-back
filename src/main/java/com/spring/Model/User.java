@@ -53,8 +53,8 @@ public class User extends Actor{
 	@SafeHtml
     private String gitUser;
 	
-	@Lob
-	@Column(name = "photo", columnDefinition="BLOB")
+	@Column(name = "photo")
+	@SafeHtml
 	private String photo;
 	
 	@DateTimeFormat

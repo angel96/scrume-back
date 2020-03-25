@@ -1,14 +1,12 @@
 package com.spring.CustomObject;
 
-
+import java.time.LocalDateTime;
 import java.util.Date;
-
-import com.spring.Model.Box;
 
 import lombok.Data;
 
 @Data
-public class UserDto {
+public class RegisterDto {
 	private Integer id;
 	
 	private String username;
@@ -27,9 +25,11 @@ public class UserDto {
 
     private Date endingBoxDate;
 
-    private Box box;
-
-
-	
-	
+    private Integer idBox;
+    
+    private LocalDateTime createdAt;
+    
+    private LocalDateTime lastPasswordChangeAt = LocalDateTime.now();
+    
+    
 }
