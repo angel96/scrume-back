@@ -14,7 +14,7 @@ public class BoxServiceTest extends AbstractTest {
 
 	@Test
 	public void testMinimalBox() {
-		Object[][] objects = { { "testuser@gmail.com", null } };
+		Object[][] objects = { { "testuser1@gmail.com", null } };
 
 		Stream.of(objects).forEach(x -> driverMinimalBox((String) x[0], (Class<?>) x[1]));
 	}
@@ -26,7 +26,7 @@ public class BoxServiceTest extends AbstractTest {
 		try {
 			super.authenticateOrUnauthenticate(user);
 			
-			assert service.getMinimumBoxOfATeam(super.entities().get("team1")).getName() == "BASIC";
+			assert service.getMinimumBoxOfATeam(super.entities().get("team1")).getName() == "STANDARD";
 			
 			super.authenticateOrUnauthenticate(null);
 		} catch (Throwable oops) {
