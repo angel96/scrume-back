@@ -1,5 +1,7 @@
 package com.spring.CustomObject;
 
+import java.time.LocalDate;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,11 +9,9 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class WorkspaceAndColumnTodoDto {
-	
-	private Integer id;
+public class PaymentEditDto {
 
-	private String name;
-	
-	private Integer column;
+	private int id;
+	private int box;
+	private LocalDate expiredDate;
 }

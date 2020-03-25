@@ -27,8 +27,8 @@ public class WorkspaceServiceTest extends AbstractTest {
 
 	@Test
 	public void testListTodoColumnsOfAProject() {
-		Object[][] objects = { { "testuser@gmail.com", super.entities().get("project1"), null },
-				{ "angdellun@gmail.com", super.entities().get("project1"), ResponseStatusException.class } };
+		Object[][] objects = { { "testuser1@gmail.com", super.entities().get("project1"), null },
+				{ "testuser3@gmail.com", super.entities().get("project1"), ResponseStatusException.class } };
 		Stream.of(objects)
 				.forEach(x -> driverListTodoColumnsOfAProject((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}
@@ -50,8 +50,8 @@ public class WorkspaceServiceTest extends AbstractTest {
 	@Test
 	public void testFindWorkspacesByTeam() {
 
-		Object[][] objects = { { "testuser@gmail.com", super.entities().get("team1"), null },
-				{ "angdellun@gmail.com", super.entities().get("team1"), ResponseStatusException.class } };
+		Object[][] objects = { { "testuser1@gmail.com", super.entities().get("team1"), null },
+				{ "testuser3@gmail.com", super.entities().get("team1"), ResponseStatusException.class } };
 
 		Stream.of(objects).forEach(x -> driverFindWorkspacesByTeam((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}
@@ -73,8 +73,8 @@ public class WorkspaceServiceTest extends AbstractTest {
 
 	@Test
 	public void testFindWorkspaceWithColumns() {
-		Object[][] objects = { { "testuser@gmail.com", super.entities().get("workspace1"), null },
-				{ "angdellun@gmail.com", super.entities().get("workspace1"), ResponseStatusException.class } };
+		Object[][] objects = { { "testuser1@gmail.com", super.entities().get("workspace1"), null },
+				{ "testuser3@gmail.com", super.entities().get("workspace1"), ResponseStatusException.class } };
 
 		Stream.of(objects)
 				.forEach(x -> driverFindWorkspacesWithColumns((String) x[0], (Integer) x[1], (Class<?>) x[2]));
@@ -98,8 +98,8 @@ public class WorkspaceServiceTest extends AbstractTest {
 
 	@Test
 	public void testFindWorkspacesBySprint() {
-		Object[][] objects = { { "testuser@gmail.com", super.entities().get("sprint1"), null },
-				{ "angdellun@gmail.com", super.entities().get("sprint1"), ResponseStatusException.class } };
+		Object[][] objects = { { "testuser1@gmail.com", super.entities().get("sprint1"), null },
+				{ "testuser3@gmail.com", super.entities().get("sprint1"), ResponseStatusException.class } };
 
 		Stream.of(objects).forEach(x -> driverFindWorkspacesBySprint((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}
@@ -122,9 +122,9 @@ public class WorkspaceServiceTest extends AbstractTest {
 
 	@Test
 	public void testSave() {
-		Object[][] objects = { { "testuser@gmail.com", 0, null },
+		Object[][] objects = { { "testuser1@gmail.com", 0, null },
 				{ "testuser2@gmail.com", super.entities().get("workspace1"), ResponseStatusException.class },
-				{ "testuser@gmail.com", super.entities().get("workspace1"), null } };
+				{ "testuser1@gmail.com", super.entities().get("workspace1"), null } };
 
 		Stream.of(objects).forEach(x -> driverSave((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}
@@ -160,9 +160,9 @@ public class WorkspaceServiceTest extends AbstractTest {
 	@Test
 	public void testDelete() {
 		Object[][] objects = {
-				{ "angdellun@gmail.com", super.entities().get("workspace1"), ResponseStatusException.class },
+				{ "testuser3@gmail.com", super.entities().get("workspace1"), ResponseStatusException.class },
 				{ "testuser2@gmail.com", super.entities().get("workspace1"), ResponseStatusException.class },
-				{ "testuser@gmail.com", super.entities().get("workspace1"), null } };
+				{ "testuser1@gmail.com", super.entities().get("workspace1"), null } };
 
 		Stream.of(objects).forEach(x -> driverDelete((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}
