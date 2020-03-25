@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.CustomObject.RegisterDto;
 import com.spring.CustomObject.UserOfATeamByWorspaceDto;
+import com.spring.Model.User;
 import com.spring.Service.UserService;
 
 @RestController

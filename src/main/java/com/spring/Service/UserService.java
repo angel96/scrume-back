@@ -1,6 +1,7 @@
 package com.spring.Service;
 
 import java.lang.reflect.Type;
+import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -44,6 +45,7 @@ public class UserService extends AbstractService {
 	
 	@Autowired
 	private WorkspaceService workspaceService;
+
 	
 	@Autowired
 	private BoxService boxService;
@@ -149,4 +151,23 @@ public class UserService extends AbstractService {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The workspace is not in the database");
 		}	
 	}
+
+
+	public User getByAuthorization(String string) {
+		User res;
+		Base64.Decoder dec = Base64.getDecoder();
+		String auth;
+		String decodedAuth;
+		String username;
+		try {
+			auth = string.split(" ")[1];
+			decodedAuth = new String(dec.decode(auth));
+			username = decodedAuth.split(":")[0];
+			res = this.userRepository.findUserByUserName(username).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authorized"));
+		}catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user has not been found");
+		}
+		return res;
+	}
+	
 }

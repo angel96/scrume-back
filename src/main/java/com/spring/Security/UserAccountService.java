@@ -13,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -106,5 +107,22 @@ public class UserAccountService implements UserDetailsService {
 			throw new ResponseStatusException(HttpStatus.CONFLICT, "the username is not a valid email");
 		}
 	}
+
+	public Boolean isAValidUser(String string) {
+		Boolean res;
+		Base64.Decoder dec = Base64.getDecoder();
+		try {
+			String auth = string.split(" ")[1];
+			String decodedAuth = new String(dec.decode(auth));
+			String username = decodedAuth.split(":")[0];
+			String password = decodedAuth.split(":")[1];
+			BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();  
+			res = encoder.matches(password, this.loadUserByUsername(username).getPassword()); 
+		}catch (Exception e) {
+			res = false;
+		} 
+		return res;
+	}
+
 
 }

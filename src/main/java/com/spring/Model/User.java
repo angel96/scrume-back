@@ -1,20 +1,14 @@
 package com.spring.Model;
 
-import java.sql.Blob;
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
-import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.validator.constraints.SafeHtml;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -57,13 +51,4 @@ public class User extends Actor{
 	@SafeHtml
 	private String photo;
 	
-	@DateTimeFormat
-	@NotNull
-	@Column(name = "endingBoxDate", nullable = false)
-    private Date endingBoxDate;
-	
-	@ManyToOne
-	@NotNull
-	@JoinColumn(name = "box", nullable = false)
-    private Box box;
 }
