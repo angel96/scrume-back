@@ -80,9 +80,7 @@ public class UserService extends AbstractService {
 		UserAccount userAccountDB = this.userAccountService.findOne(userDB.getUserAccount().getId());
 		registerDto.setName(userDB.getName());
 		registerDto.setCreatedAt(userAccountDB.getCreatedAt());
-		registerDto.setEndingBoxDate(userDB.getEndingBoxDate());
 		registerDto.setGitUser(userDB.getGitUser());
-		registerDto.setIdBox(userDB.getBox().getId());
 		registerDto.setLastPasswordChangeAt(userAccountDB.getLastPasswordChangeAt());
 		registerDto.setNick(userDB.getNick());
 		registerDto.setPassword(userAccountDB.getPassword());
@@ -93,9 +91,8 @@ public class UserService extends AbstractService {
 	}
 	
 	public RegisterDto save(RegisterDto registerDto) {
-		Box box = this.boxService.findOne(registerDto.getIdBox());
 		UserAccount userAccountDB = new UserAccount(registerDto.getUsername(), registerDto.getPassword(), registerDto.getCreatedAt(), registerDto.getLastPasswordChangeAt(), null);
-		User userDB = new User(registerDto.getName(), registerDto.getSurnames(), registerDto.getNick(), registerDto.getGitUser(), registerDto.getPhoto(), registerDto.getEndingBoxDate(), box);
+		User userDB = new User(registerDto.getName(), registerDto.getSurnames(), registerDto.getNick(), registerDto.getGitUser(), registerDto.getPhoto());
 		UserAccount userAccountEntity = this.userAccountService.save(userAccountDB);
 		userDB.setUserAccount(userAccountEntity);
 		this.userRepository.save(userDB);
@@ -106,8 +103,6 @@ public class UserService extends AbstractService {
 		User userDB = this.findOne(idUser); //User from DB
 		UserAccount userAccountDB = this.userAccountService.findOne(userDB.getUserAccount().getId()); //UserAccount from userDB from DB
 		UserAccount userAccountEntity = this.userAccountService.update(userAccountDB.getId(), registerDto);
-		userDB.setBox(this.boxService.findOne(registerDto.getIdBox()));
-		userDB.setEndingBoxDate(registerDto.getEndingBoxDate());
 		userDB.setGitUser(registerDto.getGitUser());
 		userDB.setName(registerDto.getName());
 		userDB.setNick(registerDto.getNick());

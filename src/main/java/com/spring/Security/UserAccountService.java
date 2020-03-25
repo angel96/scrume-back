@@ -1,6 +1,7 @@
 package com.spring.Security;
 
 import java.time.LocalDateTime;
+import java.util.Base64;
 
 import javax.transaction.Transactional;
 
@@ -64,7 +65,7 @@ public class UserAccountService implements UserDetailsService {
 			userAccountEntity.setPassword(Utiles.encryptedPassword(registerDto.getPassword()));
 			userAccountEntity.setLastPasswordChangeAt(LocalDateTime.now());
 		} else {
-			userAccountEntity.setPassword(registerDto.getPassword());
+			userAccountEntity.setPassword(userAccountEntity.getPassword());
 			userAccountEntity.setLastPasswordChangeAt(registerDto.getLastPasswordChangeAt());
 		}
 		userAccountEntity.setCreatedAt(registerDto.getCreatedAt());

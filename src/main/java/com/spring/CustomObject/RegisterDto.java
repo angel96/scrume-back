@@ -22,10 +22,6 @@ public class RegisterDto {
     private String gitUser;
 
 	private String photo;
-
-    private Date endingBoxDate;
-
-    private Integer idBox;
     
     private LocalDateTime createdAt;
     
