@@ -80,11 +80,9 @@ public class TaskService extends AbstractService {
 		checkUserOnTeam(UserAccountService.getPrincipal(), project.getTeam());
 		ModelMapper mapper = new ModelMapper();
 		Task taskEntity = mapper.map(task, Task.class);
-		Task taskDB = new Task();
-		taskDB.setTitle(taskEntity.getTitle());
-		taskDB.setDescription(taskEntity.getDescription());
-//		taskDB.setPoints(taskEntity.getPoints());
-		taskDB.setProject(project);
+		Task taskDB = new Task(taskEntity.getTitle(), taskEntity.getDescription(), 0, project, new HashSet<>(), null);
+		taskDB = taskRepository.saveAndFlush(taskDB);
+	
 		/*
 		 * if (taskEntity.getUsers() == null || taskEntity.getUsers().isEmpty()) {
 		 * Set<User> usuarios = new HashSet<>(); taskDB.setUsers(usuarios); } else {
@@ -93,11 +91,8 @@ public class TaskService extends AbstractService {
 		 * userAux.stream().forEach(x -> checkUserOnTeam(x.getUserAccount(),
 		 * project.getTeam())); taskDB.setUsers(userAux); }
 		 */
-		taskDB = taskRepository.saveAndFlush(taskDB);
 //		Set<Integer> users = taskEntity.getUsers().stream().filter(x -> x.getId()<=0).map(User::getId).collect(Collectors.toSet());
-		return new TaskDto(taskDB.getTitle(), taskDB.getDescription(), 0,
-				/* taskDB.getProject().getId() */ projectId, new HashSet<>(),
-				null/* taskDB.getColumn() == null ? null : taskDB.getColumn().getId() */);
+		return new TaskDto(taskDB.getTitle(), taskDB.getDescription(), taskDB.getPoints(), projectId, new HashSet<>(),null);
 	}
 
 	public TaskEditDto update(TaskEditDto task, int taskId) {
@@ -151,6 +146,7 @@ public class TaskService extends AbstractService {
 	}
 
 	public ListAllTaskByProjectDto getAllTasksByProject(int idProject) {
+		User principal = this.userService.getUserByPrincipal();
 		Project project = this.projectService.findOne(idProject);
 		this.validateProject(project);
 		checkUserLogged(UserAccountService.getPrincipal());
@@ -162,7 +158,7 @@ public class TaskService extends AbstractService {
 			if(finalPoints == null) {
 				finalPoints = 0;
 			}
-			Estimation estimation = this.estimationService.findByTask(task);
+			Estimation estimation = this.estimationService.findByTaskAndUser(task, principal);
 			Integer estimatedPoints;
 			if(estimation == null) {
 				estimatedPoints = 0;
