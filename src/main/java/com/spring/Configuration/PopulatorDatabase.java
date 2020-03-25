@@ -18,6 +18,8 @@ import org.springframework.stereotype.Component;
 
 import com.spring.Model.Box;
 import com.spring.Model.Column;
+import com.spring.Model.Document;
+import com.spring.Model.DocumentType;
 import com.spring.Model.Estimation;
 import com.spring.Model.HistoryTask;
 import com.spring.Model.Invitation;
@@ -32,6 +34,7 @@ import com.spring.Model.UserRol;
 import com.spring.Model.Workspace;
 import com.spring.Repository.BoxRepository;
 import com.spring.Repository.ColumnRepository;
+import com.spring.Repository.DocumentRepository;
 import com.spring.Repository.EstimationRepository;
 import com.spring.Repository.HistoryTaskRepository;
 import com.spring.Repository.InvitationRepository;
@@ -91,6 +94,9 @@ public class PopulatorDatabase implements CommandLineRunner {
 
 	@Autowired
 	private InvitationRepository invitationRepository;
+	
+	@Autowired
+	private DocumentRepository documentRepository;
 
 	@Autowired
 	private PaymentRepository paymentRepository;
@@ -124,6 +130,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		userRepository.deleteAll();
 		boxRepository.deleteAll();
 		accountRepository.deleteAll();
+		documentRepository.deleteAll();
 
 		UserAccount account1 = accountRepository
 				.save(new UserAccount("testuser1@gmail.com", Utiles.encryptedPassword("1234561"), LocalDateTime.now(),
@@ -349,6 +356,16 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("task4", task4.getId());
 		entities.put("task5", task5.getId());
 		entities.put("task6", task6.getId());
+		
+		Document doc1 = this.documentRepository.save(new Document(DocumentType.DAILY,"Prueba 1",sprint1));
+		Document doc2 = this.documentRepository.save(new Document(DocumentType.PLANNING_MEETING,"Prueba 2",sprint1));
+		Document doc3 = this.documentRepository.save(new Document(DocumentType.REVIEW,"Prueba 3",sprint1));
+		Document doc4 = this.documentRepository.save(new Document(DocumentType.RETROSPECTIVE,"Prueba 4",sprint1));
+		
+		entities.put("doc1", doc1.getId());
+		entities.put("doc2", doc2.getId());
+		entities.put("doc3", doc3.getId());
+		entities.put("doc4", doc4.getId());
 
 		HistoryTask historyTask1 = this.historyTaskRepository.save(new HistoryTask(localDateTime5, toDo1, inProgress1, task2));
 		HistoryTask historyTask2 = this.historyTaskRepository.save(new HistoryTask(localDateTime5, toDo1, toDo5, task3));
@@ -412,6 +429,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		paymentRepository.flush();
 		historyTaskRepository.flush();
 		estimationRepository.flush();
+		documentRepository.flush();
 	}
 
 }
