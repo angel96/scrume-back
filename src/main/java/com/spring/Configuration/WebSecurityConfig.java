@@ -35,7 +35,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
 		http.logout().logoutUrl("/api/login/logout").clearAuthentication(true).deleteCookies("JSESSIONID").and().csrf()
 				.disable();
-
+		//TODO: REVISAR ESTOS FILTROS, NO ME PERMITEN PONERLE UN PERMITALL A ESTAS DOS URL
+		//http.authorizeRequests().antMatchers("/api/login/isAValidUser").permitAll().antMatchers("api/user/find-by-authorization").permitAll();
 		http.cors().and().httpBasic().authenticationEntryPoint(customBasicAuthenticationEntryPoint).and()
 				.authorizeRequests().antMatchers("/api/team/*").authenticated().antMatchers("/api/sprint/*")
 				.authenticated().antMatchers("/api/login/roles").authenticated().antMatchers("/api/project/**")

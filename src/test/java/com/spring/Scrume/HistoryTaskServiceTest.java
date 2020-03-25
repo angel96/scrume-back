@@ -20,9 +20,9 @@ public class HistoryTaskServiceTest extends AbstractTest {
 
 	@Test
 	public void testFindHistoricalByWorkspace() throws Exception {
-		Object[][] objects = { { "testuser@gmail.com", super.entities().get("workspace1"), null },
-				{ "testuser@gmail.com", 0, null },
-				{ "angdellun@gmail.com", super.entities().get("workspace1"), ResponseStatusException.class } };
+		Object[][] objects = { { "testuser1@gmail.com", super.entities().get("workspace1"), null },
+				{ "testuser1@gmail.com", 0, null },
+				{ "testuser2@gmail.com", super.entities().get("workspace1"), ResponseStatusException.class } };
 
 		Stream.of(objects)
 				.forEach(x -> driverFindHistoricalByWorkspace((String) x[0], (Integer) x[1], (Class<?>) x[2]));
@@ -49,8 +49,8 @@ public class HistoryTaskServiceTest extends AbstractTest {
 		task.setColumn(null);
 
 		Object[][] objects = {
-				{ "testuser@gmail.com", super.entities().get("task1"), super.entities().get("toDo"), null },
-				{ "testuser@gmail.com", super.entities().get("task1"), super.entities().get("toDo5"),
+				{ "testuser1@gmail.com", super.entities().get("task3"), super.entities().get("toDo5"), null },
+				{ "testuser1@gmail.com", super.entities().get("task1"), super.entities().get("toDo5"),
 						ResponseStatusException.class } };
 
 		Stream.of(objects).forEach(x ->
@@ -62,12 +62,12 @@ public class HistoryTaskServiceTest extends AbstractTest {
 	public void testSave() throws Exception {
 
 		Object[][] objects = {
-				{ "testuser@gmail.com", super.entities().get("task1"), super.entities().get("inProgress"), null },
-				{ "angdellun@gmail.com", super.entities().get("task1"), super.entities().get("inProgress"),
+				{ "testuser1@gmail.com", super.entities().get("task1"), super.entities().get("inProgress1"), null },
+				{ "testuser2@gmail.com", super.entities().get("task1"), super.entities().get("inProgress1"),
 						ResponseStatusException.class },
-				{ "testuser@gmail.com", super.entities().get("task1"), super.entities().get("inProgress6"),
+				{ "testuser1@gmail.com", super.entities().get("task1"), super.entities().get("inProgress6"),
 						ResponseStatusException.class },
-				{ "testuser@gmail.com", super.entities().get("task1"), super.entities().get("inProgress6"),
+				{ "testuser1@gmail.com", super.entities().get("task1"), super.entities().get("inProgress6"),
 						ResponseStatusException.class } };
 
 		Stream.of(objects).forEach(x ->
