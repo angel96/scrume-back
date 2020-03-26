@@ -14,9 +14,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.spring.CustomObject.RegisterDto;
+import com.spring.CustomObject.UserDto;
+import com.spring.CustomObject.UserLoginDto;
 import com.spring.CustomObject.UserOfATeamByWorspaceDto;
-import com.spring.Model.User;
 import com.spring.Service.UserService;
 
 @RestController
@@ -33,28 +33,28 @@ public class UserApiController extends AbstractApiController {
 	}
 	
 	@GetMapping("/{idUser}")
-	public RegisterDto get(@PathVariable Integer idUser) {
+	public UserDto get(@PathVariable Integer idUser) {
 		super.logger.info("GET /api/user");
 		return this.userService.get(idUser);
 	}
 	
 	@GetMapping("/find-by-authorization")
 	@CrossOrigin(origins = "*", methods = { RequestMethod.GET })
-	public User getUserByAuthorization(@RequestHeader("authorization") String auth) {
+	public UserLoginDto getUserByAuthorization(@RequestHeader("authorization") String auth) {
 		super.logger.info("GET /api/login/isAValidUser");
 		return userService.getByAuthorization(auth);
 	}
 	
 	@PostMapping
-	public RegisterDto save(@RequestBody RegisterDto registerDto) {
+	public UserDto save(@RequestBody UserDto userDto) {
 		super.logger.info("POST /api/user");
-		return this.userService.save(registerDto);
+		return this.userService.save(userDto);
 	}
 	
 	@PutMapping("/{idUser}")
-	public RegisterDto update(@PathVariable Integer idUser, @RequestBody RegisterDto registerDto) {
+	public UserDto update(@PathVariable Integer idUser, @RequestBody UserDto userDto) {
 		super.logger.info("UPDATE /api/user");
-		return this.userService.update(registerDto, idUser);
+		return this.userService.update(userDto, idUser);
 	}
 
 }

@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DocumentDto {
+	int id;
+	private String name;
 	private String type;
 	private String content;
 	private Integer sprint;

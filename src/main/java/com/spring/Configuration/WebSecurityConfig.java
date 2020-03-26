@@ -39,10 +39,11 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.authenticationEntryPoint(customBasicAuthenticationEntryPoint).and().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests().and()
 				.authorizeRequests().antMatchers("/api/team/*").authenticated().antMatchers("/api/sprint/*")
-				.authenticated().antMatchers("/api/login/roles").authenticated().antMatchers("/api/project/**")
+				.authenticated().antMatchers("/api/login/**").authenticated().antMatchers("/api/project/**")
 				.authenticated().antMatchers("/api/workspace/**").authenticated().antMatchers("/api/history-task/**")
 				.authenticated().antMatchers("/api/task/**").authenticated().antMatchers("/api/payment/**")
-				.authenticated().antMatchers("/api/box/**").authenticated().antMatchers("/api/user/**").authenticated();
+				.authenticated().antMatchers("/api/box/**").authenticated().antMatchers("/api/user/**").authenticated()
+				.antMatchers("/api/document/**").authenticated();
 
 		// Probar si al cierre de sesion, sigue disponible la API
 		http.logout().logoutUrl("/api/login/logout").clearAuthentication(true).deleteCookies("JSESSIONID").and().csrf()

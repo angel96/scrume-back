@@ -146,11 +146,16 @@ public class PopulatorDatabase implements CommandLineRunner {
 		UserAccount account4 = accountRepository
 				.save(new UserAccount("testuser4@gmail.com", Utiles.encryptedPassword("1234564"), LocalDateTime.now(),
 						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_ADMIN))));
+		
+		UserAccount account5 = accountRepository
+				.save(new UserAccount("testuser5@gmail.com", Utiles.encryptedPassword("1234565"), LocalDateTime.now(),
+						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_ADMIN))));
 
 		entities.put("account1", account1.getId());
 		entities.put("account2", account2.getId());
 		entities.put("account3", account3.getId());
 		entities.put("account4", account4.getId());
+		entities.put("account5", account5.getId());
 
 		Box basicBox = boxRepository.save(new Box("BASIC", 0.0));
 		Box standardBox = boxRepository.save(new Box("STANDARD", 1.0));
@@ -348,10 +353,10 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("task5", task5.getId());
 		entities.put("task6", task6.getId());
 
-		Document doc1 = this.documentRepository.save(new Document(DocumentType.DAILY, "Prueba 1", sprint1));
-		Document doc2 = this.documentRepository.save(new Document(DocumentType.PLANNING_MEETING, "Prueba 2", sprint1));
-		Document doc3 = this.documentRepository.save(new Document(DocumentType.REVIEW, "Prueba 3", sprint1));
-		Document doc4 = this.documentRepository.save(new Document(DocumentType.RETROSPECTIVE, "Prueba 4", sprint1));
+		Document doc1 = this.documentRepository.save(new Document(DocumentType.DAILY, "Daily Test", "Prueba 1", sprint1));
+		Document doc2 = this.documentRepository.save(new Document(DocumentType.PLANNING_MEETING,"Planning meeting Test", "Prueba 2", sprint1));
+		Document doc3 = this.documentRepository.save(new Document(DocumentType.REVIEW, "Review Test", "Prueba 3", sprint1));
+		Document doc4 = this.documentRepository.save(new Document(DocumentType.RETROSPECTIVE, "Retrospective Test", "Prueba 4", sprint1));
 
 		entities.put("doc1", doc1.getId());
 		entities.put("doc2", doc2.getId());

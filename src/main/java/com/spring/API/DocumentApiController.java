@@ -21,7 +21,12 @@ public class DocumentApiController extends AbstractApiController {
 	@Autowired
 	private DocumentService documentService;
 	
-	@GetMapping("{idSprint}")
+	@GetMapping("doc/{documentId}")
+	public DocumentDto getDocument(@PathVariable int documentId) {
+		return this.documentService.findOneDto(documentId);
+		
+	}
+	@GetMapping("sprint/{idSprint}")
 	public List<DocumentDto> showAllBySprint(@PathVariable int idSprint){
 		super.logger.info("GET /api/document/" + idSprint);
 		return this.documentService.findAllBySprint(idSprint);

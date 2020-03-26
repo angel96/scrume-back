@@ -1,13 +1,11 @@
 package com.spring.Service;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -35,16 +33,22 @@ public class DocumentService extends AbstractService {
 	@Autowired
 	private UserService userService;
 
-	private Document findOne(int id) {
+	public Document findOne(int id) {
 		return this.documentRepo.findById(id).orElseThrow(
 				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested documetn not exists"));
+	}
+	
+	public DocumentDto findOneDto(int id) {
+		Document doc = this.findOne(id);
+		checkUserOnTeam(UserAccountService.getPrincipal(), doc.getSprint().getProject().getTeam());
+		return new DocumentDto(doc.getId(), doc.getName(), String.valueOf(doc.getType()), doc.getContent(), doc.getSprint().getId());
 	}
 
 	public List<DocumentDto> findAllBySprint(int sprintId) {
 		Sprint sprint = this.sprintService.getOne(sprintId);
 		checkUserOnTeam(UserAccountService.getPrincipal(), sprint.getProject().getTeam());
 		List<Document> docs = this.documentRepo.findBySprint(sprint);
-		return docs.stream().map(x -> new DocumentDto(String.valueOf(x.getType()), x.getContent(), sprint.getId()))
+		return docs.stream().map(x -> new DocumentDto(x.getId(),x.getName(), String.valueOf(x.getType()), x.getContent(), sprint.getId()))
 				.collect(Collectors.toList());
 	}
 
@@ -52,24 +56,20 @@ public class DocumentService extends AbstractService {
 		checkType(document.getType());
 		Sprint sprint = this.sprintService.getOne(sprintId);
 		checkUserOnTeam(UserAccountService.getPrincipal(), sprint.getProject().getTeam());
-		ModelMapper mapper = new ModelMapper();
-		Document entity = mapper.map(document, Document.class);
-		entity.setSprint(sprint);
+		Document entity = new Document(DocumentType.valueOf(document.getType()), document.getName(), document.getContent(), sprint);
 		Document saved = this.documentRepo.saveAndFlush(entity);
-		return new DocumentDto(saved.getType().toString(), saved.getContent(), saved.getSprint().getId());
+		return new DocumentDto(saved.getId(), saved.getName(), saved.getType().toString(), saved.getContent(), saved.getSprint().getId());
 	}
 
 	public DocumentDto update(DocumentDto dto, int documentId) {
 		checkType(dto.getType());
-		ModelMapper mapper = new ModelMapper();
-		Document entity = mapper.map(dto, Document.class);
-		Document db = this.documentRepo.findById(documentId).orElseThrow(
-				() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "The requested document is not avaiable"));
+		Document db = this.findOne(documentId);
 		checkUserOnTeam(UserAccountService.getPrincipal(), db.getSprint().getProject().getTeam());
-		db.setContent(entity.getContent());
-		db.setType(entity.getType());
+		db.setContent(dto.getContent());
+		db.setType(DocumentType.valueOf(dto.getType()));
+		db.setName(dto.getName());
 		db = this.documentRepo.saveAndFlush(db);
-		return new DocumentDto(db.getType().toString(), db.getContent(), db.getSprint().getId());
+		return new DocumentDto(db.getId(), db.getName(),db.getType().toString(), db.getContent(), db.getSprint().getId());
 	}
 
 	public void delete(int idDoc) {
@@ -106,7 +106,7 @@ public class DocumentService extends AbstractService {
 		}
 	}
 
-	private void flush() {
+	public void flush() {
 		this.documentRepo.flush();
 	}
 

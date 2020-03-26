@@ -32,6 +32,11 @@ public class Document extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private DocumentType type;
 	
+	@NotBlank
+	@SafeHtml
+	@JsonProperty
+	private String name;
+	
 	@JsonProperty
 	@SafeHtml
 	@NotBlank

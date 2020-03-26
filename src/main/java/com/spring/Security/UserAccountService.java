@@ -6,6 +6,7 @@ import java.util.Base64;
 import javax.transaction.Transactional;
 
 import org.jboss.logging.Logger;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
@@ -18,7 +19,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.spring.CustomObject.RegisterDto;
+import com.spring.CustomObject.UserAccountDto;
+import com.spring.Model.Sprint;
 import com.spring.Model.UserAccount;
 import com.spring.Utiles.Utiles;
 
@@ -41,37 +43,41 @@ public class UserAccountService implements UserDetailsService {
 		return repository.findById(idUserAccount).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested userAccount doesn´t exists"));
 	}
 	
-	public UserAccount save(UserAccount userAccount) {
-		UserAccount userAccountEntity = new UserAccount();
-		this.validationUsername(userAccount.getUsername());
-		userAccountEntity.setUsername(userAccount.getUsername());
-		this.validationPassword(userAccount.getPassword());
-		String password = Utiles.encryptedPassword(userAccount.getPassword());
-		userAccountEntity.setPassword(password);
-		userAccountEntity.setCreatedAt(userAccount.getCreatedAt());
-		userAccountEntity.setLastPasswordChangeAt(userAccount.getLastPasswordChangeAt());
-		userAccountEntity.setRoles(userAccount.getRoles());
-		this.repository.save(userAccountEntity);
-		return userAccountEntity;
-		
+	public UserAccountDto save(UserAccountDto userAccountDto) {
+		ModelMapper mapper = new ModelMapper();
+		UserAccount userAccountEntity = mapper.map(userAccountDto, UserAccount.class);
+		UserAccount userAccountDB = new UserAccount();
+		this.validationUsername(userAccountEntity.getUsername());
+		userAccountDB.setUsername(userAccountEntity.getUsername());
+		this.validationPassword(userAccountEntity.getPassword());
+		String password = Utiles.encryptedPassword(userAccountEntity.getPassword());
+		userAccountDB.setPassword(password);
+		userAccountDB.setCreatedAt(userAccountEntity.getCreatedAt());
+		userAccountDB.setLastPasswordChangeAt(userAccountEntity.getLastPasswordChangeAt());
+		userAccountDB.setRoles(userAccountEntity.getRoles());
+		this.validateDate(userAccountDB);
+		this.repository.save(userAccountDB);
+		return mapper.map(userAccountDB, UserAccountDto.class);
 	}
 	
-	public UserAccount update(Integer idUserAccount, RegisterDto registerDto) {
-		UserAccount userAccountEntity = this.findOne(idUserAccount);
-		this.validationUsername(registerDto.getUsername());
-		userAccountEntity.setUsername(registerDto.getUsername());
-		this.validationPassword(registerDto.getPassword());
-		if (Utiles.matchesPassword(registerDto.getPassword(), userAccountEntity.getPassword()) == false) {
-			userAccountEntity.setPassword(Utiles.encryptedPassword(registerDto.getPassword()));
-			userAccountEntity.setLastPasswordChangeAt(LocalDateTime.now());
+	public UserAccountDto update(Integer idUserAccount, UserAccountDto userAccountDto) {
+		ModelMapper mapper = new ModelMapper();
+		UserAccount userAccountEntity = mapper.map(userAccountDto, UserAccount.class);
+		UserAccount userAccountDB = this.findOne(idUserAccount);
+		this.validationUsername(userAccountEntity.getUsername());
+		userAccountDB.setUsername(userAccountEntity.getUsername());
+		this.validationPassword(userAccountEntity.getPassword());
+		if (Utiles.matchesPassword(userAccountEntity.getPassword(), userAccountEntity.getPassword()) == false) {
+			userAccountDB.setPassword(Utiles.encryptedPassword(userAccountEntity.getPassword()));
+			userAccountDB.setLastPasswordChangeAt(LocalDateTime.now());
 		} else {
-			userAccountEntity.setPassword(userAccountEntity.getPassword());
-			userAccountEntity.setLastPasswordChangeAt(registerDto.getLastPasswordChangeAt());
+			userAccountDB.setPassword(userAccountEntity.getPassword());
+			userAccountDB.setLastPasswordChangeAt(userAccountEntity.getLastPasswordChangeAt());
 		}
-		userAccountEntity.setCreatedAt(registerDto.getCreatedAt());
-		userAccountEntity.setRoles(null);
-		userAccountEntity.setId(idUserAccount);
-		return this.repository.saveAndFlush(userAccountEntity);
+		userAccountDB.setCreatedAt(userAccountEntity.getCreatedAt());
+		this.validateDate(userAccountDB);
+		this.repository.saveAndFlush(userAccountDB);
+		return mapper.map(userAccountDB, UserAccountDto.class);
 	}
 
 	public static UserAccount getPrincipal() {
@@ -106,6 +112,15 @@ public class UserAccountService implements UserDetailsService {
 			return s;
 		} else {
 			throw new ResponseStatusException(HttpStatus.CONFLICT, "the username is not a valid email");
+		}
+	}
+	
+	private void validateDate(UserAccount userAccount) {
+		if (userAccount.getCreatedAt() == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "the date of user account creation cannot be null");
+		}
+		if (userAccount.getLastPasswordChangeAt() == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "the last date the password was updated cannot be null");
 		}
 	}
 
