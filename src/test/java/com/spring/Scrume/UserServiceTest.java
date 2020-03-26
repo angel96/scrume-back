@@ -27,7 +27,9 @@ public class UserServiceTest extends AbstractTest {
 	protected void driverTestGet(Integer idUser, Class<?> expected) {
 		Class<?> caught = null;
 		try {
+			super.authenticateOrUnauthenticate("testuser1@gmail.com");
 			this.userService.get(idUser);
+			super.authenticateOrUnauthenticate(null);
 		} catch (Exception oops) {
 			caught = oops.getClass();
 		}
@@ -65,7 +67,7 @@ public class UserServiceTest extends AbstractTest {
 	@Test
 	public void userTestUpdate() throws Exception {
 		Object[][] objects = {
-			{ super.entities().get("user1"), "Prueba Surname", null}};
+			{ super.entities().get("user2"), "Prueba Surname", null}};
 		
 		Stream.of(objects).forEach(x -> driverTestUpdate((Integer) x[0], (String) x[1], (Class<?>) x[2]));
 	
@@ -74,11 +76,13 @@ public class UserServiceTest extends AbstractTest {
 	protected void driverTestUpdate(Integer idUser, String surname, Class<?> expected) {
 		Class<?> caught = null;
 		try {
+			super.authenticateOrUnauthenticate("testuser2@gmail.com");
 			User userDB = this.userService.findOne(idUser);
 			ModelMapper mapper = new ModelMapper();
 			UserDto userDto = mapper.map(userDB, UserDto.class);
 			userDto.setSurnames(surname);
 			this.userService.update(userDto, idUser);
+			super.authenticateOrUnauthenticate(null);
 		} catch (Exception oops) {
 			caught = oops.getClass();
 		}
