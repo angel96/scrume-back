@@ -2,6 +2,7 @@ package com.spring.Service;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -13,6 +14,7 @@ import com.spring.CustomObject.PaymentEditDto;
 import com.spring.CustomObject.PaymentListDto;
 import com.spring.Model.Payment;
 import com.spring.Model.User;
+import com.spring.Model.UserAccount;
 import com.spring.Repository.PaymentRepository;
 
 @Service
@@ -53,5 +55,17 @@ public class PaymentService extends AbstractService {
 	public void flush() {
 		repository.flush();
 	}
+
+	public Payment findByUserAccount(UserAccount userAccount) {
+		Payment res;
+		List<Payment> payments =this.repository.findByUserAccount(userAccount);
+		if(payments.isEmpty()) {
+			res = null;
+		}else {
+			res = payments.get(0);
+		}
+		return res;
+	}
+	
 
 }

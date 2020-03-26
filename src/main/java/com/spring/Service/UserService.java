@@ -1,6 +1,7 @@
 package com.spring.Service;
 
 import java.lang.reflect.Type;
+import java.time.LocalDate;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
@@ -14,18 +15,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
 import com.spring.CustomObject.FindByNickDto;
 import com.spring.CustomObject.RegisterDto;
 import com.spring.CustomObject.UserForWorkspaceDto;
+import com.spring.CustomObject.UserLoginDto;
 import com.spring.CustomObject.UserOfATeamByWorspaceDto;
-import com.spring.Model.Box;
 import com.spring.Model.Team;
 import com.spring.Model.User;
 import com.spring.Model.UserAccount;
 import com.spring.Model.Workspace;
 import com.spring.Repository.UserRepository;
 import com.spring.Security.UserAccountService;
-import com.spring.Utiles.Utiles;
 
 @Service
 @Transactional
@@ -46,9 +47,9 @@ public class UserService extends AbstractService {
 	@Autowired
 	private WorkspaceService workspaceService;
 
-	
 	@Autowired
-	private BoxService boxService;
+	private PaymentService paymentService;
+	
 	
 	public Collection<UserOfATeamByWorspaceDto> listUsersOfATeamByWorkspace(Integer idWorkspace) {
 		ModelMapper mapper = new ModelMapper();
@@ -148,8 +149,8 @@ public class UserService extends AbstractService {
 	}
 
 
-	public User getByAuthorization(String string) {
-		User res;
+	public UserLoginDto getByAuthorization(String string) {
+		UserLoginDto res;
 		Base64.Decoder dec = Base64.getDecoder();
 		String auth;
 		String decodedAuth;
@@ -158,9 +159,11 @@ public class UserService extends AbstractService {
 			auth = string.split(" ")[1];
 			decodedAuth = new String(dec.decode(auth));
 			username = decodedAuth.split(":")[0];
-			res = this.userRepository.findUserByUserName(username).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authorized"));
+			User user = this.userRepository.findUserByUserName(username).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authorized"));
+			LocalDate endingBoxDate = this.paymentService.findByUserAccount(user.getUserAccount()).getExpiredDate();
+			res = new UserLoginDto(user.getId(), user.getUserAccount().getUsername(), user.getUserAccount().getPassword(), endingBoxDate);
 		}catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user has not been found");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user has not been found or does not have any box payment record");
 		}
 		return res;
 	}
