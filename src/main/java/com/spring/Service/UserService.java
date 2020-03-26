@@ -181,7 +181,7 @@ public class UserService extends AbstractService {
 			username = decodedAuth.split(":")[0];
 			User user = this.userRepository.findUserByUserName(username).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authorized"));
 			LocalDate endingBoxDate = this.paymentService.findByUserAccount(user.getUserAccount()).getExpiredDate();
-			res = new UserLoginDto(user.getId(), user.getUserAccount().getUsername(), user.getUserAccount().getPassword(), endingBoxDate);
+			res = new UserLoginDto(user.getId(), user.getUserAccount().getUsername(), endingBoxDate);
 		}catch (Exception e) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user has not been found or does not have any box payment record");
 		}

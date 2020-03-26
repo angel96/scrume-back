@@ -14,9 +14,7 @@ public class UserLoginDto {
 	private Integer idUser;
 	
 	private String username;
-	
-	private String password;
-	
+		
     private LocalDate endingBoxDate;
 
 	
