@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
-import org.modelmapper.internal.util.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -29,7 +28,6 @@ import com.spring.Model.User;
 import com.spring.Model.UserAccount;
 import com.spring.Model.Workspace;
 import com.spring.Repository.TaskRepository;
-import com.spring.Security.Role;
 import com.spring.Security.UserAccountService;
 
 @Service
@@ -48,7 +46,6 @@ public class TaskService extends AbstractService {
 	private EstimationService estimationService;
 
 	public Task findOne(int id) {
-//		checkUserLogged(UserAccountService.getPrincipal());
 		return this.taskRepository.findById(id).orElseThrow(
 				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested task doesn´t exists"));
 	}
@@ -62,15 +59,13 @@ public class TaskService extends AbstractService {
 				task.getColumn() == null ? null : task.getColumn().getId());
 	}
 
-	/*
-	 * public List<Task> findAll() { return this.taskRepository.findAll(); }
-	 */
 	public List<Task> findBySprint(Sprint sprint) {
 		return this.taskRepository.findBySprint(sprint);
 	}
 
 	public List<Task> findCompleteTaskBySprint(Sprint sprint) {
-		return this.taskRepository.findCompleteTaskBySprint(sprint);
+		List<Task> tasks = this.taskRepository.findCompleteTaskBySprint(sprint);
+		return tasks;
 	}
 
 	public TaskDto save(TaskDto task, int projectId) {
@@ -83,21 +78,10 @@ public class TaskService extends AbstractService {
 		Task taskDB = new Task();
 		taskDB.setTitle(taskEntity.getTitle());
 		taskDB.setDescription(taskEntity.getDescription());
-//		taskDB.setPoints(taskEntity.getPoints());
 		taskDB.setProject(project);
-		/*
-		 * if (taskEntity.getUsers() == null || taskEntity.getUsers().isEmpty()) {
-		 * Set<User> usuarios = new HashSet<>(); taskDB.setUsers(usuarios); } else {
-		 * Set<User> userAux = task.getUsers().stream().filter(x -> x <= 0) .map(x ->
-		 * this.userService.findOne(x)).collect(Collectors.toSet());
-		 * userAux.stream().forEach(x -> checkUserOnTeam(x.getUserAccount(),
-		 * project.getTeam())); taskDB.setUsers(userAux); }
-		 */
 		taskDB = taskRepository.saveAndFlush(taskDB);
-//		Set<Integer> users = taskEntity.getUsers().stream().filter(x -> x.getId()<=0).map(User::getId).collect(Collectors.toSet());
-		return new TaskDto(taskDB.getTitle(), taskDB.getDescription(), taskDB.getPoints(),
-				/* taskDB.getProject().getId() */ projectId, new HashSet<>(),
-				null/* taskDB.getColumn() == null ? null : taskDB.getColumn().getId() */);
+		return new TaskDto(taskDB.getTitle(), taskDB.getDescription(), taskDB.getPoints(), projectId, new HashSet<>(),
+				null);
 	}
 
 	public TaskEditDto update(TaskEditDto task, int taskId) {
@@ -119,17 +103,9 @@ public class TaskService extends AbstractService {
 			taskDB.getUsers().retainAll(userAux);
 		}
 		taskDB.setDescription(taskEntity.getDescription());
-//		taskDB.setPoints(taskEntity.getPoints());
 		taskDB.setProject(project);
 		taskDB.setTitle(taskEntity.getTitle());
 
-		/*
-		 * if (taskEntity.getColumn() != null) { Workspace w =
-		 * this.taskRepository.findWorkspaceByProject(project.getId());
-		 * 
-		 * Column c = this.taskRepository.findColumnToDoByWorkspace(w.getId());
-		 * taskDB.setColumn(c); }
-		 */
 		taskDB = taskRepository.saveAndFlush(taskDB);
 		Set<Integer> users = taskDB.getUsers().stream().filter(x -> x.getId() < 0).map(User::getId)
 				.collect(Collectors.toSet());
@@ -138,19 +114,29 @@ public class TaskService extends AbstractService {
 	}
 
 	public void delete(int taskId) {
-		try {
-			Task task = this.findOne(taskId);
-			checkUserLogged(UserAccountService.getPrincipal());
-			Project project = task.getProject();
-			checkUserOnTeam(UserAccountService.getPrincipal(), project.getTeam());
-			Assert.isTrue(UserAccountService.getPrincipal().getRoles().contains(Role.ROLE_ADMIN));
-			taskRepository.deleteById(taskId);
-		} catch (IllegalArgumentException t) {
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "You`re not an admin");
+		boolean check = this.taskRepository.existsById(taskId);
+
+		if (!check) {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Task not found");
 		}
+
+		checkUserLogged(UserAccountService.getPrincipal());
+		Task task = this.findOne(taskId);
+		Project project = task.getProject();
+		checkUserOnTeam(UserAccountService.getPrincipal(), project.getTeam());
+		boolean user = this.userRolService.isAdminOnTeam(this.userService.getUserByPrincipal(), project.getTeam());
+
+		if (user) {
+			taskRepository.deleteById(taskId);
+		} else {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"You are not admin of this team. You are not allowed to remove this task");
+		}
+
 	}
 
 	public ListAllTaskByProjectDto getAllTasksByProject(int idProject) {
+		User principal = this.userService.getUserByPrincipal();
 		Project project = this.projectService.findOne(idProject);
 		this.validateProject(project);
 		checkUserLogged(UserAccountService.getPrincipal());
@@ -159,21 +145,20 @@ public class TaskService extends AbstractService {
 		List<TaskListDto> taskListDto = new ArrayList<>();
 		for (Task task : tasks) {
 			Integer finalPoints = task.getPoints();
-			if(finalPoints == null) {
+			if (finalPoints == null) {
 				finalPoints = 0;
 			}
-			Estimation estimation = this.estimationService.findByTask(task);
+			Estimation estimation = this.estimationService.findByTaskAndUser(task, principal);
 			Integer estimatedPoints;
-			if(estimation == null) {
+			if (estimation == null) {
 				estimatedPoints = 0;
-			}else {
+			} else {
 				estimatedPoints = estimation.getPoints();
 			}
-			taskListDto.add(new TaskListDto(task.getId(), task.getTitle(), task.getDescription(), finalPoints, estimatedPoints, task.getColumn()));
-		}		
-		return  new ListAllTaskByProjectDto(project.getId(), project.getName(), project.getTeam(), project.getDescription(), taskListDto);
+		}
+		return new ListAllTaskByProjectDto(project.getId(), project.getName(), project.getTeam(),
+				project.getDescription(), taskListDto);
 	}
-
 
 	private void validateProject(Project project) {
 		if (project == null) {
@@ -200,7 +185,7 @@ public class TaskService extends AbstractService {
 	public Collection<Task> findByWorkspace(Workspace workspace) {
 		return this.taskRepository.findByWorkspace(workspace);
 	}
-	
+
 	public void saveEstimation(Task task, Integer points) {
 		task.setPoints(points);
 		this.taskRepository.save(task);

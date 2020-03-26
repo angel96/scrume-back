@@ -50,7 +50,7 @@ public class HistoryTaskServiceTest extends AbstractTest {
 
 		Object[][] objects = {
 				{ "testuser1@gmail.com", super.entities().get("task3"), super.entities().get("toDo5"), null },
-				{ "testuser1@gmail.com", super.entities().get("task1"), super.entities().get("toDo5"),
+				{ "testuser1@gmail.com", super.entities().get("task1"), super.entities().get("toDo4"),
 						ResponseStatusException.class } };
 
 		Stream.of(objects).forEach(x ->
@@ -62,12 +62,12 @@ public class HistoryTaskServiceTest extends AbstractTest {
 	public void testSave() throws Exception {
 
 		Object[][] objects = {
-				{ "testuser1@gmail.com", super.entities().get("task1"), super.entities().get("inProgress1"), null },
-				{ "testuser2@gmail.com", super.entities().get("task1"), super.entities().get("inProgress1"),
+				{ "testuser1@gmail.com", super.entities().get("task1"), super.entities().get("inProgress"), null },
+				{ "testuser2@gmail.com", super.entities().get("task1"), super.entities().get("inProgress"),
 						ResponseStatusException.class },
-				{ "testuser1@gmail.com", super.entities().get("task1"), super.entities().get("inProgress6"),
+				{ "testuser1@gmail.com", super.entities().get("task1"), super.entities().get("inProgress4"),
 						ResponseStatusException.class },
-				{ "testuser1@gmail.com", super.entities().get("task1"), super.entities().get("inProgress6"),
+				{ "testuser1@gmail.com", super.entities().get("task1"), super.entities().get("inProgress4"),
 						ResponseStatusException.class } };
 
 		Stream.of(objects).forEach(x ->
