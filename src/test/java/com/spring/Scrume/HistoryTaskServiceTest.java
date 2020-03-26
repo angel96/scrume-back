@@ -1,6 +1,5 @@
 package com.spring.Scrume;
 
-import java.util.Collection;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -8,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.HistoryTaskDto;
-import com.spring.Model.HistoryTask;
 import com.spring.Model.Task;
 import com.spring.Service.HistoryTaskService;
 import com.spring.Service.TaskService;
@@ -22,9 +20,9 @@ public class HistoryTaskServiceTest extends AbstractTest {
 
 	@Test
 	public void testFindHistoricalByWorkspace() throws Exception {
-		Object[][] objects = { { "testuser@gmail.com", super.entities().get("workspace1"), null },
-				{ "testuser@gmail.com", 0, null },
-				{ "angdellun@gmail.com", super.entities().get("workspace1"), ResponseStatusException.class } };
+		Object[][] objects = { { "testuser1@gmail.com", super.entities().get("workspace1"), null },
+				{ "testuser1@gmail.com", 0, null },
+				{ "testuser2@gmail.com", super.entities().get("workspace1"), ResponseStatusException.class } };
 
 		Stream.of(objects)
 				.forEach(x -> driverFindHistoricalByWorkspace((String) x[0], (Integer) x[1], (Class<?>) x[2]));
@@ -35,7 +33,7 @@ public class HistoryTaskServiceTest extends AbstractTest {
 
 		try {
 			super.authenticateOrUnauthenticate(user);
-			Collection<HistoryTask> historical = this.serviceHistoryTask.findHistoricalByWorkspace(entity);
+			this.serviceHistoryTask.findHistoricalByWorkspace(entity);
 			this.serviceHistoryTask.flush();
 			super.authenticateOrUnauthenticate(null);
 		} catch (Exception oops) {
@@ -51,8 +49,8 @@ public class HistoryTaskServiceTest extends AbstractTest {
 		task.setColumn(null);
 
 		Object[][] objects = {
-				{ "testuser@gmail.com", super.entities().get("task1"), super.entities().get("toDo"), null },
-				{ "testuser@gmail.com", super.entities().get("task1"), super.entities().get("toDo5"),
+				{ "testuser1@gmail.com", super.entities().get("task3"), super.entities().get("toDo5"), null },
+				{ "testuser1@gmail.com", super.entities().get("task1"), super.entities().get("toDo4"),
 						ResponseStatusException.class } };
 
 		Stream.of(objects).forEach(x ->
@@ -64,12 +62,12 @@ public class HistoryTaskServiceTest extends AbstractTest {
 	public void testSave() throws Exception {
 
 		Object[][] objects = {
-				{ "testuser@gmail.com", super.entities().get("task1"), super.entities().get("inProgress"), null },
-				{ "angdellun@gmail.com", super.entities().get("task1"), super.entities().get("inProgress"),
+				{ "testuser1@gmail.com", super.entities().get("task1"), super.entities().get("inProgress"), null },
+				{ "testuser2@gmail.com", super.entities().get("task1"), super.entities().get("inProgress"),
 						ResponseStatusException.class },
-				{ "testuser@gmail.com", super.entities().get("task1"), super.entities().get("inProgress6"),
+				{ "testuser1@gmail.com", super.entities().get("task1"), super.entities().get("inProgress4"),
 						ResponseStatusException.class },
-				{ "testuser@gmail.com", super.entities().get("task1"), super.entities().get("inProgress6"),
+				{ "testuser1@gmail.com", super.entities().get("task1"), super.entities().get("inProgress4"),
 						ResponseStatusException.class } };
 
 		Stream.of(objects).forEach(x ->

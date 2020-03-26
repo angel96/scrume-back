@@ -84,7 +84,7 @@ public class WorkspaceService extends AbstractService {
 			Collection<UserForWorkspaceDto> usersDto = modelMapper.map(users, collectionUsersDto);
 			TaskForWorkspaceDto taskDto = new TaskForWorkspaceDto(task.getId(), task.getTitle(), task.getDescription(),
 					task.getPoints(), usersDto);
-			if (task.getColumn().getName().compareTo("To Do") == 0) {
+			if (task.getColumn().getName().compareTo("To do") == 0) {
 				tasksDtoTodo.add(taskDto);
 			} else if (task.getColumn().getName().compareTo("In progress") == 0) {
 				tasksDtoInProgress.add(taskDto);
