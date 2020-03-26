@@ -52,8 +52,8 @@ public class UserAccountService implements UserDetailsService {
 		this.validationPassword(userAccountEntity.getPassword());
 		String password = Utiles.encryptedPassword(userAccountEntity.getPassword());
 		userAccountDB.setPassword(password);
-		userAccountDB.setCreatedAt(userAccountEntity.getCreatedAt());
-		userAccountDB.setLastPasswordChangeAt(userAccountEntity.getLastPasswordChangeAt());
+		userAccountDB.setCreatedAt(LocalDateTime.now());
+		userAccountDB.setLastPasswordChangeAt(LocalDateTime.now());
 		userAccountDB.setRoles(userAccountEntity.getRoles());
 		this.validateDate(userAccountDB);
 		this.repository.save(userAccountDB);
