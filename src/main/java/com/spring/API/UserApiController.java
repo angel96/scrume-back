@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.CustomObject.RegisterDto;
+import com.spring.CustomObject.UserLoginDto;
 import com.spring.CustomObject.UserOfATeamByWorspaceDto;
-import com.spring.Model.User;
 import com.spring.Service.UserService;
 
 @RestController
@@ -40,7 +40,7 @@ public class UserApiController extends AbstractApiController {
 	
 	@GetMapping("/find-by-authorization")
 	@CrossOrigin(origins = "*", methods = { RequestMethod.GET })
-	public User getUserByAuthorization(@RequestHeader("authorization") String auth) {
+	public UserLoginDto getUserByAuthorization(@RequestHeader("authorization") String auth) {
 		super.logger.info("GET /api/login/isAValidUser");
 		return userService.getByAuthorization(auth);
 	}
