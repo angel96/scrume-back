@@ -19,23 +19,20 @@ public class UserAccountServiceTest extends AbstractTest{
 	@Test
 	public void userAccountTestSave() throws Exception {
 		Object[][] objects = {
-				{ "prueba@gmail.com", "Prueba12345", LocalDateTime.of(2020, 03, 26, 11, 00, 00), LocalDateTime.of(2020, 03, 26, 11, 01, 00), null }, //Caso positivo
-				{ "prueba", "Prueba12345", LocalDateTime.of(2020, 03, 26, 11, 00, 00), LocalDateTime.of(2020, 03, 26, 11, 01, 00), ResponseStatusException.class}, //Caso negativo: username invalido
-				{ "prueba@gmail.com", "prueba12345", LocalDateTime.of(2020, 03, 26, 11, 00, 00), LocalDateTime.of(2020, 03, 26, 11, 01, 00), ResponseStatusException.class}, //Caso negativo: password invalida
-				{ "prueba@gmail.com", "prueba12345", null, LocalDateTime.of(2020, 03, 26, 11, 01, 00), ResponseStatusException.class}}; //Caso negativo: fecha de creacion nula
+				{ "prueba@gmail.com", "Prueba12345", null }, //Caso positivo
+				{ "prueba", "Prueba12345", ResponseStatusException.class}, //Caso negativo: username invalido
+				{ "prueba@gmail.com", "prueba12345", ResponseStatusException.class}}; //Caso negativo: password invalida
 				 
 		
-		Stream.of(objects).forEach(x -> driverTestSave((String) x[0], (String) x[1], (LocalDateTime) x[2], (LocalDateTime) x[3], (Class<?>) x[4]));
+		Stream.of(objects).forEach(x -> driverTestSave((String) x[0], (String) x[1], (Class<?>) x[3]));
 	}
 	
-	protected void driverTestSave(String username, String password, LocalDateTime createdAt, LocalDateTime lastPasswordChangeAt, Class<?> expected) {
+	protected void driverTestSave(String username, String password, Class<?> expected) {
 		Class<?> caught = null;
 		try {
 			UserAccountDto userAccountDto = new UserAccountDto();
 			userAccountDto.setUsername(username);
 			userAccountDto.setPassword(password);
-			userAccountDto.setCreatedAt(createdAt);
-			userAccountDto.setLastPasswordChangeAt(lastPasswordChangeAt);
 			this.userAccountService.save(userAccountDto);
 		} catch (Exception oops) {
 			caught = oops.getClass();
@@ -46,8 +43,6 @@ public class UserAccountServiceTest extends AbstractTest{
 	@Test
 	public void userAccountTestUpdate() throws Exception {
 		UserAccountDto userAccountDto = new UserAccountDto();
-		userAccountDto.setCreatedAt(LocalDateTime.of(2020, 03, 26, 11, 00, 00));
-		userAccountDto.setLastPasswordChangeAt(LocalDateTime.of(2020, 03, 26, 11, 00, 00));
 		userAccountDto.setPassword("Prueba112");
 		userAccountDto.setUsername("prueba@gmail.com");
 		Integer userAccountId = 1;
