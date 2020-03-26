@@ -4,6 +4,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -27,22 +28,35 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
 	}
 
+	// For private access
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
-		// Probar si al cierre de sesion, sigue disponible la API
+		// No session will be created or used by spring security
 		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 
-		http.logout().logoutUrl("/api/login/logout").clearAuthentication(true).deleteCookies("JSESSIONID").and().csrf()
-				.disable();
-		//TODO: REVISAR ESTOS FILTROS, NO ME PERMITEN PONERLE UN PERMITALL A ESTAS DOS URL
-		//http.authorizeRequests().antMatchers("/api/login/isAValidUser").permitAll().antMatchers("api/user/find-by-authorization").permitAll();
-		http.cors().and().httpBasic().authenticationEntryPoint(customBasicAuthenticationEntryPoint).and()
+		http.cors().and().httpBasic().and().exceptionHandling()
+				.authenticationEntryPoint(customBasicAuthenticationEntryPoint).and().sessionManagement()
+				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests().and()
 				.authorizeRequests().antMatchers("/api/team/*").authenticated().antMatchers("/api/sprint/*")
 				.authenticated().antMatchers("/api/login/roles").authenticated().antMatchers("/api/project/**")
 				.authenticated().antMatchers("/api/workspace/**").authenticated().antMatchers("/api/history-task/**")
 				.authenticated().antMatchers("/api/task/**").authenticated().antMatchers("/api/payment/**")
-				.authenticated().antMatchers("/api/box/**").authenticated();
+				.authenticated().antMatchers("/api/box/**").authenticated().antMatchers("/api/user/**").authenticated()
+				.antMatchers("/api/document/**").authenticated();
+
+		// Probar si al cierre de sesion, sigue disponible la API
+		http.logout().logoutUrl("/api/login/logout").clearAuthentication(true).deleteCookies("JSESSIONID").and().csrf()
+				.disable();
+
+	}
+
+	// For public urls
+	@Override
+	public void configure(WebSecurity web) {
+		
+		web.ignoring().antMatchers("/api/login/**");
+		web.ignoring().antMatchers("/api/user/find-by-authorization");
 	}
 
 	@Bean

@@ -2,6 +2,7 @@ package com.spring.Service;
 
 import java.time.LocalDate;
 import java.util.Collection;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -13,6 +14,7 @@ import com.spring.CustomObject.PaymentEditDto;
 import com.spring.CustomObject.PaymentListDto;
 import com.spring.Model.Payment;
 import com.spring.Model.User;
+import com.spring.Model.UserAccount;
 import com.spring.Repository.PaymentRepository;
 
 @Service
@@ -30,8 +32,10 @@ public class PaymentService extends AbstractService {
 
 	public Collection<PaymentListDto> findPaymentsByUserLogged() {
 		User user = this.serviceUser.getUserByPrincipal();
-		return repository.findPaymentsByUser(user.getId()).stream().map(x -> new PaymentListDto(x.getExpiredDate(),
-				x.getPaymentDate(), x.getBox().getName(), x.getBox().getPrice())).collect(Collectors.toList());
+		return repository.findPaymentsByUser(user.getUserAccount().getId()).stream()
+				.map(x -> new PaymentListDto(x.getExpiredDate(), x.getPaymentDate(), x.getBox().getName(),
+						x.getBox().getPrice()))
+				.collect(Collectors.toList());
 	}
 
 	public PaymentEditDto save(PaymentEditDto payment) {
@@ -40,7 +44,7 @@ public class PaymentService extends AbstractService {
 
 		if (payment.getId() == 0) {
 			saveTo = new Payment(LocalDate.now(), this.serviceBox.getOne(payment.getBox()),
-					this.serviceUser.getUserByPrincipal(), payment.getExpiredDate());
+					this.serviceUser.getUserByPrincipal().getUserAccount(), payment.getExpiredDate());
 			saveTo = repository.saveAndFlush(saveTo);
 			payment.setId(saveTo.getId());
 		}
@@ -51,5 +55,17 @@ public class PaymentService extends AbstractService {
 	public void flush() {
 		repository.flush();
 	}
+
+	public Payment findByUserAccount(UserAccount userAccount) {
+		Payment res;
+		List<Payment> payments =this.repository.findByUserAccount(userAccount);
+		if(payments.isEmpty()) {
+			res = null;
+		}else {
+			res = payments.get(0);
+		}
+		return res;
+	}
+	
 
 }
