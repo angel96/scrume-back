@@ -8,7 +8,9 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.PaymentEditDto;
 import com.spring.CustomObject.PaymentListDto;
@@ -43,10 +45,16 @@ public class PaymentService extends AbstractService {
 		Payment saveTo = null;
 
 		if (payment.getId() == 0) {
-			saveTo = new Payment(LocalDate.now(), this.serviceBox.getOne(payment.getBox()),
-					this.serviceUser.getUserByPrincipal().getUserAccount(), payment.getExpiredDate());
-			saveTo = repository.saveAndFlush(saveTo);
-			payment.setId(saveTo.getId());
+			if (payment.getExpiredDate().isAfter(LocalDate.now())) {
+				saveTo = new Payment(LocalDate.now(), this.serviceBox.getOne(payment.getBox()),
+						this.serviceUser.getUserByPrincipal().getUserAccount(), payment.getExpiredDate());
+				saveTo = repository.saveAndFlush(saveTo);
+				payment.setId(saveTo.getId());
+			} else {
+				throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED,
+						"Expired date is not later than currently");
+			}
+
 		}
 
 		return payment;
@@ -58,14 +66,13 @@ public class PaymentService extends AbstractService {
 
 	public Payment findByUserAccount(UserAccount userAccount) {
 		Payment res;
-		List<Payment> payments =this.repository.findByUserAccount(userAccount);
-		if(payments.isEmpty()) {
+		List<Payment> payments = this.repository.findByUserAccount(userAccount);
+		if (payments.isEmpty()) {
 			res = null;
-		}else {
+		} else {
 			res = payments.get(0);
 		}
 		return res;
 	}
-	
 
 }
