@@ -1,8 +1,6 @@
 package com.spring.CustomObject;
 
-import java.util.Date;
-
-import com.spring.Model.Project;
+import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,13 +9,15 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class SprintDto {
+public class UserLoginDto {
 	
-	private Integer id;
+	private Integer idUser;
 	
-	private Date startDate;
+	private String username;
 	
-	private Date endDate;
+	private String password;
 	
-	private Project project;
+    private LocalDate endingBoxDate;
+
+	
 }

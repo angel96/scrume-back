@@ -76,7 +76,7 @@ public class EstimationService extends AbstractService {
 		estimationRepository.flush();
 	}
 
-	public Estimation findByTask(Task task) {
-		return this.estimationRepository.findByTask(task).orElse(null);
+	public Estimation findByTaskAndUser(Task task, User user) {
+		return this.estimationRepository.findByTask(task, user).orElse(null);
 	}
 }

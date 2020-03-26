@@ -27,6 +27,7 @@ import com.spring.CustomObject.WorkspaceEditDto;
 import com.spring.CustomObject.WorkspaceSprintListDto;
 import com.spring.CustomObject.WorkspaceWithColumnsDto;
 import com.spring.Model.Column;
+import com.spring.Model.HistoryTask;
 import com.spring.Model.Project;
 import com.spring.Model.Sprint;
 import com.spring.Model.Task;
@@ -83,7 +84,7 @@ public class WorkspaceService extends AbstractService {
 			Collection<UserForWorkspaceDto> usersDto = modelMapper.map(users, collectionUsersDto);
 			TaskForWorkspaceDto taskDto = new TaskForWorkspaceDto(task.getId(), task.getTitle(), task.getDescription(),
 					task.getPoints(), usersDto);
-			if (task.getColumn().getName().compareTo("To Do") == 0) {
+			if (task.getColumn().getName().compareTo("To do") == 0) {
 				tasksDtoTodo.add(taskDto);
 			} else if (task.getColumn().getName().compareTo("In progress") == 0) {
 				tasksDtoInProgress.add(taskDto);
@@ -110,6 +111,7 @@ public class WorkspaceService extends AbstractService {
 	}
 
 	public Collection<Workspace> findWorkspacesByTeam(int team) {
+		checkMembers(team);
 		return this.repository.findWorkspacesByTeam(team);
 	}
 
@@ -122,7 +124,6 @@ public class WorkspaceService extends AbstractService {
 	}
 
 	public void saveDefaultWorkspace(Sprint sprint) {
-
 		Workspace workspace = new Workspace();
 		workspace.setName("Default");
 		workspace.setSprint(sprint);
@@ -132,9 +133,10 @@ public class WorkspaceService extends AbstractService {
 
 	public Collection<SprintWithWorkspacesDto> listTodoColumnsOfAProject(Integer idProject) {
 		Project project = this.projectService.findOne(idProject);
+		checkMembers(project.getTeam().getId());
 		Collection<Column> columns = this.serviceColumns.findColumnTodoByProject(project);
 		Collection<SprintWithWorkspacesDto> res = new ArrayList<>();
-		Map<Integer, Collection<WorkspaceAndColumnTodoDto>> sprints = new HashMap<Integer, Collection<WorkspaceAndColumnTodoDto>>();
+		Map<Integer, Collection<WorkspaceAndColumnTodoDto>> sprints = new HashMap<>();
 		for (Column column : columns) {
 			Workspace workspace = column.getWorkspace();
 			WorkspaceAndColumnTodoDto workspaceAndColumnTodoDto = new WorkspaceAndColumnTodoDto(workspace.getId(),
@@ -163,7 +165,7 @@ public class WorkspaceService extends AbstractService {
 
 		if (idWorkspace != 0) {
 			checkAuthorityAdmin(idWorkspace);
-			workspace = this.repository.getOne(idWorkspace);
+			workspace = this.findOne(idWorkspace);
 			workspace.setName(workspaceDto.getName());
 			if (workspaceDto.getSprint() != 0) {
 				workspace.setSprint(this.serviceSprint.getOne(workspaceDto.getSprint()));
@@ -181,10 +183,11 @@ public class WorkspaceService extends AbstractService {
 	public void delete(int workspace) {
 
 		// 1. Existe
-		boolean check = this.repository.existsById(workspace);
+		boolean check = this.checksIfExists(workspace);
 
 		if (check) {
 			// 2. Es administrador y pertenece
+			this.findOne(workspace);
 			checkAuthorityAdmin(workspace);
 			this.repository.deleteById(workspace);
 		}
@@ -221,6 +224,28 @@ public class WorkspaceService extends AbstractService {
 		checkMembers(team.getId());
 		return this.repository.findWorkspacesBySprint(sprint).stream()
 				.map(x -> new WorkspaceSprintListDto(x.getId(), x.getName())).collect(Collectors.toList());
+	}
+
+	public WorkspaceSprintListDto findWorkspaceLastModifiedByProject(int project) {
+
+		Project proj = this.projectService.findOne(project);
+
+		checkMembers(proj.getTeam().getId());
+
+		Collection<HistoryTask> historyTasksByProject = this.repository.findAllHistoryTasksByProject(project);
+
+		WorkspaceSprintListDto result = null;
+
+		if (historyTasksByProject.isEmpty() || historyTasksByProject == null) {
+			result = new WorkspaceSprintListDto(0, "");
+		} else {
+			List<HistoryTask> historyTasks = new ArrayList<>(historyTasksByProject);
+			Workspace ht = historyTasks.get(0).getDestiny().getWorkspace();
+			result = new WorkspaceSprintListDto(ht.getId(), ht.getName());
+		}
+
+		return result;
+
 	}
 
 	public void flush() {
