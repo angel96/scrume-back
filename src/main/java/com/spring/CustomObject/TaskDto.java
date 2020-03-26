@@ -2,24 +2,22 @@ package com.spring.CustomObject;
 
 import java.util.Set;
 
-import com.spring.Model.Column;
-import com.spring.Model.Project;
-import com.spring.Model.User;
-
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 @Data
+@AllArgsConstructor
 public class TaskDto {
 
 	private String title;
 
 	private String description;
 
-	private int points;
-	private Project project;
+	private Integer points;
+	private Integer project;
 
-	private Set<User> users;
+	private Set<Integer> users;
 
-	private Column column;
+	private Integer column;
 
 }

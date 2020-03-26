@@ -23,7 +23,7 @@ import com.spring.Repository.ProjectRepository;
 public class ProjectService extends AbstractService {
 
 	@Autowired
-	private ProjectRepository repository;
+	private ProjectRepository projectRepository;
 
 	@Autowired
 	private TeamService teamService;
@@ -35,16 +35,12 @@ public class ProjectService extends AbstractService {
 	private UserRolService userRolService;
 
 
-	public List<Project> findAll() {
-		return repository.findAll();
-	}
-
 	public List<ProjectDto> findProjectByTeamId(Integer id) {
 		User principal = this.userService.getUserByPrincipal();
 		Team team = teamService.findOne(id);
 		validateTeam(team);
 		validateSeeProject(team, principal);
-		List<Project> lista = repository.findByTeam(team);
+		List<Project> lista = projectRepository.findByTeam(team);
 
 		ModelMapper mapper = new ModelMapper();
 
@@ -54,13 +50,13 @@ public class ProjectService extends AbstractService {
 	}
 
 	public Project findOne(Integer id) {
-		return repository.findById(id).orElse(null);
+		return projectRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested project doesn´t exists"));
 	}
 
 	public ProjectDto getOne(Integer idProject) {
 		User principal = this.userService.getUserByPrincipal();
 		ModelMapper mapper = new ModelMapper();
-		Project projectEntity = this.repository.getOne(idProject);
+		Project projectEntity = this.projectRepository.getOne(idProject);
 		validateProject(projectEntity);
 		validateSeeProject(projectEntity.getTeam(), principal);
 		return mapper.map(projectEntity, ProjectDto.class);
@@ -71,7 +67,7 @@ public class ProjectService extends AbstractService {
 		ModelMapper mapper = new ModelMapper();
 		Project projectEntity = mapper.map(projectDto, Project.class);
 		validateProject(projectEntity);
-		Project projectDB = this.repository.getOne(idProject);
+		Project projectDB = this.projectRepository.getOne(idProject);
 		validateProject(projectDB);
 		Integer idTeam = projectEntity.getTeam().getId();
 		Team team = teamService.findOne(idTeam);
@@ -80,7 +76,7 @@ public class ProjectService extends AbstractService {
 		projectDB.setTeam(team);
 		projectDB.setName(projectEntity.getName());
 		projectDB.setDescription(projectEntity.getDescription());
-		repository.save(projectDB);
+		projectRepository.save(projectDB);
 		return mapper.map(projectDB, ProjectDto.class);
 	}
 
@@ -95,19 +91,23 @@ public class ProjectService extends AbstractService {
 		projectDB.setTeam(team);
 		projectDB.setName(projectEntity.getName());
 		projectDB.setDescription(projectEntity.getDescription());
-		repository.save(projectDB);
+		projectRepository.save(projectDB);
 		return mapper.map(projectDB, ProjectDto.class);
 	}
 
 	public void delete(Integer id) {
 		User principal = this.userService.getUserByPrincipal();
-		boolean checkIfExists = this.repository.existsById(id);
-		Project projectDB = this.repository.getOne(id);
+		boolean checkIfExists = this.projectRepository.existsById(id);
+		Project projectDB = this.projectRepository.getOne(id);
 		validateProject(projectDB);
 		validateEditPermission(projectDB.getTeam(), principal);
 		if (checkIfExists) {
-			repository.deleteById(id);
+			projectRepository.deleteById(id);
 		}
+	}
+	
+	public void flush() {
+		projectRepository.flush();
 	}
 
 	private void validateProject(Project project) {

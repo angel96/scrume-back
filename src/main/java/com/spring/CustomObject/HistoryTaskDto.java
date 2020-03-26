@@ -9,7 +9,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class HistoryTaskDto {
 
-	private int id;
 	private int destiny;
 	private int task;
 

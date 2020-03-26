@@ -7,31 +7,26 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.TeamDto;
-import com.spring.Model.UserRol;
 import com.spring.Service.TeamService;
-import com.spring.Service.UserRolService;
 
-public class TeamAPITest extends AbstractTest {
+public class TeamServiceTest extends AbstractTest {
 
 	@Autowired
 	private TeamService teamService;
 	
-	@Autowired
-	private UserRolService userRolService;
-	
 	
 
 	@Test
-	public void teamApiSaveTest() throws Exception {
+	public void teamServiceSaveTest() throws Exception {
 		TeamDto teamDto1 = new TeamDto();
 		teamDto1.setName("Save 1");
 		Object[][] objects = {
-				{"testuser@gmail.com", teamDto1, null}};
+				{"testuser1@gmail.com", teamDto1, null}};
 
-		Stream.of(objects).forEach(x -> driverTeamApiSaveTest((String) x[0], (TeamDto) x[1], (Class<?>) x[2]));
+		Stream.of(objects).forEach(x -> driverTeamServiceSaveTest((String) x[0], (TeamDto) x[1], (Class<?>) x[2]));
 	}
 
-	protected void driverTeamApiSaveTest(String user, TeamDto teamDto, Class<?> expected) {
+	protected void driverTeamServiceSaveTest(String user, TeamDto teamDto, Class<?> expected) {
 		Class<?> caught = null;
 		try {
 			super.authenticateOrUnauthenticate(user);
@@ -46,7 +41,7 @@ public class TeamAPITest extends AbstractTest {
 	}
 	
 	@Test
-	public void teamApiUpdateTest() throws Exception {
+	public void teamServiceUpdateTest() throws Exception {
 		TeamDto teamDto1 = new TeamDto();
 		teamDto1.setId(super.entities().get("team1"));
 		teamDto1.setName("Update 1");
@@ -55,12 +50,12 @@ public class TeamAPITest extends AbstractTest {
 		teamDto1.setName("Update 2");
 		
 		Object[][] objects = {
-				{"testuser@gmail.com", teamDto1, null}, {"angdellun2@gmail.com", teamDto1, ResponseStatusException.class}, {"testuser2@gmail.com", teamDto1, ResponseStatusException.class},{"testuser@gmail.com", teamDto2, ResponseStatusException.class}};
+				{"testuser1@gmail.com", teamDto1, null}, {"testuser2@gmail.com", teamDto1, ResponseStatusException.class}, {"testuser4@gmail.com", teamDto1, ResponseStatusException.class},{"testuser1@gmail.com", teamDto2, ResponseStatusException.class}};
 
-		Stream.of(objects).forEach(x -> driverTeamApiUpdateTest((String) x[0], (TeamDto) x[1], (Class<?>) x[2]));
+		Stream.of(objects).forEach(x -> driverTeamServiceUpdateTest((String) x[0], (TeamDto) x[1], (Class<?>) x[2]));
 	}
 
-	protected void driverTeamApiUpdateTest(String user, TeamDto teamDto, Class<?> expected) {
+	protected void driverTeamServiceUpdateTest(String user, TeamDto teamDto, Class<?> expected) {
 		Class<?> caught = null;
 		
 		try {
@@ -77,15 +72,15 @@ public class TeamAPITest extends AbstractTest {
 	}
 	
 	@Test
-	public void teamApiDeleteTest() throws Exception {
+	public void teamServiceDeleteTest() throws Exception {
 		
 		Object[][] objects = {
-				{"testuser2@gmail.com", super.entities().get("team3"), null}, {"testuser2@gmail.com", 123456, ResponseStatusException.class}, {"testuser2@gmail.com",  super.entities().get("team1"), ResponseStatusException.class},{"testuser@gmail.com",  super.entities().get("team1"), ResponseStatusException.class}};
+				{"testuser2@gmail.com", super.entities().get("team2"), null}, {"testuser2@gmail.com", 123456, ResponseStatusException.class}, {"testuser4@gmail.com",  super.entities().get("team1"), ResponseStatusException.class},{"testuser1@gmail.com",  super.entities().get("team1"), ResponseStatusException.class}};
 
-		Stream.of(objects).forEach(x -> driverTeamApiDeleteTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
+		Stream.of(objects).forEach(x -> driverTeamServiceDeleteTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}
 
-	protected void driverTeamApiDeleteTest(String user, Integer idTeam, Class<?> expected) {
+	protected void driverTeamServiceDeleteTest(String user, Integer idTeam, Class<?> expected) {
 		Class<?> caught = null;
 		
 		try {
