@@ -9,6 +9,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.UserAccountDto;
+import com.spring.Model.UserAccount;
 import com.spring.Security.UserAccountService;
 
 public class UserAccountServiceTest extends AbstractTest{
@@ -24,7 +25,7 @@ public class UserAccountServiceTest extends AbstractTest{
 				{ "prueba@gmail.com", "prueba12345", ResponseStatusException.class}}; //Caso negativo: password invalida
 				 
 		
-		Stream.of(objects).forEach(x -> driverTestSave((String) x[0], (String) x[1], (Class<?>) x[3]));
+		Stream.of(objects).forEach(x -> driverTestSave((String) x[0], (String) x[1], (Class<?>) x[2]));
 	}
 	
 	protected void driverTestSave(String username, String password, Class<?> expected) {
@@ -42,22 +43,25 @@ public class UserAccountServiceTest extends AbstractTest{
 	
 	@Test
 	public void userAccountTestUpdate() throws Exception {
-		UserAccountDto userAccountDto = new UserAccountDto();
-		userAccountDto.setPassword("Prueba112");
-		userAccountDto.setUsername("prueba@gmail.com");
-		Integer userAccountId = 1;
 		Object[][] objects = {
-				{ userAccountDto, userAccountId, "prueba22@gmail.com", null}}; //Caso positivo
+				{ super.entities().get("user1"), super.entities().get("account1"), "prueba22@gmail.com", null}}; //Caso positivo
 				 
 		
-		Stream.of(objects).forEach(x -> driverTestUpdate((UserAccountDto) x[0], (Integer) x[1], (String) x[2], (Class<?>) x[3]));
+		Stream.of(objects).forEach(x -> driverTestUpdate((Integer) x[0], (Integer) x[1], (String) x[2], (Class<?>) x[3]));
 	}
 	
-	protected void driverTestUpdate(UserAccountDto userAccountDto, Integer userAccountId, String usernameName, Class<?> expected) {
+	protected void driverTestUpdate(Integer userId, Integer userAccountId, String username, Class<?> expected) {
 		Class<?> caught = null;
 		try {
-			this.userAccountService.save(userAccountDto);
-			userAccountDto.setUsername(usernameName);
+			System.out.println(userId);
+			System.out.println(userAccountId);
+			UserAccount userAccountDB = this.userAccountService.findOne(userAccountId);
+			System.out.println(userAccountDB);
+			UserAccountDto userAccountDto = new UserAccountDto();
+			userAccountDto.setPassword(userAccountDB.getPassword());
+			userAccountDto.setRoles(null);
+			userAccountDto.setUsername(userAccountDB.getUsername());
+			userAccountDto.setUsername(username);
 			this.userAccountService.update(userAccountId, userAccountDto);
 		} catch (Exception oops) {
 			caught = oops.getClass();

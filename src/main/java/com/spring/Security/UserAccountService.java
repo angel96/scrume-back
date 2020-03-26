@@ -55,7 +55,6 @@ public class UserAccountService implements UserDetailsService {
 		userAccountDB.setCreatedAt(LocalDateTime.now());
 		userAccountDB.setLastPasswordChangeAt(LocalDateTime.now());
 		userAccountDB.setRoles(userAccountEntity.getRoles());
-		this.validateDate(userAccountDB);
 		this.repository.save(userAccountDB);
 		return mapper.map(userAccountDB, UserAccountDto.class);
 	}
@@ -75,7 +74,6 @@ public class UserAccountService implements UserDetailsService {
 			userAccountDB.setLastPasswordChangeAt(userAccountEntity.getLastPasswordChangeAt());
 		}
 		userAccountDB.setCreatedAt(userAccountEntity.getCreatedAt());
-		this.validateDate(userAccountDB);
 		this.repository.saveAndFlush(userAccountDB);
 		return mapper.map(userAccountDB, UserAccountDto.class);
 	}
@@ -112,15 +110,6 @@ public class UserAccountService implements UserDetailsService {
 			return s;
 		} else {
 			throw new ResponseStatusException(HttpStatus.CONFLICT, "the username is not a valid email");
-		}
-	}
-	
-	private void validateDate(UserAccount userAccount) {
-		if (userAccount.getCreatedAt() == null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "the date of user account creation cannot be null");
-		}
-		if (userAccount.getLastPasswordChangeAt() == null) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "the last date the password was updated cannot be null");
 		}
 	}
 

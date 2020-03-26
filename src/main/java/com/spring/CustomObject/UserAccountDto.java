@@ -9,7 +9,7 @@ import lombok.Data;
 @Data
 public class UserAccountDto {
 	
-	private String id;
+	private Integer id;
 	
 	private String username;
 	
