@@ -1,11 +1,11 @@
 package com.spring.Service;
 
 import java.lang.reflect.Type;
+import java.time.LocalDate;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.transaction.Transactional;
 
@@ -19,6 +19,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.spring.CustomObject.FindByNickDto;
 import com.spring.CustomObject.UserDto;
 import com.spring.CustomObject.UserForWorkspaceDto;
+import com.spring.CustomObject.UserLoginDto;
 import com.spring.CustomObject.UserOfATeamByWorspaceDto;
 import com.spring.Model.Team;
 import com.spring.Model.User;
@@ -46,6 +47,10 @@ public class UserService extends AbstractService {
 	@Autowired
 	private WorkspaceService workspaceService;
 
+	@Autowired
+	private PaymentService paymentService;
+	
+	
 	public Collection<UserOfATeamByWorspaceDto> listUsersOfATeamByWorkspace(Integer idWorkspace) {
 		ModelMapper mapper = new ModelMapper();
 		User principal = this.getUserByPrincipal();
@@ -73,6 +78,7 @@ public class UserService extends AbstractService {
 	public UserDto get(Integer idUser) {
 		UserDto userDto = new UserDto();
 		User userDB = this.findOne(idUser);
+		validatePermission(userDB);
 		validateUser(userDB);
 		userDto.setId(userDB.getId());
 		userDto.setName(userDB.getName());
@@ -87,18 +93,14 @@ public class UserService extends AbstractService {
 	public UserDto save(UserDto userDto) {
 		ModelMapper mapper = new ModelMapper();
 		User userEntity = mapper.map(userDto, User.class);
-		System.out.println(userEntity.toString());
 		User userDB = new User();
 		userDB.setGitUser(userEntity.getGitUser());
 		userDB.setName(userEntity.getName());
 		userDB.setNick(userEntity.getNick());
 		userDB.setPhoto(userEntity.getPhoto());
 		userDB.setSurnames(userEntity.getSurnames());
-		System.out.println("Entro 1");
 		UserAccount userAccountDB = this.userAccountService.findOne(userDto.getIdUserAccount());
-		System.out.println("Entro 2");
 		userDB.setUserAccount(userAccountDB);
-		System.out.println("Entro 3");
 		validateUser(userDB);
 		this.userRepository.saveAndFlush(userDB);
 		return userDto;
@@ -108,9 +110,8 @@ public class UserService extends AbstractService {
 		ModelMapper mapper = new ModelMapper();
 		User userEntity = mapper.map(userDto, User.class);
 		User userDB = this.findOne(idUser); // User from DB
+		validatePermission(userDB);
 		UserAccount userAccountDB = this.userAccountService.findOne(userDB.getUserAccount().getId()); // UserAccount
-																										// from userDB
-																										// from DB
 		userDB.setGitUser(userEntity.getGitUser());
 		userDB.setName(userEntity.getName());
 		userDB.setNick(userEntity.getNick());
@@ -146,6 +147,13 @@ public class UserService extends AbstractService {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user is null");
 		}
 	}
+	
+	private void validatePermission(User user) {
+		User principal = this.getUserByPrincipal();
+		if(!user.equals(principal)) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user does not match the logged in user");
+		}
+	}
 
 	private void validateUserPrincipalTeam(User principal, Team team) {
 		if (principal == null) {
@@ -162,8 +170,9 @@ public class UserService extends AbstractService {
 		}
 	}
 
-	public User getByAuthorization(String string) {
-		User res;
+
+	public UserLoginDto getByAuthorization(String string) {
+		UserLoginDto res;
 		Base64.Decoder dec = Base64.getDecoder();
 		String auth;
 		String decodedAuth;
@@ -172,10 +181,11 @@ public class UserService extends AbstractService {
 			auth = string.split(" ")[1];
 			decodedAuth = new String(dec.decode(auth));
 			username = decodedAuth.split(":")[0];
-			res = this.userRepository.findUserByUserName(username)
-					.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authorized"));
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user has not been found");
+			User user = this.userRepository.findUserByUserName(username).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authorized"));
+			LocalDate endingBoxDate = this.paymentService.findByUserAccount(user.getUserAccount()).getExpiredDate();
+			res = new UserLoginDto(user.getId(), user.getUserAccount().getUsername(), endingBoxDate);
+		}catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user has not been found or does not have any box payment record");
 		}
 		return res;
 	}
