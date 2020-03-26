@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.spring.CustomObject.RegisterDto;
+import com.spring.CustomObject.UserDto;
 import com.spring.CustomObject.UserOfATeamByWorspaceDto;
 import com.spring.Model.User;
 import com.spring.Service.UserService;
@@ -31,7 +31,7 @@ public class UserApiController extends AbstractApiController {
 	}
 	
 	@GetMapping("/{idUser}")
-	public RegisterDto get(@PathVariable Integer idUser) {
+	public UserDto get(@PathVariable Integer idUser) {
 		super.logger.info("GET /api/user");
 		return this.userService.get(idUser);
 	}
@@ -43,15 +43,15 @@ public class UserApiController extends AbstractApiController {
 	}
 	
 	@PostMapping
-	public RegisterDto save(@RequestBody RegisterDto registerDto) {
+	public UserDto save(@RequestBody UserDto userDto) {
 		super.logger.info("POST /api/user");
-		return this.userService.save(registerDto);
+		return this.userService.save(userDto);
 	}
 	
 	@PutMapping("/{idUser}")
-	public RegisterDto update(@PathVariable Integer idUser, @RequestBody RegisterDto registerDto) {
+	public UserDto update(@PathVariable Integer idUser, @RequestBody UserDto userDto) {
 		super.logger.info("UPDATE /api/user");
-		return this.userService.update(registerDto, idUser);
+		return this.userService.update(userDto, idUser);
 	}
 
 }

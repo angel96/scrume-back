@@ -57,7 +57,7 @@ import com.spring.Utiles.Utiles;
  *
  */
 
-//@Component
+@Component
 public class PopulatorDatabase implements CommandLineRunner {
 
 	protected final Logger log = Logger.getLogger(PopulatorDatabase.class);
@@ -150,11 +150,16 @@ public class PopulatorDatabase implements CommandLineRunner {
 		UserAccount account4 = accountRepository
 				.save(new UserAccount("testuser4@gmail.com", Utiles.encryptedPassword("1234564"), LocalDateTime.now(),
 						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_ADMIN))));
+		
+		UserAccount account5 = accountRepository
+				.save(new UserAccount("testuser5@gmail.com", Utiles.encryptedPassword("1234565"), LocalDateTime.now(),
+						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_ADMIN))));
 
 		entities.put("account1", account1.getId());
 		entities.put("account2", account2.getId());
 		entities.put("account3", account3.getId());
 		entities.put("account4", account4.getId());
+		entities.put("account5", account5.getId());
 
 		Box basicBox =  boxRepository.save(new Box("BASIC",0.0));
 		Box standardBox = boxRepository.save(new Box("STANDARD", 1.0));
