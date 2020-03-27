@@ -2,11 +2,11 @@ package com.spring.Service;
 
 import java.lang.reflect.Type;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.transaction.Transactional;
 
@@ -65,6 +65,7 @@ public class UserService extends AbstractService {
 		}.getType();
 		return mapper.map(users, listType);
 	}
+	
 
 	public User getUserByPrincipal() {
 		UserAccount userAccount = UserAccountService.getPrincipal();
@@ -79,6 +80,7 @@ public class UserService extends AbstractService {
 	public UserDto get(Integer idUser) {
 		UserDto userDto = new UserDto();
 		User userDB = this.findOne(idUser);
+		validatePermission(userDB);
 		validateUser(userDB);
 		userDto.setId(userDB.getId());
 		userDto.setName(userDB.getName());
@@ -93,18 +95,14 @@ public class UserService extends AbstractService {
 	public UserDto save(UserDto userDto) {
 		ModelMapper mapper = new ModelMapper();
 		User userEntity = mapper.map(userDto, User.class);
-		System.out.println(userEntity.toString());
 		User userDB = new User();
 		userDB.setGitUser(userEntity.getGitUser());
 		userDB.setName(userEntity.getName());
 		userDB.setNick(userEntity.getNick());
 		userDB.setPhoto(userEntity.getPhoto());
 		userDB.setSurnames(userEntity.getSurnames());
-		System.out.println("Entro 1");
 		UserAccount userAccountDB = this.userAccountService.findOne(userDto.getIdUserAccount());
-		System.out.println("Entro 2");
 		userDB.setUserAccount(userAccountDB);
-		System.out.println("Entro 3");
 		validateUser(userDB);
 		this.userRepository.saveAndFlush(userDB);
 		return userDto;
@@ -114,9 +112,8 @@ public class UserService extends AbstractService {
 		ModelMapper mapper = new ModelMapper();
 		User userEntity = mapper.map(userDto, User.class);
 		User userDB = this.findOne(idUser); // User from DB
+		validatePermission(userDB);
 		UserAccount userAccountDB = this.userAccountService.findOne(userDB.getUserAccount().getId()); // UserAccount
-																										// from userDB
-																										// from DB
 		userDB.setGitUser(userEntity.getGitUser());
 		userDB.setName(userEntity.getName());
 		userDB.setNick(userEntity.getNick());
@@ -134,9 +131,16 @@ public class UserService extends AbstractService {
 
 	public Collection<UserForWorkspaceDto> findByNickStartsWith(FindByNickDto findByNickDto) {
 		List<User> users = this.userRepository.findByNickStartsWith(findByNickDto.getWord());
-		Team team = this.teamService.findOne(findByNickDto.getTeam());
-		Collection<Integer> idUsers = findByNickDto.getUsers();
-		idUsers.addAll(this.userRolService.findIdUsersByTeam(team));
+		Collection<Integer> idUsers = new ArrayList<>();
+		if(findByNickDto.getUsers()!= null) {
+			idUsers.addAll(findByNickDto.getUsers());
+		}
+		if(findByNickDto.getTeam() != null) {
+			Team team = this.teamService.findOne(findByNickDto.getTeam());
+			if(team != null) {
+				idUsers.addAll(this.userRolService.findIdUsersByTeam(team));
+			}
+		}
 		users = users.stream().filter(u -> !idUsers.contains(u.getId())).collect(Collectors.toList());
 		if (users.size() > 5) {
 			users = users.subList(0, 4);
@@ -150,6 +154,13 @@ public class UserService extends AbstractService {
 	private void validateUser(User user) {
 		if (user == null) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user is null");
+		}
+	}
+	
+	private void validatePermission(User user) {
+		User principal = this.getUserByPrincipal();
+		if(!user.equals(principal)) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user does not match the logged in user");
 		}
 	}
 
