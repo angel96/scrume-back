@@ -2,6 +2,7 @@ package com.spring.Service;
 
 import java.lang.reflect.Type;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
@@ -64,6 +65,7 @@ public class UserService extends AbstractService {
 		}.getType();
 		return mapper.map(users, listType);
 	}
+	
 
 	public User getUserByPrincipal() {
 		UserAccount userAccount = UserAccountService.getPrincipal();
@@ -129,9 +131,16 @@ public class UserService extends AbstractService {
 
 	public Collection<UserForWorkspaceDto> findByNickStartsWith(FindByNickDto findByNickDto) {
 		List<User> users = this.userRepository.findByNickStartsWith(findByNickDto.getWord());
-		Team team = this.teamService.findOne(findByNickDto.getTeam());
-		Collection<Integer> idUsers = findByNickDto.getUsers();
-		idUsers.addAll(this.userRolService.findIdUsersByTeam(team));
+		Collection<Integer> idUsers = new ArrayList<>();
+		if(findByNickDto.getUsers()!= null) {
+			idUsers.addAll(findByNickDto.getUsers());
+		}
+		if(findByNickDto.getTeam() != null) {
+			Team team = this.teamService.findOne(findByNickDto.getTeam());
+			if(team != null) {
+				idUsers.addAll(this.userRolService.findIdUsersByTeam(team));
+			}
+		}
 		users = users.stream().filter(u -> !idUsers.contains(u.getId())).collect(Collectors.toList());
 		if (users.size() > 5) {
 			users = users.subList(0, 4);

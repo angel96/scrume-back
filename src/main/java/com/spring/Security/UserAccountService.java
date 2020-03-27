@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.UserAccountDto;
+import com.spring.CustomObject.UsernameDto;
 import com.spring.Model.Sprint;
 import com.spring.Model.UserAccount;
 import com.spring.Utiles.Utiles;
@@ -39,6 +40,13 @@ public class UserAccountService implements UserDetailsService {
 				.orElseThrow(() -> new UsernameNotFoundException(username + " no encontrado"));
 	}
 	
+	public UsernameDto findUserByUsername(String username) {
+		UserAccount user = repository.findByUserName(username).orElseThrow(() -> new UsernameNotFoundException(username + " no encontrado"));
+		UsernameDto usernameDto = new UsernameDto();
+		usernameDto.setUsername(user.getUsername());
+		return usernameDto;
+	}
+	
 	public UserAccount findOne(Integer idUserAccount) {
 		return repository.findById(idUserAccount).orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested userAccount doesn´t exists"));
 	}
@@ -56,7 +64,10 @@ public class UserAccountService implements UserDetailsService {
 		userAccountDB.setLastPasswordChangeAt(LocalDateTime.now());
 		userAccountDB.setRoles(userAccountEntity.getRoles());
 		this.repository.save(userAccountDB);
-		return mapper.map(userAccountDB, UserAccountDto.class);
+		UserAccountDto userAccountDtoBack = mapper.map(userAccountDB, UserAccountDto.class);
+		userAccountDtoBack.setConfirmation(userAccountDto.getConfirmation());
+		validateConfirmation(userAccountDtoBack.getConfirmation());
+		return userAccountDtoBack;
 	}
 	
 	public UserAccountDto update(Integer idUserAccount, UserAccountDto userAccountDto) {
@@ -75,7 +86,10 @@ public class UserAccountService implements UserDetailsService {
 		}
 		userAccountDB.setCreatedAt(userAccountEntity.getCreatedAt());
 		this.repository.saveAndFlush(userAccountDB);
-		return mapper.map(userAccountDB, UserAccountDto.class);
+		UserAccountDto userAccountDtoBack = mapper.map(userAccountDB, UserAccountDto.class);
+		userAccountDtoBack.setConfirmation(userAccountDto.getConfirmation());
+		validateConfirmation(userAccountDtoBack.getConfirmation());
+		return userAccountDtoBack;
 	}
 
 	public static UserAccount getPrincipal() {
@@ -95,7 +109,7 @@ public class UserAccountService implements UserDetailsService {
 		return result;
 	}
 	
-	public String validationPassword(String s) {
+	private String validationPassword(String s) {
 		String pattern = "^.*(?=.{8,})(?=..*[0-9])(?=.*[a-z])(?=.*[A-Z]).*$";
 		if (s.matches(pattern) == true) {
 			return s;
@@ -104,12 +118,18 @@ public class UserAccountService implements UserDetailsService {
 		}
 	}
 	
-	public String validationUsername(String s) {
+	private String validationUsername(String s) {
 		String pattern = "^([a-zA-Z0-9_!#$%&*+/=?{|}~^.-]+@[a-zA-Z0-9.-]+)|([\\\\w\\\\s]+<[a-zA-Z0-9_!#$%&*+/=?{|}~^.-]+@[a-zA-Z0-9.-]+>+)|([0-9a-zA-Z]([-.\\\\\\\\w]*[0-9a-zA-Z])+@)|([\\\\w\\\\s]+<[a-zA-Z0-9_!#$%&*+/=?`{|}~^.-]+@+>)$";
 		if (s.matches(pattern) == true) {
 			return s;
 		} else {
 			throw new ResponseStatusException(HttpStatus.CONFLICT, "the username is not a valid email");
+		}
+	}
+	
+	private void validateConfirmation(Boolean confirmation) {
+		if (confirmation == false) {
+			throw new ResponseStatusException(HttpStatus.CONFLICT, "the user did not accept the terms and conditions");
 		}
 	}
 
