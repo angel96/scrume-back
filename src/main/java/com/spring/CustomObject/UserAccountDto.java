@@ -16,4 +16,6 @@ public class UserAccountDto {
 	private String password;
 	
 	private Set<Role> roles;
+	
+	private Boolean confirmation;
 }
