@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.UserAccountDto;
+import com.spring.CustomObject.UsernameDto;
 import com.spring.Model.Sprint;
 import com.spring.Model.UserAccount;
 import com.spring.Utiles.Utiles;
@@ -37,6 +38,13 @@ public class UserAccountService implements UserDetailsService {
 	public UserDetails loadUserByUsername(String username) {
 		return repository.findByUserName(username)
 				.orElseThrow(() -> new UsernameNotFoundException(username + " no encontrado"));
+	}
+	
+	public UsernameDto findUserByUsername(String username) {
+		UserAccount user = repository.findByUserName(username).orElseThrow(() -> new UsernameNotFoundException(username + " no encontrado"));
+		UsernameDto usernameDto = new UsernameDto();
+		usernameDto.setUsername(user.getUsername());
+		return usernameDto;
 	}
 	
 	public UserAccount findOne(Integer idUserAccount) {

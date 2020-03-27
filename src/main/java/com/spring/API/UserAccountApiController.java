@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.CustomObject.UserAccountDto;
 import com.spring.CustomObject.UserDto;
+import com.spring.CustomObject.UsernameDto;
 import com.spring.Security.UserAccountService;
 
 @RestController
@@ -57,6 +58,12 @@ public class UserAccountApiController extends AbstractApiController {
 		super.logger.info("GET /api/login/isAValidUser");
 		String auth = request.getHeader("authorization");
 		return service.isAValidUser(auth);
+	}
+	
+	@GetMapping("/loadUsername")
+	public UsernameDto findUsername(@RequestBody UsernameDto usernameDto) {
+		super.logger.info("GET /api/login/loadUsername");
+		return this.service.findUserByUsername(usernameDto.getUsername());
 	}
 
 }
