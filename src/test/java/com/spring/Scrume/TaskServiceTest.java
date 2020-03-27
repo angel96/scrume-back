@@ -61,7 +61,7 @@ public class TaskServiceTest extends AbstractTest {
 				// Caso positivo
 				{ "testuser1@gmail.com", super.entities().get("sprint1"), null },
 				// Caso negativo(no existe Sprint con dicho id)
-				{ "testuser1@gmail.com", Integer.MAX_VALUE, IllegalArgumentException.class } };
+				{ "testuser1@gmail.com", Integer.MAX_VALUE, ResponseStatusException.class } };
 		Stream.of(objectsFindBySprint)
 				.forEach(x -> driverFindBySprintTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}

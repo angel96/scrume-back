@@ -1,6 +1,7 @@
 package com.spring.Service;
 
 import java.lang.reflect.Type;
+import java.util.Collection;
 import java.util.List;
 
 import javax.transaction.Transactional;
@@ -132,6 +133,11 @@ public class ProjectService extends AbstractService {
 
 	private void validateEditPermission(Team team, User principal) {
 		if (!this.userRolService.isUserOnTeam(principal, team)) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"The user must belong to the team to edit the project");
+		}
+		Collection<Integer> membersTeam = this.userRolService.findIdUsersByTeam(team);
+		if (!membersTeam.contains(principal.getId())) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The user must belong to the team to edit the project");
 		}

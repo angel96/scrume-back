@@ -44,7 +44,8 @@ public class SprintService extends AbstractService {
 	private TaskService taskService;
 
 	public Sprint getOne(int id) {
-		return this.sprintRepository.findById(id).orElse(null);
+		return this.sprintRepository.findById(id).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested sprint not exists"));
 	}
 
 	public SprintStatisticsDto getStatistics(Integer idSprint) {
