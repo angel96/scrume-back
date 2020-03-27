@@ -65,6 +65,7 @@ public class UserService extends AbstractService {
 		}.getType();
 		return mapper.map(users, listType);
 	}
+	
 
 	public User getUserByPrincipal() {
 		UserAccount userAccount = UserAccountService.getPrincipal();
