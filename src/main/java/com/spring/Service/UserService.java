@@ -17,7 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.FindByNickDto;
-import com.spring.CustomObject.RegisterDto;
+import com.spring.CustomObject.UserDto;
 import com.spring.CustomObject.UserForWorkspaceDto;
 import com.spring.CustomObject.UserLoginDto;
 import com.spring.CustomObject.UserOfATeamByWorspaceDto;
@@ -34,16 +34,16 @@ public class UserService extends AbstractService {
 
 	@Autowired
 	private UserRepository userRepository;
-	
+
 	@Autowired
 	private UserAccountService userAccountService;
-	
+
 	@Autowired
 	private UserRolService userRolService;
 
 	@Autowired
 	private TeamService teamService;
-	
+
 	@Autowired
 	private WorkspaceService workspaceService;
 
@@ -59,78 +59,100 @@ public class UserService extends AbstractService {
 		Team team = workspace.getSprint().getProject().getTeam();
 		this.validateUserPrincipalTeam(principal, team);
 		Collection<User> users = this.userRolService.findUsersByTeam(team);
-		
+
 		Type listType = new TypeToken<Collection<UserOfATeamByWorspaceDto>>() {
 		}.getType();
-		return mapper.map(users, listType); 
+		return mapper.map(users, listType);
 	}
-	
 
 	public User getUserByPrincipal() {
 		UserAccount userAccount = UserAccountService.getPrincipal();
 		return this.userRepository.findByUserAccount(userAccount.getUsername()).orElse(null);
 	}
-	
+
 	public User findOne(int userId) {
-		return this.userRepository.findById(userId).orElse(null);
+		return this.userRepository.findById(userId).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested user doesn´t exists"));
 	}
-	
-	public RegisterDto get(Integer idUser) {
-		RegisterDto registerDto = new RegisterDto();
+
+	public UserDto get(Integer idUser) {
+		UserDto userDto = new UserDto();
 		User userDB = this.findOne(idUser);
-		UserAccount userAccountDB = this.userAccountService.findOne(userDB.getUserAccount().getId());
-		registerDto.setName(userDB.getName());
-		registerDto.setCreatedAt(userAccountDB.getCreatedAt());
-		registerDto.setGitUser(userDB.getGitUser());
-		registerDto.setLastPasswordChangeAt(userAccountDB.getLastPasswordChangeAt());
-		registerDto.setNick(userDB.getNick());
-		registerDto.setPassword(userAccountDB.getPassword());
-		registerDto.setPhoto(userDB.getPhoto());
-		registerDto.setSurnames(userDB.getSurnames());
-		registerDto.setUsername(userAccountDB.getUsername());
-		return registerDto;
+		validatePermission(userDB);
+		validateUser(userDB);
+		userDto.setId(userDB.getId());
+		userDto.setName(userDB.getName());
+		userDto.setGitUser(userDB.getGitUser());
+		userDto.setNick(userDB.getNick());
+		userDto.setPhoto(userDB.getPhoto());
+		userDto.setSurnames(userDB.getSurnames());
+		userDto.setIdUserAccount(userDB.getUserAccount().getId());
+		return userDto;
 	}
-	
-	public RegisterDto save(RegisterDto registerDto) {
-		UserAccount userAccountDB = new UserAccount(registerDto.getUsername(), registerDto.getPassword(), registerDto.getCreatedAt(), registerDto.getLastPasswordChangeAt(), null);
-		User userDB = new User(registerDto.getName(), registerDto.getSurnames(), registerDto.getNick(), registerDto.getGitUser(), registerDto.getPhoto());
-		UserAccount userAccountEntity = this.userAccountService.save(userAccountDB);
-		userDB.setUserAccount(userAccountEntity);
-		this.userRepository.save(userDB);
-		return registerDto;
-	}
-	
-	public RegisterDto update(RegisterDto registerDto, Integer idUser) {
-		User userDB = this.findOne(idUser); //User from DB
-		UserAccount userAccountDB = this.userAccountService.findOne(userDB.getUserAccount().getId()); //UserAccount from userDB from DB
-		UserAccount userAccountEntity = this.userAccountService.update(userAccountDB.getId(), registerDto);
-		userDB.setGitUser(registerDto.getGitUser());
-		userDB.setName(registerDto.getName());
-		userDB.setNick(registerDto.getNick());
-		userDB.setPhoto(registerDto.getPhoto());
-		userDB.setSurnames(registerDto.getSurnames());
-		userDB.setUserAccount(userAccountEntity);
+
+	public UserDto save(UserDto userDto) {
+		ModelMapper mapper = new ModelMapper();
+		User userEntity = mapper.map(userDto, User.class);
+		User userDB = new User();
+		userDB.setGitUser(userEntity.getGitUser());
+		userDB.setName(userEntity.getName());
+		userDB.setNick(userEntity.getNick());
+		userDB.setPhoto(userEntity.getPhoto());
+		userDB.setSurnames(userEntity.getSurnames());
+		UserAccount userAccountDB = this.userAccountService.findOne(userDto.getIdUserAccount());
+		userDB.setUserAccount(userAccountDB);
+		validateUser(userDB);
 		this.userRepository.saveAndFlush(userDB);
-		return registerDto;
+		return userDto;
 	}
-	
+
+	public UserDto update(UserDto userDto, Integer idUser) {
+		ModelMapper mapper = new ModelMapper();
+		User userEntity = mapper.map(userDto, User.class);
+		User userDB = this.findOne(idUser); // User from DB
+		validatePermission(userDB);
+		UserAccount userAccountDB = this.userAccountService.findOne(userDB.getUserAccount().getId()); // UserAccount
+		userDB.setGitUser(userEntity.getGitUser());
+		userDB.setName(userEntity.getName());
+		userDB.setNick(userEntity.getNick());
+		userDB.setPhoto(userEntity.getPhoto());
+		userDB.setSurnames(userEntity.getSurnames());
+		userDB.setUserAccount(userAccountDB);
+		validateUser(userDB);
+		this.userRepository.saveAndFlush(userDB);
+		return mapper.map(userDB, UserDto.class);
+	}
+
 	public void flush() {
 		userRepository.flush();
 	}
-	
-	public Collection<UserForWorkspaceDto> findByNickStartsWith(FindByNickDto findByNickDto){
+
+	public Collection<UserForWorkspaceDto> findByNickStartsWith(FindByNickDto findByNickDto) {
 		List<User> users = this.userRepository.findByNickStartsWith(findByNickDto.getWord());
 		Team team = this.teamService.findOne(findByNickDto.getTeam());
 		Collection<Integer> idUsers = findByNickDto.getUsers();
 		idUsers.addAll(this.userRolService.findIdUsersByTeam(team));
 		users = users.stream().filter(u -> !idUsers.contains(u.getId())).collect(Collectors.toList());
-		if(users.size() > 5) {
-			users = users.subList(0,  4);
+		if (users.size() > 5) {
+			users = users.subList(0, 4);
 		}
 		ModelMapper mapper = new ModelMapper();
 		Type listType = new TypeToken<List<UserForWorkspaceDto>>() {
 		}.getType();
 		return mapper.map(users, listType);
+	}
+
+	private void validateUser(User user) {
+		if (user == null) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user is null");
+		}
+	}
+	
+	private void validatePermission(User user) {
+		User principal = this.getUserByPrincipal();
+		if(!user.equals(principal)) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user does not match the logged in user");
+		}
 	}
 
 	private void validateUserPrincipalTeam(User principal, Team team) {
@@ -145,7 +167,7 @@ public class UserService extends AbstractService {
 	private void validateWorkspace(Workspace workspace) {
 		if (workspace == null) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The workspace is not in the database");
-		}	
+		}
 	}
 
 
@@ -167,5 +189,5 @@ public class UserService extends AbstractService {
 		}
 		return res;
 	}
-	
+
 }

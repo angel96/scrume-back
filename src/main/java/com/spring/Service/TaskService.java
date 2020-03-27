@@ -19,6 +19,7 @@ import com.spring.CustomObject.ListAllTaskByProjectDto;
 import com.spring.CustomObject.TaskDto;
 import com.spring.CustomObject.TaskEditDto;
 import com.spring.CustomObject.TaskListDto;
+import com.spring.CustomObject.UserForWorkspaceDto;
 import com.spring.Model.Estimation;
 import com.spring.Model.Project;
 import com.spring.Model.Sprint;
@@ -54,7 +55,8 @@ public class TaskService extends AbstractService {
 		Task task = this.findOne(id);
 		checkUserLogged(UserAccountService.getPrincipal());
 		checkUserOnTeam(UserAccountService.getPrincipal(), task.getProject().getTeam());
-		Set<Integer> users = task.getUsers().stream().map(User::getId).collect(Collectors.toSet());
+		Set<UserForWorkspaceDto> users = task.getUsers().stream().map(x -> new UserForWorkspaceDto(x.getId(),x.getNick())).collect(Collectors.toSet());
+//		Set<Integer> users = task.getUsers().stream().map(User::getId).collect(Collectors.toSet());
 		return new TaskDto(task.getTitle(), task.getDescription(), task.getPoints(), task.getProject().getId(), users,
 				task.getColumn() == null ? null : task.getColumn().getId());
 	}
