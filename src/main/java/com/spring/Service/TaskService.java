@@ -150,33 +150,17 @@ public class TaskService extends AbstractService {
 				null);
 	}
 
-	public TaskEditDto update(TaskEditDto task, int taskId) {
-		ModelMapper mapper = new ModelMapper();
-		Task taskEntity = mapper.map(task, Task.class);
-		Task taskDB = findOne(taskId);
-		Project project = this.projectService.findOne(taskDB.getProject().getId());
+	public TaskEditDto update(TaskEditDto taskDto, int taskId) {
+		Task taskEntity = this.findOne(taskId);
 		checkUserLogged(UserAccountService.getPrincipal());
-		checkUserOnTeam(UserAccountService.getPrincipal(), project.getTeam());
+		checkUserOnTeam(UserAccountService.getPrincipal(), taskEntity.getProject().getTeam());
+		
+		taskEntity.setDescription(taskDto.getDescription());
+		taskEntity.setTitle(taskDto.getTitle());
+		taskEntity.setUsers(taskDto.getUsers().stream().map(x -> this.userService.findOne(x)).collect(Collectors.toSet()));
+		Task taskDB = taskRepository.saveAndFlush(taskEntity);
 
-		if (taskEntity.getUsers() == null || taskEntity.getUsers().isEmpty()) {
-			Set<User> usuarios = new HashSet<>();
-			taskDB.setUsers(usuarios);
-		} else {
-			Set<User> usuarios = taskEntity.getUsers();
-			Set<User> userAux = usuarios.stream().filter(x -> x.getId() > 0)
-					.map(x -> this.userService.findOne(x.getId())).collect(Collectors.toSet());
-			usuarios.stream().forEach(x -> checkUserOnTeam(x.getUserAccount(), project.getTeam()));
-			taskDB.getUsers().retainAll(userAux);
-		}
-		taskDB.setDescription(taskEntity.getDescription());
-		taskDB.setProject(project);
-		taskDB.setTitle(taskEntity.getTitle());
-
-		taskDB = taskRepository.saveAndFlush(taskDB);
-		Set<Integer> users = taskDB.getUsers().stream().filter(x -> x.getId() < 0).map(User::getId)
-				.collect(Collectors.toSet());
-
-		return new TaskEditDto(taskDB.getId(), taskDB.getTitle(), taskDB.getDescription(), users);
+		return new TaskEditDto(taskDB.getId(), taskDB.getTitle(), taskDB.getDescription(), taskDto.getUsers());
 	}
 
 	public void delete(int taskId) {
