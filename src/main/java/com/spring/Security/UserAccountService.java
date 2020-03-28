@@ -21,7 +21,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.UserAccountDto;
 import com.spring.CustomObject.UsernameDto;
-import com.spring.Model.Sprint;
 import com.spring.Model.UserAccount;
 import com.spring.Utiles.Utiles;
 
@@ -133,8 +132,11 @@ public class UserAccountService implements UserDetailsService {
 		}
 	}
 
+	public Boolean isAValidEmail(String email) {
+		return this.repository.existsByUsername(email);
+	}
+	
 	public Boolean isAValidUser(String string) {
-		System.out.println(string);
 		Boolean res;
 		Base64.Decoder dec = Base64.getDecoder();
 
@@ -152,5 +154,6 @@ public class UserAccountService implements UserDetailsService {
 		}
 		return res;
 	}
+
 
 }
