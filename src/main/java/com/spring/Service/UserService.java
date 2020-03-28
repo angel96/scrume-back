@@ -121,7 +121,7 @@ public class UserService extends AbstractService {
 		userDB.setNick(userDto.getNick());
 		userDB.setPhoto(userDto.getPhoto());
 		userDB.setSurnames(userDto.getSurnames());
-		if(userDto.getPreviousPassword() != null) {
+		if(userDto.getPreviousPassword() != null && userDto.getPreviousPassword() != "") {
 			this.validatePassword(userAccountDB, userDto.getPreviousPassword(), userDto.getNewPassword());
 			String password = Utiles.encryptedPassword(userDto.getNewPassword());
 			userAccountDB.setPassword(password);
