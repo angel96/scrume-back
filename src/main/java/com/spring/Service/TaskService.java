@@ -157,7 +157,11 @@ public class TaskService extends AbstractService {
 		
 		taskEntity.setDescription(taskDto.getDescription());
 		taskEntity.setTitle(taskDto.getTitle());
-		taskEntity.setUsers(taskDto.getUsers().stream().map(x -> this.userService.findOne(x)).collect(Collectors.toSet()));
+		if(taskDto.getUsers() != null) {
+			taskEntity.setUsers(taskDto.getUsers().stream().map(x -> this.userService.findOne(x)).collect(Collectors.toSet()));
+		}else {
+			taskEntity.setUsers(new HashSet<>());
+		}
 		Task taskDB = taskRepository.saveAndFlush(taskEntity);
 
 		return new TaskEditDto(taskDB.getId(), taskDB.getTitle(), taskDB.getDescription(), taskDto.getUsers());
