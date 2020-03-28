@@ -60,7 +60,7 @@ public class TaskService extends AbstractService {
 		checkUserLogged(UserAccountService.getPrincipal());
 		checkUserOnTeam(UserAccountService.getPrincipal(), task.getProject().getTeam());
 		Set<UserForWorkspaceDto> users = task.getUsers().stream()
-				.map(x -> new UserForWorkspaceDto(x.getId(), x.getNick())).collect(Collectors.toSet());
+				.map(x -> new UserForWorkspaceDto(x.getId(), x.getNick(), x.getPhoto())).collect(Collectors.toSet());
 //		Set<Integer> users = task.getUsers().stream().map(User::getId).collect(Collectors.toSet());
 		return new TaskDto(task.getTitle(), task.getDescription(), task.getPoints(), task.getProject().getId(), users,
 				task.getColumn() == null ? null : task.getColumn().getId());
