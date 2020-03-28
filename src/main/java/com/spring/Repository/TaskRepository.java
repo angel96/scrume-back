@@ -2,6 +2,7 @@ package com.spring.Repository;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -15,6 +16,7 @@ import com.spring.Model.Workspace;
 
 @Repository
 public interface TaskRepository extends AbstractRepository<Task> {
+	
 
 	@Query("select u from User u where u.userAccount.id = ?1")
 	User findUserByUserAccount(int id);
@@ -43,4 +45,7 @@ public interface TaskRepository extends AbstractRepository<Task> {
 
 	@Query("select t from Task t join t.column c join c.workspace w where w = ?1")
 	Collection<Task> findByWorkspace(Workspace workspace);
+	
+	@Query("select t from Task t, User u where u.userAccount.id = ?1 and u member of t.users")
+	List<Task> findAllByUser(int id);
 }
