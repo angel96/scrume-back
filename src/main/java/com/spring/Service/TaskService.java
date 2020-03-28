@@ -17,11 +17,13 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.ColumnDto;
 import com.spring.CustomObject.ListAllTaskByProjectDto;
+import com.spring.CustomObject.ProjectIdNameDto;
 import com.spring.CustomObject.TaskDto;
 import com.spring.CustomObject.TaskEditDto;
 import com.spring.CustomObject.TaskListDto;
 import com.spring.CustomObject.UserForWorkspaceDto;
 import com.spring.CustomObject.UserProjectWorkspaceFromTaskDto;
+import com.spring.CustomObject.WorkspaceSprintListDto;
 import com.spring.Model.Estimation;
 import com.spring.Model.Project;
 import com.spring.Model.Sprint;
@@ -73,23 +75,22 @@ public class TaskService extends AbstractService {
 		return tasks;
 	}
 	
-	public List<UserProjectWorkspaceFromTaskDto> findTaskByUser(int accountId) {
-		checkUserLogged(UserAccountService.getPrincipal());
-		checkUser(this.taskRepository.findUserByUserAccount(UserAccountService.getPrincipal().getId()),
-				this.taskRepository.findUserByUserAccount(accountId));
-		List<Task> userTask = this.taskRepository.findAllByUser(accountId);
+	public List<UserProjectWorkspaceFromTaskDto> findTaskByUser() {
+		ModelMapper mapper = new ModelMapper();
+		User principal = this.userService.getUserByPrincipal();
+		this.checkUserLogged(principal.getUserAccount());
+		List<Task> userTask = this.taskRepository.findAllByUser(principal);
 		List<UserProjectWorkspaceFromTaskDto> res = new ArrayList<>();
-		UserProjectWorkspaceFromTaskDto dto;
 		for (Task task : userTask) {
-			dto = new UserProjectWorkspaceFromTaskDto();
-			dto.setTaskId(task.getId());
-			dto.setProjectId(task.getProject().getId());
-			dto.setProjectName(task.getProject().getName());
+			WorkspaceSprintListDto workspace = null;
 			if (task.getColumn() != null) {
-				dto.setWorkId(task.getColumn().getWorkspace().getId());
-				dto.setWorkName(task.getColumn().getWorkspace().getName());
+				workspace = mapper.map(task.getColumn().getWorkspace(), WorkspaceSprintListDto.class);
 			}
-			res.add(dto);
+			UserProjectWorkspaceFromTaskDto userProjectWorkspaceFromTaskDto = 
+			new UserProjectWorkspaceFromTaskDto(task.getId(), task.getTitle(),
+			new ProjectIdNameDto(task.getProject().getId(),
+			task.getProject().getName()), workspace);	
+			res.add(userProjectWorkspaceFromTaskDto);
 		}
 		return res;
 	}
@@ -218,12 +219,6 @@ public class TaskService extends AbstractService {
 	private void checkUserLogged(UserAccount user) {
 		if (user == null)
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You must be logged");
-	}
-	
-	private void checkUser(User logged, User requested) {
-		if (!logged.equals(requested))
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-					"The requested user must be equals to the actually logged user");
 	}
 	
 	public void flush() {
