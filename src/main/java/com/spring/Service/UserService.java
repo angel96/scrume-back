@@ -119,9 +119,11 @@ public class UserService extends AbstractService {
 		userDB.setNick(userDto.getNick());
 		userDB.setPhoto(userDto.getPhoto());
 		userDB.setSurnames(userDto.getSurnames());
-		this.validatePassword(userAccountDB, userDto.getPreviousPassword(), userDto.getNewPassword());
-		userAccountDB.setPassword(userDto.getNewPassword());
-		userAccountDB = this.userAccountService.save(userAccountDB);
+		if(userDto.getPreviousPassword() != null) {
+			this.validatePassword(userAccountDB, userDto.getPreviousPassword(), userDto.getNewPassword());
+			userAccountDB.setPassword(userDto.getNewPassword());
+			userAccountDB = this.userAccountService.save(userAccountDB);
+		}
 		userDB.setUserAccount(userAccountDB);
 		validateUser(userDB);
 		this.userRepository.saveAndFlush(userDB);
@@ -206,11 +208,11 @@ public class UserService extends AbstractService {
 
 	private void validatePassword(UserAccount userAccountDB, String previousPassword, String newPassword) {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
-		String pattern = "^([a-zA-Z0-9_!#$%&*+/=?{|}~^.-]+@[a-zA-Z0-9.-]+)|([\\\\w\\\\s]+<[a-zA-Z0-9_!#$%&*+/=?{|}~^.-]+@[a-zA-Z0-9.-]+>+)|([0-9a-zA-Z]([-.\\\\\\\\w]*[0-9a-zA-Z])+@)|([\\\\w\\\\s]+<[a-zA-Z0-9_!#$%&*+/=?`{|}~^.-]+@+>)$";
-		if (encoder.matches(previousPassword, userAccountDB.getPassword())) {
+		String pattern = "^.*(?=.{8,})(?=..*[0-9])(?=.*[a-z])(?=.*[A-Z]).*$";
+		if (!encoder.matches(previousPassword, userAccountDB.getPassword())) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The current password does not match the one stored in the database");
 		}
-		if (newPassword.matches(pattern) == false) {
+		if (!newPassword.matches(pattern)) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new password must have an uppercase, a lowercase, a number and at least 8 characters");
 		}
 		
