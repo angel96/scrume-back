@@ -14,6 +14,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -22,6 +23,7 @@ import com.spring.CustomObject.UserDto;
 import com.spring.CustomObject.UserForWorkspaceDto;
 import com.spring.CustomObject.UserLoginDto;
 import com.spring.CustomObject.UserOfATeamByWorspaceDto;
+import com.spring.CustomObject.UserUpdateDto;
 import com.spring.Model.Team;
 import com.spring.Model.User;
 import com.spring.Model.UserAccount;
@@ -108,22 +110,25 @@ public class UserService extends AbstractService {
 		return userDto;
 	}
 
-	public UserDto update(UserDto userDto, Integer idUser) {
-		ModelMapper mapper = new ModelMapper();
-		User userEntity = mapper.map(userDto, User.class);
-		User userDB = this.findOne(idUser); // User from DB
+	public UserDto update(UserUpdateDto userDto, Integer idUser) {
+		User userDB = this.findOne(idUser); 
 		validatePermission(userDB);
-		UserAccount userAccountDB = this.userAccountService.findOne(userDB.getUserAccount().getId()); // UserAccount
-		userDB.setGitUser(userEntity.getGitUser());
-		userDB.setName(userEntity.getName());
-		userDB.setNick(userEntity.getNick());
-		userDB.setPhoto(userEntity.getPhoto());
-		userDB.setSurnames(userEntity.getSurnames());
+		UserAccount userAccountDB = this.userAccountService.findOne(userDB.getUserAccount().getId());
+		userDB.setGitUser(userDto.getGitUser());
+		userDB.setName(userDto.getName());
+		userDB.setNick(userDto.getNick());
+		userDB.setPhoto(userDto.getPhoto());
+		userDB.setSurnames(userDto.getSurnames());
+		this.validatePassword(userAccountDB, userDto.getPreviousPassword(), userDto.getNewPassword());
+		userAccountDB.setPassword(userDto.getNewPassword());
+		userAccountDB = this.userAccountService.save(userAccountDB);
 		userDB.setUserAccount(userAccountDB);
 		validateUser(userDB);
 		this.userRepository.saveAndFlush(userDB);
-		return mapper.map(userDB, UserDto.class);
+		return new UserDto(userDB.getId(), userDB.getName(), userDB.getSurnames(), userDB.getNick(), userDB.getGitUser(), userDB.getPhoto(), userDB.getUserAccount().getId());
 	}
+
+
 
 	public void flush() {
 		userRepository.flush();
@@ -199,4 +204,15 @@ public class UserService extends AbstractService {
 		return res;
 	}
 
+	private void validatePassword(UserAccount userAccountDB, String previousPassword, String newPassword) {
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		String pattern = "^([a-zA-Z0-9_!#$%&*+/=?{|}~^.-]+@[a-zA-Z0-9.-]+)|([\\\\w\\\\s]+<[a-zA-Z0-9_!#$%&*+/=?{|}~^.-]+@[a-zA-Z0-9.-]+>+)|([0-9a-zA-Z]([-.\\\\\\\\w]*[0-9a-zA-Z])+@)|([\\\\w\\\\s]+<[a-zA-Z0-9_!#$%&*+/=?`{|}~^.-]+@+>)$";
+		if (encoder.matches(previousPassword, userAccountDB.getPassword())) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The current password does not match the one stored in the database");
+		}
+		if (newPassword.matches(pattern) == false) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new password must have an uppercase, a lowercase, a number and at least 8 characters");
+		}
+		
+	}
 }

@@ -12,4 +12,6 @@ import com.spring.Model.UserAccount;
 public interface UserAccountRepository extends JpaRepository<UserAccount, Integer> {
 	@Query("select ua from UserAccount ua where ua.username = ?1")
 	Optional<UserAccount> findByUserName(String username);
+
+	Boolean existsByUsername(String email);
 }

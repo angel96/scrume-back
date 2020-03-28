@@ -56,6 +56,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 	public void configure(WebSecurity web) {
 		
 		web.ignoring().antMatchers("/api/login/**");
+		web.ignoring().antMatchers("/api/box/**");
 		web.ignoring().antMatchers("/api/user/find-by-authorization");
 	}
 
