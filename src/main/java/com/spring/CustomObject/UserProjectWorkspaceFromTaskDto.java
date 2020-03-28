@@ -7,18 +7,15 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class TaskListDto {
+public class UserProjectWorkspaceFromTaskDto {
 
-	private Integer id;
+	private int id;
 	
 	private String title;
 
-	private String description;
-
-	private Integer finalPoints;
+	private ProjectIdNameDto project;
 	
-	private Integer estimatedPoints;
-
-	private ColumnDto column;
+	private WorkspaceSprintListDto workspace;
+	
 
 }

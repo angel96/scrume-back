@@ -1,6 +1,6 @@
 package com.spring.CustomObject;
 
-import java.util.Collection;
+import java.time.LocalDate;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,10 +9,13 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class InvitationRecipientDto {
- 		
-	private Integer id;
+public class UserLoginDto {
 	
-    private Boolean isAccepted;
+	private Integer idUser;
+	
+	private String username;
+		
+    private LocalDate endingBoxDate;
+
 	
 }

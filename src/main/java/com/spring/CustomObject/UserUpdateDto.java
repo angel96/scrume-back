@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserDto {
+public class UserUpdateDto {
 	private Integer id;
 	
 	private String name;
@@ -22,6 +22,9 @@ public class UserDto {
 
 	private String photo;
 	
-	private Integer idUserAccount;
+	private String previousPassword;
+	
+	private String newPassword;
+
 	
 }

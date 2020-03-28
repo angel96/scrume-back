@@ -12,8 +12,10 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jboss.logging.Logger;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.web.server.ResponseStatusException;
 
 public class Utiles {
 
@@ -28,6 +30,11 @@ public class Utiles {
 	public static String encryptedPassword(String s) {
 		PasswordEncoder encoder = new BCryptPasswordEncoder();
 		return encoder.encode(s);
+	}
+	
+	public static Boolean matchesPassword(String password, String encrypted) {
+		PasswordEncoder encoder = new BCryptPasswordEncoder();
+		return encoder.matches(password, encrypted); 
 	}
 
 	/**

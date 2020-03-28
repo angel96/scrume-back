@@ -15,6 +15,7 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.ToString;
 
 @Getter
 @Setter
@@ -23,6 +24,7 @@ import lombok.Setter;
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 @EqualsAndHashCode(callSuper = true)
+@ToString
 public class User extends Actor{
  
 	@NotBlank
@@ -47,8 +49,8 @@ public class User extends Actor{
 	@SafeHtml
     private String gitUser;
 	
-	@Lob
-	@Column(name = "photo", columnDefinition="BLOB")
+	@Column(name = "photo")
+	@SafeHtml
 	private String photo;
 	
 }

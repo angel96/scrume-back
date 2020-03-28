@@ -151,7 +151,7 @@
 						</goals>
 					</execution>
 				</executions>
-        	</plugin>
+			</plugin>
 		</plugins>
 		<resources>
 			<resource>
