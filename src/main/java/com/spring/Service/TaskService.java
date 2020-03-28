@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.transaction.Transactional;
 
@@ -16,6 +15,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.spring.CustomObject.ColumnDto;
 import com.spring.CustomObject.ListAllTaskByProjectDto;
 import com.spring.CustomObject.TaskDto;
 import com.spring.CustomObject.TaskEditDto;
@@ -118,11 +118,16 @@ public class TaskService extends AbstractService {
 			} else {
 				estimatedPoints = estimation.getPoints();
 			}
-		}
+			if(task.getColumn() != null) {
+				taskListDto.add(new TaskListDto(task.getId(), task.getTitle(), task.getDescription(), finalPoints, estimatedPoints, new ColumnDto(task.getColumn().getId(), null, null)));		
+			}else {
+				taskListDto.add(new TaskListDto(task.getId(), task.getTitle(), task.getDescription(), finalPoints, estimatedPoints, null));		
+			}
+			}
 		return new ListAllTaskByProjectDto(project.getId(), project.getName(), project.getTeam(),
 				project.getDescription(), taskListDto);
 	}
-
+	
 	public void saveEstimation(Task task, Integer points) {
 		task.setPoints(points);
 		this.taskRepository.save(task);
