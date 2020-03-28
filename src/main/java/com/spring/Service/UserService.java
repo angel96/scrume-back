@@ -2,6 +2,7 @@ package com.spring.Service;
 
 import java.lang.reflect.Type;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
@@ -30,6 +31,7 @@ import com.spring.Model.UserAccount;
 import com.spring.Model.Workspace;
 import com.spring.Repository.UserRepository;
 import com.spring.Security.UserAccountService;
+import com.spring.Utiles.Utiles;
 
 @Service
 @Transactional
@@ -121,7 +123,11 @@ public class UserService extends AbstractService {
 		userDB.setSurnames(userDto.getSurnames());
 		if(userDto.getPreviousPassword() != null) {
 			this.validatePassword(userAccountDB, userDto.getPreviousPassword(), userDto.getNewPassword());
-			userAccountDB.setPassword(userDto.getNewPassword());
+			String password = Utiles.encryptedPassword(userDto.getNewPassword());
+			userAccountDB.setPassword(password);
+			userAccountDB.setCreatedAt(LocalDateTime.now());
+			userAccountDB.setLastPasswordChangeAt(LocalDateTime.now());
+			userAccountDB.setRoles(userAccountDB.getRoles());
 			userAccountDB = this.userAccountService.save(userAccountDB);
 		}
 		userDB.setUserAccount(userAccountDB);
