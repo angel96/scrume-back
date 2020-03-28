@@ -155,5 +155,9 @@ public class UserAccountService implements UserDetailsService {
 		return res;
 	}
 
+	public UserAccount save(UserAccount userAccount) {
+		return this.repository.save(userAccount);
+	}
+
 
 }
