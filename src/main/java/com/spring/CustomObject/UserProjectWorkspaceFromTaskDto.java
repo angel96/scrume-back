@@ -8,11 +8,14 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserProjectWorkspaceFromTaskDto {
-	private int taskId;
-	private int projectId;
-	private String projectName;
-	private Integer workId;
-	private String workName;
+
+	private int id;
+	
+	private String title;
+
+	private ProjectIdNameDto project;
+	
+	private WorkspaceSprintListDto workspace;
 	
 
 }

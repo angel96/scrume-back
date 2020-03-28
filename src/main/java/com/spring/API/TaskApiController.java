@@ -30,10 +30,10 @@ public class TaskApiController extends AbstractApiController {
 	@Autowired
 	private EstimationService estimationService;
 	
-	@GetMapping("user/{id}")
-	public List<UserProjectWorkspaceFromTaskDto> findTaskByUser(@PathVariable int id){
-		super.logger.info("GET /api/task/user/" + id);
-		return this.taskService.findTaskByUser(id);
+	@GetMapping("user")
+	public List<UserProjectWorkspaceFromTaskDto> findTaskByUser(){
+		super.logger.info("GET /api/task/user");
+		return this.taskService.findTaskByUser();
 	}
 	
 	@GetMapping("/{idTask}")

@@ -156,19 +156,17 @@ public class TaskServiceTest extends AbstractTest {
 		// Param 2 -> Value to modify
 		// Param 3 -> Expected Exception;
 		Object[][] objectsFind = {
-				// Caso negativo(el usuario no coincide con el id de la user account)
-				{ "testuser1@gmail.com", 4, ResponseStatusException.class },
 				// Caso positivo
-				{ "testuser1@gmail.com", super.entities().get("account1"), null }, };
-		Stream.of(objectsFind).forEach(x -> driverFindByUserTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
+				{ "testuser1@gmail.com", null }};
+		Stream.of(objectsFind).forEach(x -> driverFindByUserTest((String) x[0], (Class<?>) x[1]));
 	}
 	
-	protected void driverFindByUserTest(String user, Integer entity, Class<?> expected) {
+	protected void driverFindByUserTest(String user, Class<?> expected) {
 		Class<?> caught = null;
 
 		try {
 			super.authenticateOrUnauthenticate(user);
-			this.taskService.findTaskByUser(entity);
+			this.taskService.findTaskByUser();
 			super.authenticateOrUnauthenticate(null);
 		} catch (Exception oops) {
 			caught = oops.getClass();
