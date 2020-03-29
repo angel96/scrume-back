@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import javax.transaction.Transactional;
 
@@ -16,12 +15,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.spring.CustomObject.ColumnDto;
 import com.spring.CustomObject.ListAllTaskByProjectDto;
+import com.spring.CustomObject.ProjectIdNameDto;
 import com.spring.CustomObject.TaskDto;
 import com.spring.CustomObject.TaskEditDto;
 import com.spring.CustomObject.TaskListDto;
 import com.spring.CustomObject.UserForWorkspaceDto;
 import com.spring.CustomObject.UserProjectWorkspaceFromTaskDto;
+import com.spring.CustomObject.WorkspaceSprintListDto;
 import com.spring.Model.Estimation;
 import com.spring.Model.Project;
 import com.spring.Model.Sprint;
@@ -58,7 +60,7 @@ public class TaskService extends AbstractService {
 		checkUserLogged(UserAccountService.getPrincipal());
 		checkUserOnTeam(UserAccountService.getPrincipal(), task.getProject().getTeam());
 		Set<UserForWorkspaceDto> users = task.getUsers().stream()
-				.map(x -> new UserForWorkspaceDto(x.getId(), x.getNick())).collect(Collectors.toSet());
+				.map(x -> new UserForWorkspaceDto(x.getId(), x.getNick(), x.getPhoto())).collect(Collectors.toSet());
 //		Set<Integer> users = task.getUsers().stream().map(User::getId).collect(Collectors.toSet());
 		return new TaskDto(task.getTitle(), task.getDescription(), task.getPoints(), task.getProject().getId(), users,
 				task.getColumn() == null ? null : task.getColumn().getId());
@@ -73,23 +75,22 @@ public class TaskService extends AbstractService {
 		return tasks;
 	}
 	
-	public List<UserProjectWorkspaceFromTaskDto> findTaskByUser(int accountId) {
-		checkUserLogged(UserAccountService.getPrincipal());
-		checkUser(this.taskRepository.findUserByUserAccount(UserAccountService.getPrincipal().getId()),
-				this.taskRepository.findUserByUserAccount(accountId));
-		List<Task> userTask = this.taskRepository.findAllByUser(accountId);
+	public List<UserProjectWorkspaceFromTaskDto> findTaskByUser() {
+		ModelMapper mapper = new ModelMapper();
+		User principal = this.userService.getUserByPrincipal();
+		this.checkUserLogged(principal.getUserAccount());
+		List<Task> userTask = this.taskRepository.findAllByUser(principal);
 		List<UserProjectWorkspaceFromTaskDto> res = new ArrayList<>();
-		UserProjectWorkspaceFromTaskDto dto;
 		for (Task task : userTask) {
-			dto = new UserProjectWorkspaceFromTaskDto();
-			dto.setTaskId(task.getId());
-			dto.setProjectId(task.getProject().getId());
-			dto.setProjectName(task.getProject().getName());
+			WorkspaceSprintListDto workspace = null;
 			if (task.getColumn() != null) {
-				dto.setWorkId(task.getColumn().getWorkspace().getId());
-				dto.setWorkName(task.getColumn().getWorkspace().getName());
+				workspace = mapper.map(task.getColumn().getWorkspace(), WorkspaceSprintListDto.class);
 			}
-			res.add(dto);
+			UserProjectWorkspaceFromTaskDto userProjectWorkspaceFromTaskDto = 
+			new UserProjectWorkspaceFromTaskDto(task.getId(), task.getTitle(),
+			new ProjectIdNameDto(task.getProject().getId(),
+			task.getProject().getName()), workspace);	
+			res.add(userProjectWorkspaceFromTaskDto);
 		}
 		return res;
 	}
@@ -118,11 +119,16 @@ public class TaskService extends AbstractService {
 			} else {
 				estimatedPoints = estimation.getPoints();
 			}
-		}
+			if(task.getColumn() != null) {
+				taskListDto.add(new TaskListDto(task.getId(), task.getTitle(), task.getDescription(), finalPoints, estimatedPoints, new ColumnDto(task.getColumn().getId(), null, null)));		
+			}else {
+				taskListDto.add(new TaskListDto(task.getId(), task.getTitle(), task.getDescription(), finalPoints, estimatedPoints, null));		
+			}
+			}
 		return new ListAllTaskByProjectDto(project.getId(), project.getName(), project.getTeam(),
 				project.getDescription(), taskListDto);
 	}
-
+	
 	public void saveEstimation(Task task, Integer points) {
 		task.setPoints(points);
 		this.taskRepository.save(task);
@@ -144,33 +150,21 @@ public class TaskService extends AbstractService {
 				null);
 	}
 
-	public TaskEditDto update(TaskEditDto task, int taskId) {
-		ModelMapper mapper = new ModelMapper();
-		Task taskEntity = mapper.map(task, Task.class);
-		Task taskDB = findOne(taskId);
-		Project project = this.projectService.findOne(taskDB.getProject().getId());
+	public TaskEditDto update(TaskEditDto taskDto, int taskId) {
+		Task taskEntity = this.findOne(taskId);
 		checkUserLogged(UserAccountService.getPrincipal());
-		checkUserOnTeam(UserAccountService.getPrincipal(), project.getTeam());
-
-		if (taskEntity.getUsers() == null || taskEntity.getUsers().isEmpty()) {
-			Set<User> usuarios = new HashSet<>();
-			taskDB.setUsers(usuarios);
-		} else {
-			Set<User> usuarios = taskEntity.getUsers();
-			Set<User> userAux = usuarios.stream().filter(x -> x.getId() > 0)
-					.map(x -> this.userService.findOne(x.getId())).collect(Collectors.toSet());
-			usuarios.stream().forEach(x -> checkUserOnTeam(x.getUserAccount(), project.getTeam()));
-			taskDB.getUsers().retainAll(userAux);
+		checkUserOnTeam(UserAccountService.getPrincipal(), taskEntity.getProject().getTeam());
+		
+		taskEntity.setDescription(taskDto.getDescription());
+		taskEntity.setTitle(taskDto.getTitle());
+		if(taskDto.getUsers() != null) {
+			taskEntity.setUsers(taskDto.getUsers().stream().map(x -> this.userService.findOne(x)).collect(Collectors.toSet()));
+		}else {
+			taskEntity.setUsers(new HashSet<>());
 		}
-		taskDB.setDescription(taskEntity.getDescription());
-		taskDB.setProject(project);
-		taskDB.setTitle(taskEntity.getTitle());
+		Task taskDB = taskRepository.saveAndFlush(taskEntity);
 
-		taskDB = taskRepository.saveAndFlush(taskDB);
-		Set<Integer> users = taskDB.getUsers().stream().filter(x -> x.getId() < 0).map(User::getId)
-				.collect(Collectors.toSet());
-
-		return new TaskEditDto(taskDB.getId(), taskDB.getTitle(), taskDB.getDescription(), users);
+		return new TaskEditDto(taskDB.getId(), taskDB.getTitle(), taskDB.getDescription(), taskDto.getUsers());
 	}
 
 	public void delete(int taskId) {
@@ -213,12 +207,6 @@ public class TaskService extends AbstractService {
 	private void checkUserLogged(UserAccount user) {
 		if (user == null)
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You must be logged");
-	}
-	
-	private void checkUser(User logged, User requested) {
-		if (!logged.equals(requested))
-			throw new ResponseStatusException(HttpStatus.FORBIDDEN,
-					"The requested user must be equals to the actually logged user");
 	}
 	
 	public void flush() {

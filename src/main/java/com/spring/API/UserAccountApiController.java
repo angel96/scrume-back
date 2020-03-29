@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.CustomObject.UserAccountDto;
-import com.spring.CustomObject.UserDto;
 import com.spring.CustomObject.UsernameDto;
 import com.spring.Security.UserAccountService;
 
@@ -60,10 +59,11 @@ public class UserAccountApiController extends AbstractApiController {
 		return service.isAValidUser(auth);
 	}
 	
-	@GetMapping("/loadUsername")
-	public UsernameDto findUsername(@RequestBody UsernameDto usernameDto) {
-		super.logger.info("GET /api/login/loadUsername");
-		return this.service.findUserByUsername(usernameDto.getUsername());
+	@PostMapping("/isAValidEmail")
+	@CrossOrigin(origins = "*", methods = { RequestMethod.POST })
+	public Boolean isAValidEmail(@RequestBody UsernameDto usernameDto) {
+		super.logger.info("POST /api/login/isAValidEmail");
+		return !this.service.isAValidEmail(usernameDto.getUsername());
 	}
 
 }
