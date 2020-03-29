@@ -35,7 +35,7 @@ public class DocumentService extends AbstractService {
 
 	public Document findOne(int id) {
 		return this.documentRepo.findById(id).orElseThrow(
-				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested documetn not exists"));
+				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested document not exists"));
 	}
 	
 	public DocumentDto findOneDto(int id) {

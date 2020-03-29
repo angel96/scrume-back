@@ -16,7 +16,7 @@ public class TaskDto {
 	private Integer points;
 	private Integer project;
 
-	private Set<Integer> users;
+	private Set<UserForWorkspaceDto> users;
 
 	private Integer column;
 
