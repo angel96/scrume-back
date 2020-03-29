@@ -17,6 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.CustomObject.UserAccountDto;
 import com.spring.CustomObject.UsernameDto;
+import com.spring.JWT.JwtRequest;
+import com.spring.JWT.JwtResponse;
+import com.spring.JWT.JwtUserAccountService;
 import com.spring.Security.UserAccountService;
 
 @RestController
@@ -26,6 +29,14 @@ public class UserAccountApiController extends AbstractApiController {
 	@Autowired
 	private UserAccountService service;
 
+	@Autowired
+	private JwtUserAccountService serviceJwt;
+	
+	@PostMapping("/authenticate")
+	public JwtResponse authenticate(@RequestBody JwtRequest request) {
+		return serviceJwt.generateToken(request);
+	}
+	
 	@GetMapping("/roles")
 	public Role[] findAllRoles() {
 		super.logger.info("GET /api/login/roles");
