@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.spring.CustomObject.UserDto;
 import com.spring.CustomObject.UserLoginDto;
 import com.spring.CustomObject.UserOfATeamByWorspaceDto;
+import com.spring.CustomObject.UserUpdateDto;
 import com.spring.Service.UserService;
 
 @RestController
@@ -52,9 +53,14 @@ public class UserApiController extends AbstractApiController {
 	}
 	
 	@PutMapping("/{idUser}")
-	public UserDto update(@PathVariable Integer idUser, @RequestBody UserDto userDto) {
+	public UserDto update(@PathVariable Integer idUser, @RequestBody UserUpdateDto userDto) {
 		super.logger.info("UPDATE /api/user");
 		return this.userService.update(userDto, idUser);
 	}
-
+	
+	@GetMapping("/anonymize")
+	public void anonymize() {
+		super.logger.info("GET /api/user/anonymize");
+		this.userService.anonymize();
+	}
 }

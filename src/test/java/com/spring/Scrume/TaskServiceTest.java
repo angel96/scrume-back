@@ -61,7 +61,7 @@ public class TaskServiceTest extends AbstractTest {
 				// Caso positivo
 				{ "testuser1@gmail.com", super.entities().get("sprint1"), null },
 				// Caso negativo(no existe Sprint con dicho id)
-				{ "testuser1@gmail.com", Integer.MAX_VALUE, IllegalArgumentException.class } };
+				{ "testuser1@gmail.com", Integer.MAX_VALUE, ResponseStatusException.class } };
 		Stream.of(objectsFindBySprint)
 				.forEach(x -> driverFindBySprintTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}
@@ -148,6 +148,33 @@ public class TaskServiceTest extends AbstractTest {
 		Stream.of(objectsSaveEstimation)
 				.forEach(x -> driverSaveEstimationTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}
+	
+	@Test
+	public void findByuserTest() throws Exception {
+		// Param 0 -> User to make the call
+		// Param 1 -> Entity
+		// Param 2 -> Value to modify
+		// Param 3 -> Expected Exception;
+		Object[][] objectsFind = {
+				// Caso positivo
+				{ "testuser1@gmail.com", null }};
+		Stream.of(objectsFind).forEach(x -> driverFindByUserTest((String) x[0], (Class<?>) x[1]));
+	}
+	
+	protected void driverFindByUserTest(String user, Class<?> expected) {
+		Class<?> caught = null;
+
+		try {
+			super.authenticateOrUnauthenticate(user);
+			this.taskService.findTaskByUser();
+			super.authenticateOrUnauthenticate(null);
+		} catch (Exception oops) {
+			caught = oops.getClass();
+
+		}
+		super.checkExceptions(expected, caught);
+	}
+
 
 	protected void driverFindTest(String user, Integer entity, Class<?> expected) {
 		Class<?> caught = null;
@@ -232,7 +259,6 @@ public class TaskServiceTest extends AbstractTest {
 
 		try {
 			super.authenticateOrUnauthenticate(user);
-			System.out.println(user);
 			this.taskService.delete(entity);
 			this.taskService.flush();
 			super.authenticateOrUnauthenticate(null);
@@ -248,7 +274,6 @@ public class TaskServiceTest extends AbstractTest {
 
 		try {
 			super.authenticateOrUnauthenticate(user);
-			System.out.println(user);
 			this.taskService.getAllTasksByProject(entity);
 			super.authenticateOrUnauthenticate(null);
 		} catch (Exception oops) {

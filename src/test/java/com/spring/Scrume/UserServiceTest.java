@@ -3,10 +3,11 @@ package com.spring.Scrume;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
+
 import com.spring.CustomObject.UserDto;
+import com.spring.CustomObject.UserUpdateDto;
 import com.spring.Model.User;
 import com.spring.Service.UserService;
 
@@ -27,7 +28,9 @@ public class UserServiceTest extends AbstractTest {
 	protected void driverTestGet(Integer idUser, Class<?> expected) {
 		Class<?> caught = null;
 		try {
+			super.authenticateOrUnauthenticate("testuser1@gmail.com");
 			this.userService.get(idUser);
+			super.authenticateOrUnauthenticate(null);
 		} catch (Exception oops) {
 			caught = oops.getClass();
 		}
@@ -65,7 +68,7 @@ public class UserServiceTest extends AbstractTest {
 	@Test
 	public void userTestUpdate() throws Exception {
 		Object[][] objects = {
-			{ super.entities().get("user1"), "Prueba Surname", null}};
+			{ super.entities().get("user2"), "Prueba Surname", null}};
 		
 		Stream.of(objects).forEach(x -> driverTestUpdate((Integer) x[0], (String) x[1], (Class<?>) x[2]));
 	
@@ -74,11 +77,12 @@ public class UserServiceTest extends AbstractTest {
 	protected void driverTestUpdate(Integer idUser, String surname, Class<?> expected) {
 		Class<?> caught = null;
 		try {
+			super.authenticateOrUnauthenticate("testuser2@gmail.com");
 			User userDB = this.userService.findOne(idUser);
-			ModelMapper mapper = new ModelMapper();
-			UserDto userDto = mapper.map(userDB, UserDto.class);
+			UserUpdateDto userDto = new UserUpdateDto(userDB.getId(), userDB.getName(), userDB.getSurnames(), userDB.getNick(), userDB.getGitUser(), userDB.getPhoto(), null ,null);
 			userDto.setSurnames(surname);
 			this.userService.update(userDto, idUser);
+			super.authenticateOrUnauthenticate(null);
 		} catch (Exception oops) {
 			caught = oops.getClass();
 		}
