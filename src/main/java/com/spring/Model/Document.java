@@ -1,11 +1,11 @@
 package com.spring.Model;
 
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -41,7 +41,7 @@ public class Document extends BaseEntity {
 	@JsonProperty
 	@SafeHtml
 	@NotBlank
-	@Column(length = 100000)
+	@Lob
 	private String content;
 	
 	@ManyToOne
