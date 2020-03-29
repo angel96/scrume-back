@@ -2,8 +2,6 @@ package com.spring.CustomObject;
 
 import java.time.LocalDate;
 
-import javax.validation.constraints.NotBlank;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
