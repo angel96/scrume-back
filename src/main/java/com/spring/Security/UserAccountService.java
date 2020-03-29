@@ -73,8 +73,6 @@ public class UserAccountService implements UserDetailsService {
 		userAccountDB = this.repository.save(userAccountDB);
 
 		UserAccountDto userAccountDtoBack = mapper.map(userAccountDB, UserAccountDto.class);
-		userAccountDtoBack.setConfirmation(userAccountDto.getConfirmation());
-		validateConfirmation(userAccountDtoBack.getConfirmation());
 
 		PaymentEditDto payment = new PaymentEditDto(0, userAccountDto.getBox(), userAccountDto.getExpiredDate(),
 				userAccountDto.getOrderId(), userAccountDto.getPayerId());
@@ -91,7 +89,7 @@ public class UserAccountService implements UserDetailsService {
 		this.validationUsername(userAccountEntity.getUsername());
 		userAccountDB.setUsername(userAccountEntity.getUsername());
 		this.validationPassword(userAccountEntity.getPassword());
-		if (Utiles.matchesPassword(userAccountEntity.getPassword(), userAccountEntity.getPassword()) == false) {
+		if (!Utiles.matchesPassword(userAccountEntity.getPassword(), userAccountEntity.getPassword())) {
 			userAccountDB.setPassword(Utiles.encryptedPassword(userAccountEntity.getPassword()));
 			userAccountDB.setLastPasswordChangeAt(LocalDateTime.now());
 		} else {
@@ -101,8 +99,6 @@ public class UserAccountService implements UserDetailsService {
 		userAccountDB.setCreatedAt(userAccountEntity.getCreatedAt());
 		this.repository.saveAndFlush(userAccountDB);
 		UserAccountDto userAccountDtoBack = mapper.map(userAccountDB, UserAccountDto.class);
-		userAccountDtoBack.setConfirmation(userAccountDto.getConfirmation());
-		validateConfirmation(userAccountDtoBack.getConfirmation());
 		return userAccountDtoBack;
 	}
 
@@ -125,7 +121,7 @@ public class UserAccountService implements UserDetailsService {
 
 	private String validationPassword(String s) {
 		String pattern = "^.*(?=.{8,})(?=..*[0-9])(?=.*[a-z])(?=.*[A-Z]).*$";
-		if (s.matches(pattern) == true) {
+		if (s.matches(pattern)) {
 			return s;
 		} else {
 			throw new ResponseStatusException(HttpStatus.CONFLICT,
@@ -135,16 +131,10 @@ public class UserAccountService implements UserDetailsService {
 
 	private String validationUsername(String s) {
 		String pattern = "^([a-zA-Z0-9_!#$%&*+/=?{|}~^.-]+@[a-zA-Z0-9.-]+)|([\\\\w\\\\s]+<[a-zA-Z0-9_!#$%&*+/=?{|}~^.-]+@[a-zA-Z0-9.-]+>+)|([0-9a-zA-Z]([-.\\\\\\\\w]*[0-9a-zA-Z])+@)|([\\\\w\\\\s]+<[a-zA-Z0-9_!#$%&*+/=?`{|}~^.-]+@+>)$";
-		if (s.matches(pattern) == true) {
+		if (s.matches(pattern)) {
 			return s;
 		} else {
 			throw new ResponseStatusException(HttpStatus.CONFLICT, "the username is not a valid email");
-		}
-	}
-
-	private void validateConfirmation(Boolean confirmation) {
-		if (confirmation == false) {
-			throw new ResponseStatusException(HttpStatus.CONFLICT, "the user did not accept the terms and conditions");
 		}
 	}
 
