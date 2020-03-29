@@ -21,12 +21,16 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.spring.CustomObject.AllDataDto;
 import com.spring.CustomObject.FindByNickDto;
+import com.spring.CustomObject.TaskListDto;
+import com.spring.CustomObject.TaskToAllDataDto;
 import com.spring.CustomObject.UserDto;
 import com.spring.CustomObject.UserLoginDto;
 import com.spring.CustomObject.UserOfATeamByWorspaceDto;
 import com.spring.CustomObject.UserUpdateDto;
 import com.spring.CustomObject.UserWithNickDto;
+import com.spring.Model.Task;
 import com.spring.Model.Team;
 import com.spring.Model.User;
 import com.spring.Model.UserAccount;
@@ -60,6 +64,8 @@ public class UserService extends AbstractService {
 	@Autowired
 	private PaymentService paymentService;
 	
+	@Autowired
+	private DocumentService documentService;
 	
 	public Collection<UserOfATeamByWorspaceDto> listUsersOfATeamByWorkspace(Integer idWorkspace) {
 		ModelMapper mapper = new ModelMapper();
@@ -173,6 +179,7 @@ public class UserService extends AbstractService {
 		String anonymous = "anonymous";
 		SecureRandom random = new SecureRandom();
 		User principal = this.getUserByPrincipal();
+		this.validateUser(principal);
 		principal.setGitUser(anonymous);
 		principal.setName(anonymous);
 		String nickAnonymous = new BigInteger(130, random).toString(32);
@@ -249,6 +256,22 @@ public class UserService extends AbstractService {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new password must have an uppercase, a lowercase, a number and at least 8 characters");
 		}
 		
+	}
+
+
+	public AllDataDto getAllMyData() {
+		User principal = this.getUserByPrincipal();
+		this.validateUser(principal);
+		Collection<Task> tasks = this.taskService.findAllTaskByUser(principal);
+		Collection<TaskToAllDataDto> tasksToAllDataDto = new ArrayList<>();
+		for (Task task : tasks) {
+			TaskToAllDataDto taskAllDataDto = new TaskToAllDataDto(task.getTitle(), task.getDescription(), task.getPoints());
+			tasksToAllDataDto.add(taskAllDataDto);
+		}
+				
+		Collection<Team> teams = this.userRolService.findAllByUser(principal);
+		Collection<String> teamsName = teams.stream().map(x -> x.getName()).collect(Collectors.toList());
+		return new AllDataDto(principal.getUserAccount().getUsername(), principal.getName(), principal.getSurnames(), principal.getNick(), principal.getGitUser(), principal.getPhoto(), tasksToAllDataDto, teamsName);
 	}
 
 

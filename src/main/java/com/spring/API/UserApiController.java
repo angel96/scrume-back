@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.spring.CustomObject.AllDataDto;
 import com.spring.CustomObject.UserDto;
 import com.spring.CustomObject.UserLoginDto;
 import com.spring.CustomObject.UserOfATeamByWorspaceDto;
@@ -62,5 +63,11 @@ public class UserApiController extends AbstractApiController {
 	public void anonymize() {
 		super.logger.info("GET /api/user/anonymize");
 		this.userService.anonymize();
+	}
+	
+	@GetMapping("/all-my-data")
+	public AllDataDto getAllMyData() {
+		super.logger.info("GET /api/user/all-my-data");
+		return this.userService.getAllMyData();
 	}
 }

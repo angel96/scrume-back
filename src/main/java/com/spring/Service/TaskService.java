@@ -185,6 +185,9 @@ public class TaskService extends AbstractService {
 
 	}
 
+	public Collection<Task> findAllTaskByUser(User user) {
+		return this.taskRepository.findAllByUser(user);
+	}
 
 
 	private void validateProject(Project project) {
@@ -218,6 +221,7 @@ public class TaskService extends AbstractService {
 			this.taskRepository.saveAndFlush(task);
 		}
 	}
+
 	
 	
 	
