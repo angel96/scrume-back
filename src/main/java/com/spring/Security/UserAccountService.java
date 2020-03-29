@@ -156,7 +156,7 @@ public class UserAccountService implements UserDetailsService {
 	}
 
 	public UserAccount save(UserAccount userAccount) {
-		return this.repository.save(userAccount);
+		return this.repository.saveAndFlush(userAccount);
 	}
 
 

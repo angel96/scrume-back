@@ -115,8 +115,8 @@ public class PopulatorDatabase implements CommandLineRunner {
 		SortedMap<String, Integer> entities = new TreeMap<>();
 		Utiles.escribeFichero(entities, properties);
 
-		estimationRepository.deleteAll();
 		historyTaskRepository.deleteAll();
+		estimationRepository.deleteAll();
 		paymentRepository.deleteAll();
 		invitationRepository.deleteAll();
 		taskRepository.deleteAll();

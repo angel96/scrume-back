@@ -1,6 +1,8 @@
 package com.spring.Service;
 
 import java.lang.reflect.Type;
+import java.math.BigInteger;
+import java.security.SecureRandom;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -21,10 +23,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.FindByNickDto;
 import com.spring.CustomObject.UserDto;
-import com.spring.CustomObject.UserForWorkspaceDto;
 import com.spring.CustomObject.UserLoginDto;
 import com.spring.CustomObject.UserOfATeamByWorspaceDto;
 import com.spring.CustomObject.UserUpdateDto;
+import com.spring.CustomObject.UserWithNickDto;
 import com.spring.Model.Team;
 import com.spring.Model.User;
 import com.spring.Model.UserAccount;
@@ -48,6 +50,9 @@ public class UserService extends AbstractService {
 
 	@Autowired
 	private TeamService teamService;
+	
+	@Autowired
+	private TaskService taskService;
 
 	@Autowired
 	private WorkspaceService workspaceService;
@@ -142,7 +147,7 @@ public class UserService extends AbstractService {
 		userRepository.flush();
 	}
 
-	public Collection<UserForWorkspaceDto> findByNickStartsWith(FindByNickDto findByNickDto) {
+	public Collection<UserWithNickDto> findByNickStartsWith(FindByNickDto findByNickDto) {
 		List<User> users = this.userRepository.findByNickStartsWith(findByNickDto.getWord());
 		Collection<Integer> idUsers = new ArrayList<>();
 		if(findByNickDto.getUsers()!= null) {
@@ -159,11 +164,33 @@ public class UserService extends AbstractService {
 			users = users.subList(0, 4);
 		}
 		ModelMapper mapper = new ModelMapper();
-		Type listType = new TypeToken<List<UserForWorkspaceDto>>() {
+		Type listType = new TypeToken<List<UserWithNickDto>>() {
 		}.getType();
 		return mapper.map(users, listType);
 	}
 
+	public void anonymize() {
+		String anonymous = "anonymous";
+		SecureRandom random = new SecureRandom();
+		User principal = this.getUserByPrincipal();
+		principal.setGitUser(anonymous);
+		principal.setName(anonymous);
+		String nickAnonymous = new BigInteger(130, random).toString(32);
+		principal.setNick(nickAnonymous);
+		principal.setPhoto(anonymous);
+		principal.setSurnames(anonymous);
+		UserAccount userAccountAnonymous = principal.getUserAccount();
+		String usernameAnonymous = new BigInteger(130, random).toString(32) + "@anonymous.es";
+		String passwordAnonymous = new BigInteger(130, random).toString(32) + "Aa";
+		userAccountAnonymous.setUsername(usernameAnonymous);
+		userAccountAnonymous.setPassword(passwordAnonymous);
+		this.taskService.getOutAllTasks(principal);
+		this.userRolService.leaveAllTeams(principal);
+		this.userAccountService.save(userAccountAnonymous);
+		principal.setUserAccount(userAccountAnonymous);
+		this.userRepository.saveAndFlush(principal);
+	}
+	
 	private void validateUser(User user) {
 		if (user == null) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user is null");
@@ -223,4 +250,6 @@ public class UserService extends AbstractService {
 		}
 		
 	}
+
+
 }
