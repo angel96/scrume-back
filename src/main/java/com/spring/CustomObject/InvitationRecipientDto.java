@@ -1,7 +1,5 @@
 package com.spring.CustomObject;
 
-import java.util.Collection;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
