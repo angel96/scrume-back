@@ -44,23 +44,23 @@ public abstract class AbstractTest {
 
 	protected void checkExceptions(Class<?> expected, Class<?> caught) {
 		if (expected != null && caught == null) {
-			throw new RuntimeException(expected.getName() + "was expected");
+			throw new RuntimeException(expected.getName() + " was expected");
 		} else if (expected == null && caught != null) {
-			throw new RuntimeException(caught.getName() + "was unexpected");
+			throw new RuntimeException(caught.getName() + " was unexpected");
 		} else if (expected != null && caught != null && !expected.equals(caught)) {
 			throw new RuntimeException(
-					expected.getName() + "was expected" + " but " + caught.getName() + " was thrown");
+					expected.getName() + " was expected" + " but " + caught.getName() + " was thrown");
 		}
 	}
 
 	protected void checkExceptions(HttpStatus expected, HttpStatus caught) {
 
 		if (expected != null && caught == null) {
-			throw new RuntimeException(expected.name() + "was expected");
+			throw new RuntimeException(expected.name() + " was expected");
 		} else if (expected == null && caught != null) {
-			throw new RuntimeException(caught.name() + "was unexpected");
+			throw new RuntimeException(caught.name() + " was unexpected");
 		} else if (expected != null && caught != null && !expected.equals(caught)) {
-			throw new RuntimeException(expected.name() + "was expected" + " but " + caught.name() + " was thrown");
+			throw new RuntimeException(expected.name() + " was expected" + " but " + caught.name() + " was thrown");
 		}
 
 	}

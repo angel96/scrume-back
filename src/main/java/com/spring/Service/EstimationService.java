@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.EstimationDto;
-import com.spring.CustomObject.TaskDto;
 import com.spring.Model.Estimation;
 import com.spring.Model.Task;
 import com.spring.Model.Team;
@@ -77,7 +76,7 @@ public class EstimationService extends AbstractService {
 		estimationRepository.flush();
 	}
 
-	public Estimation findByTask(Task task) {
-		return this.estimationRepository.findByTask(task).orElse(null);
+	public Estimation findByTaskAndUser(Task task, User user) {
+		return this.estimationRepository.findByTask(task, user).orElse(null);
 	}
 }

@@ -2,12 +2,12 @@ package com.spring.Service;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -50,7 +50,7 @@ public class InvitationService extends AbstractService {
 		Calendar calendar = Calendar.getInstance();
 		calendar.setTime(new Date());
 		calendar.add(Calendar.DAY_OF_YEAR, 30);
-		
+		this.validateRecipients(invitationSenderDto.getRecipients());
 		for (Integer i : invitationSenderDto.getRecipients()) {
 			User recipient = this.userService.findOne(i);
 			this.validateRecipient(recipient, team);
@@ -59,6 +59,7 @@ public class InvitationService extends AbstractService {
 			this.invitationRepository.saveAndFlush(invitationEntity);
 		}
 	}
+
 
 	private boolean existsActiveInvitation(User recipient, Team team) {
 		return this.invitationRepository.existsActiveInvitation(recipient, team) != 0;
@@ -150,6 +151,13 @@ public class InvitationService extends AbstractService {
 		}
 	}
 
+	private void validateRecipients(Collection<Integer> recipients) {
+		if(recipients == null || recipients.isEmpty()) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"Recipient cannot be null");	
+		}
+	}
+	
 	public void flush() {
 		invitationRepository.flush();
 	}

@@ -152,6 +152,12 @@ public class UserRolService extends AbstractService {
 					"The user who performs the action must be an admin of the team");
 		}
 	}
+	
+	public void leaveAllTeams(User principal) {
+		Collection<UserRol> userRoles = this.userRolRepository.findAllUserRolesByUser(principal);
+		this.userRolRepository.deleteAll(userRoles);
+		this.userRolRepository.flush();
+	}
 
 	public boolean isTheOnlyAdminOnTeam(User user, Team team) {
 		Integer usersOfTeam = this.getNumberOfUsersOfTeam(team);
@@ -185,5 +191,10 @@ public class UserRolService extends AbstractService {
 	public void flush() {
 		userRolRepository.flush();
 	}
+
+	public Collection<User> findUsersByTeam(Team team) {
+		return this.userRolRepository.findUsersByTeam(team);
+	}
+
 
 }
