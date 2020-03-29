@@ -77,7 +77,12 @@ public class UserAccountService implements UserDetailsService {
 		PaymentEditDto payment = new PaymentEditDto(0, userAccountDto.getBox(), userAccountDto.getExpiredDate(),
 				userAccountDto.getOrderId(), userAccountDto.getPayerId());
 
-		this.servicePayment.save(userAccountDB, payment);
+		payment = this.servicePayment.save(userAccountDB, payment);
+
+		userAccountDtoBack.setBox(payment.getBox());
+		userAccountDtoBack.setExpiredDate(payment.getExpiredDate());
+		userAccountDtoBack.setOrderId(payment.getOrderId());
+		userAccountDtoBack.setPayerId(payment.getPayerId());
 
 		return userAccountDtoBack;
 	}
