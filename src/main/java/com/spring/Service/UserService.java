@@ -21,10 +21,10 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.FindByNickDto;
 import com.spring.CustomObject.UserDto;
-import com.spring.CustomObject.UserForWorkspaceDto;
 import com.spring.CustomObject.UserLoginDto;
 import com.spring.CustomObject.UserOfATeamByWorspaceDto;
 import com.spring.CustomObject.UserUpdateDto;
+import com.spring.CustomObject.UserWithNickDto;
 import com.spring.Model.Team;
 import com.spring.Model.User;
 import com.spring.Model.UserAccount;
@@ -142,7 +142,7 @@ public class UserService extends AbstractService {
 		userRepository.flush();
 	}
 
-	public Collection<UserForWorkspaceDto> findByNickStartsWith(FindByNickDto findByNickDto) {
+	public Collection<UserWithNickDto> findByNickStartsWith(FindByNickDto findByNickDto) {
 		List<User> users = this.userRepository.findByNickStartsWith(findByNickDto.getWord());
 		Collection<Integer> idUsers = new ArrayList<>();
 		if(findByNickDto.getUsers()!= null) {
@@ -159,7 +159,7 @@ public class UserService extends AbstractService {
 			users = users.subList(0, 4);
 		}
 		ModelMapper mapper = new ModelMapper();
-		Type listType = new TypeToken<List<UserForWorkspaceDto>>() {
+		Type listType = new TypeToken<List<UserWithNickDto>>() {
 		}.getType();
 		return mapper.map(users, listType);
 	}
