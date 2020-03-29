@@ -50,6 +50,9 @@ public class UserService extends AbstractService {
 
 	@Autowired
 	private TeamService teamService;
+	
+	@Autowired
+	private TaskService taskService;
 
 	@Autowired
 	private WorkspaceService workspaceService;
@@ -181,6 +184,7 @@ public class UserService extends AbstractService {
 		String passwordAnonymous = new BigInteger(130, random).toString(32) + "Aa";
 		userAccountAnonymous.setUsername(usernameAnonymous);
 		userAccountAnonymous.setPassword(passwordAnonymous);
+		this.taskService.getOutAllTasks(principal);
 		this.userRolService.leaveAllTeams(principal);
 		this.userAccountService.save(userAccountAnonymous);
 		principal.setUserAccount(userAccountAnonymous);

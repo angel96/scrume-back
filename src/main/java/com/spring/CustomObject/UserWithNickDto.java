@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserWithNickDto {
 	
-	private Integer idUser;
+	private Integer id;
 	
     private String nick;
    

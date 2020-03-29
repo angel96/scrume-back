@@ -212,4 +212,18 @@ public class TaskService extends AbstractService {
 	public void flush() {
 		taskRepository.flush();
 	}
+
+	public void getOutAllTasks(User user) {
+		Collection<Task> tasks = this.taskRepository.findAllByUser(user);
+		for (Task task : tasks) {
+			Set<User> users = task.getUsers();
+			users.remove(user);
+			task.setUsers(users);
+			this.taskRepository.saveAndFlush(task);
+		}
+	}
+	
+	
+	
+	
 }
