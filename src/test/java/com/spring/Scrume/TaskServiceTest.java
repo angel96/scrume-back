@@ -20,7 +20,6 @@ import com.spring.Service.TaskService;
 import com.spring.Service.WorkspaceService;
 
 public class TaskServiceTest extends AbstractTest {
-	//TODO: Cuando se rehaga el populate, revisar todos los Assert
 
 	@Autowired
 	private TaskService taskService;
@@ -37,9 +36,9 @@ public class TaskServiceTest extends AbstractTest {
 		// Param 3 -> Expected Exception;
 		Object[][] objectsFind = {
 				// Caso negativo(el usuario no pertenece al equipo de la Task)
-				{ "angdellun@gmail.com", super.entities().get("task1"), ResponseStatusException.class },
+				{ "testuser3@gmail.com", super.entities().get("task1"), ResponseStatusException.class },
 				// Caso positivo
-				{ "testuser@gmail.com", super.entities().get("task1"), null }, };
+				{ "testuser1@gmail.com", super.entities().get("task1"), null }, };
 		Stream.of(objectsFind).forEach(x -> driverFindTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}
 
@@ -47,11 +46,11 @@ public class TaskServiceTest extends AbstractTest {
 	public void findOneTest() throws Exception {
 		Object[][] objectsFindOne = {
 				// Caso positivo
-				{ "testuser@gmail.com", super.entities().get("task1"), null },
+				{ "testuser1@gmail.com", super.entities().get("task1"), null },
 				// Caso negativo(usuario no autentificado)
 				{ "", super.entities().get("task1"), UsernameNotFoundException.class },
 				// Caso negativo(no existe Task con dicho id)
-				{ "testuser@gmail.com", Integer.MAX_VALUE, ResponseStatusException.class }, };
+				{ "testuser1@gmail.com", Integer.MAX_VALUE, ResponseStatusException.class }, };
 		Stream.of(objectsFindOne).forEach(x -> driverFindOneTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}
 
@@ -60,24 +59,11 @@ public class TaskServiceTest extends AbstractTest {
 
 		Object[][] objectsFindBySprint = {
 				// Caso positivo
-				{ "testuser@gmail.com", super.entities().get("sprint1"), null },
+				{ "testuser1@gmail.com", super.entities().get("sprint1"), null },
 				// Caso negativo(no existe Sprint con dicho id)
-				{ "testuser@gmail.com", Integer.MAX_VALUE, IllegalArgumentException.class } };
+				{ "testuser1@gmail.com", Integer.MAX_VALUE, ResponseStatusException.class } };
 		Stream.of(objectsFindBySprint)
 				.forEach(x -> driverFindBySprintTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
-	}
-
-	@Test
-	public void findCompleteBySprintTest() throws Exception {
-
-		Object[][] objectsFindCompleteBySprint = {
-				// Caso positivo
-				{ "testuser@gmail.com", super.entities().get("sprint3"), null },
-				// Caso negativo(ninguna Task está completa, o lo que es lo mismo, no esta en la
-				// columna Done)
-				{ "testuser@gmail.com", super.entities().get("sprint1"), IllegalArgumentException.class } };
-		Stream.of(objectsFindCompleteBySprint)
-				.forEach(x -> driverFindCompleteBySprintTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}
 
 	@Test
@@ -85,13 +71,13 @@ public class TaskServiceTest extends AbstractTest {
 
 		Object[][] objectsSave = {
 				// Caso positivo
-				{ "testuser@gmail.com", super.entities().get("project1"), null },
+				{ "testuser1@gmail.com", super.entities().get("project1"), null },
 				// Caso negativo(usuario no logueado)
 				{ "", super.entities().get("project1"), UsernameNotFoundException.class },
 				// Caso negativo(el proyecto no existe)
-				{ "testuser@gmail.com", Integer.MAX_VALUE, ResponseStatusException.class },
+				{ "testuser1@gmail.com", Integer.MAX_VALUE, ResponseStatusException.class },
 				// Caso negativo(el usuario no pertenece al equipo)
-				{ "angdellun@gmail.com", super.entities().get("project1"), ResponseStatusException.class } };
+				{ "testuser3@gmail.com", super.entities().get("project1"), ResponseStatusException.class } };
 		Stream.of(objectsSave).forEach(x -> driverSave((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}
 
@@ -99,13 +85,13 @@ public class TaskServiceTest extends AbstractTest {
 	public void updateTest() throws Exception {
 		Object[][] objectsUpdate = {
 				// Caso positivo
-				{ "testuser@gmail.com", super.entities().get("task1"), null },
+				{ "testuser1@gmail.com", super.entities().get("task1"), null },
 				// Caso negativo(usuario no logueado)
 				{ "", super.entities().get("task1"), UsernameNotFoundException.class },
 				// Caso negativo(el proyecto no existe)
-				{ "testuser@gmail.com", Integer.MAX_VALUE, ResponseStatusException.class },
+				{ "testuser1@gmail.com", Integer.MAX_VALUE, ResponseStatusException.class },
 				// Caso negativo(el usuario no pertenece al equipo)
-				{ "angdellun@gmail.com", super.entities().get("task1"), ResponseStatusException.class } };
+				{ "testuser3@gmail.com", super.entities().get("task1"), ResponseStatusException.class } };
 		Stream.of(objectsUpdate).forEach(x -> driverUpdate((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}
 
@@ -113,15 +99,15 @@ public class TaskServiceTest extends AbstractTest {
 	public void deleteTest() throws Exception {
 		Object[][] objectsDelete = {
 				// Caso positivo
-				{ "testuser@gmail.com", super.entities().get("task1"), null },
+				{ "testuser1@gmail.com", super.entities().get("task1"), null },
 				// Caso negativo(usuario no logueado)
 				{ "", super.entities().get("task1"), UsernameNotFoundException.class },
 				// Caso negativo(la tarea no existe)
-				{ "testuser@gmail.com", Integer.MAX_VALUE, ResponseStatusException.class },
+				{ "testuser1@gmail.com", Integer.MAX_VALUE, ResponseStatusException.class },
 				// Caso negativo(el usuario no pertenece al equipo)
-				{ "angdellun@gmail.com", super.entities().get("task1"), ResponseStatusException.class },
+				{ "testuser3@gmail.com", super.entities().get("task1"), ResponseStatusException.class },
 				// Caso negativo(el usuario no es el administrador del equipo)
-				{ "taskTest@gmail.com", super.entities().get("task5"), ResponseStatusException.class } };
+				{ "testuser3@gmail.com", super.entities().get("task5"), ResponseStatusException.class } };
 		Stream.of(objectsDelete).forEach(x -> driverDelete((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}
 
@@ -129,9 +115,9 @@ public class TaskServiceTest extends AbstractTest {
 	public void listAllTaskByProjectTest() throws Exception {
 		Object[][] objectsListAllTaskByProject = {
 				// Caso positivo
-				{ "testuser@gmail.com", super.entities().get("project1"), null },
+				{ "testuser1@gmail.com", super.entities().get("project1"), null },
 				// Caso negativo(el usuario no pertenece al equipo de la Task)
-				{ "angdellun@gmail.com", super.entities().get("project1"), ResponseStatusException.class } };
+				{ "testuser3@gmail.com", super.entities().get("project1"), ResponseStatusException.class } };
 		Stream.of(objectsListAllTaskByProject)
 				.forEach(x -> driverListAllTaskByProject((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}
@@ -140,28 +126,55 @@ public class TaskServiceTest extends AbstractTest {
 	public void findByWorkspaceTest() throws Exception {
 		Object[][] objectsFindByWorkspace = {
 				// Caso positivo
-				{ "testuser@gmail.com", super.entities().get("workspace1"), null },
+				{ "testuser1@gmail.com", super.entities().get("workspace1"), null },
 				// Caso negativo(el workspace no existe)
-				{ "testuser@gmail.com", Integer.MAX_VALUE, ResponseStatusException.class },
-				{ "testuser@gmail.com", null, NullPointerException.class }, };
+				{ "testuser1@gmail.com", Integer.MAX_VALUE, ResponseStatusException.class },
+				{ "testuser1@gmail.com", null, NullPointerException.class }, };
 
 		Stream.of(objectsFindByWorkspace)
 				.forEach(x -> driverFindByWorkspace((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 
 	}
-	
+
 	@Test
 	public void saveEstimation() throws Exception {
 
 		Object[][] objectsSaveEstimation = {
 				// Caso positivo
-				{ "testuser@gmail.com", super.entities().get("task1"), null },
+				{ "testuser1@gmail.com", super.entities().get("task1"), null },
 				// Caso negativo(la tarea no existe)
-				{ "testuser@gmail.com", Integer.MAX_VALUE, ResponseStatusException.class }
-				};
-				
-		Stream.of(objectsSaveEstimation).forEach(x -> driverSaveEstimationTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
+				{ "testuser1@gmail.com", Integer.MAX_VALUE, ResponseStatusException.class } };
+
+		Stream.of(objectsSaveEstimation)
+				.forEach(x -> driverSaveEstimationTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}
+	
+	@Test
+	public void findByuserTest() throws Exception {
+		// Param 0 -> User to make the call
+		// Param 1 -> Entity
+		// Param 2 -> Value to modify
+		// Param 3 -> Expected Exception;
+		Object[][] objectsFind = {
+				// Caso positivo
+				{ "testuser1@gmail.com", null }};
+		Stream.of(objectsFind).forEach(x -> driverFindByUserTest((String) x[0], (Class<?>) x[1]));
+	}
+	
+	protected void driverFindByUserTest(String user, Class<?> expected) {
+		Class<?> caught = null;
+
+		try {
+			super.authenticateOrUnauthenticate(user);
+			this.taskService.findTaskByUser();
+			super.authenticateOrUnauthenticate(null);
+		} catch (Exception oops) {
+			caught = oops.getClass();
+
+		}
+		super.checkExceptions(expected, caught);
+	}
+
 
 	protected void driverFindTest(String user, Integer entity, Class<?> expected) {
 		Class<?> caught = null;
@@ -172,9 +185,9 @@ public class TaskServiceTest extends AbstractTest {
 			super.authenticateOrUnauthenticate(null);
 		} catch (Exception oops) {
 			caught = oops.getClass();
-			super.checkExceptions(expected, caught);
-		}
 
+		}
+		super.checkExceptions(expected, caught);
 	}
 
 	protected void driverFindOneTest(String user, Integer entity, Class<?> expected) {
@@ -186,9 +199,9 @@ public class TaskServiceTest extends AbstractTest {
 			super.authenticateOrUnauthenticate(null);
 		} catch (Exception oops) {
 			caught = oops.getClass();
-			super.checkExceptions(expected, caught);
-		}
 
+		}
+		super.checkExceptions(expected, caught);
 	}
 
 	protected void driverFindBySprintTest(String user, Integer entity, Class<?> expected) {
@@ -201,24 +214,9 @@ public class TaskServiceTest extends AbstractTest {
 			super.authenticateOrUnauthenticate(null);
 		} catch (Exception oops) {
 			caught = oops.getClass();
-			super.checkExceptions(expected, caught);
+
 		}
-
-	}
-
-	protected void driverFindCompleteBySprintTest(String user, Integer entity, Class<?> expected) {
-		Class<?> caught = null;
-		try {
-			super.authenticateOrUnauthenticate(user);
-			Sprint sprint = this.sprintService.getOne(entity);
-			List<Task> tasks = this.taskService.findCompleteTaskBySprint(sprint);
-			Assert.isTrue(tasks.isEmpty());
-			super.authenticateOrUnauthenticate(null);
-		} catch (Exception oops) {
-			caught = oops.getClass();
-			super.checkExceptions(expected, caught);
-		}
-
+		super.checkExceptions(expected, caught);
 	}
 
 	protected void driverSave(String user, Integer entity, Class<?> expected) {
@@ -231,9 +229,9 @@ public class TaskServiceTest extends AbstractTest {
 			super.authenticateOrUnauthenticate(null);
 		} catch (Exception oops) {
 			caught = oops.getClass();
-			super.checkExceptions(expected, caught);
-		}
 
+		}
+		super.checkExceptions(expected, caught);
 	}
 
 	protected void driverUpdate(String user, Integer entity, Class<?> expected) {
@@ -251,33 +249,24 @@ public class TaskServiceTest extends AbstractTest {
 			super.authenticateOrUnauthenticate(null);
 		} catch (Exception oops) {
 			caught = oops.getClass();
-			super.checkExceptions(expected, caught);
-		}
 
+		}
+		super.checkExceptions(expected, caught);
 	}
 
 	protected void driverDelete(String user, Integer entity, Class<?> expected) {
 		Class<?> caught = null;
-		boolean delete = false;
 
 		try {
 			super.authenticateOrUnauthenticate(user);
 			this.taskService.delete(entity);
-			delete = true;
-			try {
-				this.taskService.findOne(entity);
-				delete = false;
-
-			} catch (ResponseStatusException e) {
-			}
+			this.taskService.flush();
 			super.authenticateOrUnauthenticate(null);
-			Assert.isTrue(delete == true);
-
 		} catch (Exception oops) {
 			caught = oops.getClass();
-			super.checkExceptions(expected, caught);
-		}
 
+		}
+		super.checkExceptions(expected, caught);
 	}
 
 	protected void driverListAllTaskByProject(String user, Integer entity, Class<?> expected) {
@@ -289,9 +278,8 @@ public class TaskServiceTest extends AbstractTest {
 			super.authenticateOrUnauthenticate(null);
 		} catch (Exception oops) {
 			caught = oops.getClass();
-			super.checkExceptions(expected, caught);
 		}
-
+		super.checkExceptions(expected, caught);
 	}
 
 	protected void driverFindByWorkspace(String user, Integer entity, Class<?> expected) {
@@ -304,11 +292,11 @@ public class TaskServiceTest extends AbstractTest {
 			super.authenticateOrUnauthenticate(null);
 		} catch (Exception oops) {
 			caught = oops.getClass();
-			super.checkExceptions(expected, caught);
-		}
 
+		}
+		super.checkExceptions(expected, caught);
 	}
-	
+
 	protected void driverSaveEstimationTest(String user, Integer entity, Class<?> expected) {
 		Class<?> caught = null;
 
@@ -319,9 +307,9 @@ public class TaskServiceTest extends AbstractTest {
 			super.authenticateOrUnauthenticate(null);
 		} catch (Exception oops) {
 			caught = oops.getClass();
-			super.checkExceptions(expected, caught);
-		}
 
+		}
+		super.checkExceptions(expected, caught);
 	}
 
 }

@@ -19,7 +19,7 @@ import com.spring.CustomObject.InvitationListDto;
 import com.spring.CustomObject.InvitationRecipientDto;
 import com.spring.CustomObject.InvitationSenderDto;
 import com.spring.CustomObject.TeamDto;
-import com.spring.CustomObject.UserForWorkspaceDto;
+import com.spring.CustomObject.UserWithNickDto;
 import com.spring.Service.InvitationService;
 import com.spring.Service.TeamService;
 import com.spring.Service.UserRolService;
@@ -106,7 +106,7 @@ public class TeamApiController extends AbstractApiController {
 	}
 	
 	@PostMapping("/findByNick")
-	public Collection<UserForWorkspaceDto> findByNickStartsWith(@RequestBody FindByNickDto findByNickDto) {
+	public Collection<UserWithNickDto> findByNickStartsWith(@RequestBody FindByNickDto findByNickDto) {
 		super.logger.info("POST /api/team/findByNick");
 		return this.userService.findByNickStartsWith(findByNickDto);
 	}

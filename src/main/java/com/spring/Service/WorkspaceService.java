@@ -27,6 +27,7 @@ import com.spring.CustomObject.WorkspaceEditDto;
 import com.spring.CustomObject.WorkspaceSprintListDto;
 import com.spring.CustomObject.WorkspaceWithColumnsDto;
 import com.spring.Model.Column;
+import com.spring.Model.HistoryTask;
 import com.spring.Model.Project;
 import com.spring.Model.Sprint;
 import com.spring.Model.Task;
@@ -83,7 +84,7 @@ public class WorkspaceService extends AbstractService {
 			Collection<UserForWorkspaceDto> usersDto = modelMapper.map(users, collectionUsersDto);
 			TaskForWorkspaceDto taskDto = new TaskForWorkspaceDto(task.getId(), task.getTitle(), task.getDescription(),
 					task.getPoints(), usersDto);
-			if (task.getColumn().getName().compareTo("To Do") == 0) {
+			if (task.getColumn().getName().compareTo("To do") == 0) {
 				tasksDtoTodo.add(taskDto);
 			} else if (task.getColumn().getName().compareTo("In progress") == 0) {
 				tasksDtoInProgress.add(taskDto);
@@ -223,6 +224,28 @@ public class WorkspaceService extends AbstractService {
 		checkMembers(team.getId());
 		return this.repository.findWorkspacesBySprint(sprint).stream()
 				.map(x -> new WorkspaceSprintListDto(x.getId(), x.getName())).collect(Collectors.toList());
+	}
+
+	public WorkspaceSprintListDto findWorkspaceLastModifiedByProject(int project) {
+
+		Project proj = this.projectService.findOne(project);
+
+		checkMembers(proj.getTeam().getId());
+
+		Collection<HistoryTask> historyTasksByProject = this.repository.findAllHistoryTasksByProject(project);
+
+		WorkspaceSprintListDto result = null;
+
+		if (historyTasksByProject.isEmpty() || historyTasksByProject == null) {
+			result = new WorkspaceSprintListDto(0, "");
+		} else {
+			List<HistoryTask> historyTasks = new ArrayList<>(historyTasksByProject);
+			Workspace ht = historyTasks.get(0).getDestiny().getWorkspace();
+			result = new WorkspaceSprintListDto(ht.getId(), ht.getName());
+		}
+
+		return result;
+
 	}
 
 	public void flush() {

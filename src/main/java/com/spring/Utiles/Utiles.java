@@ -29,6 +29,11 @@ public class Utiles {
 		PasswordEncoder encoder = new BCryptPasswordEncoder();
 		return encoder.encode(s);
 	}
+	
+	public static Boolean matchesPassword(String password, String encrypted) {
+		PasswordEncoder encoder = new BCryptPasswordEncoder();
+		return encoder.matches(password, encrypted); 
+	}
 
 	/**
 	 * 

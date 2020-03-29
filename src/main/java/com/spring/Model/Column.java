@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
-@Table(name = "`column`")
+@Table(name="`column`")
 @EqualsAndHashCode(callSuper = true)
 public class Column extends BaseEntity {
 

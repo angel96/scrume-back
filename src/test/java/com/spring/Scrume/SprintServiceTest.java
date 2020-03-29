@@ -26,7 +26,7 @@ public class SprintServiceTest extends AbstractTest {
 	@Test
 	public void SprintServiceGetStatisticsTest() throws Exception {
 		Object[][] objects = {
-				{"testuser@gmail.com", super.entities().get("sprint1"), null}, {"angdellun2@gmail.com", super.entities().get("sprint1"), ResponseStatusException.class}, {"testuser3@gmail.com", super.entities().get("sprint1"), ResponseStatusException.class}};
+				{"testuser1@gmail.com", super.entities().get("sprint1"), null}, {"testuser2@gmail.com", super.entities().get("sprint1"), ResponseStatusException.class}, {"testuser3@gmail.com", super.entities().get("sprint1"), ResponseStatusException.class}};
 
 		Stream.of(objects).forEach(x -> driverSprintServiceGetStatisticsTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}
@@ -48,7 +48,7 @@ public class SprintServiceTest extends AbstractTest {
 	@Test
 	public void SprintServiceListByProjectTest() throws Exception {
 		Object[][] objects = {
-				{"testuser@gmail.com", super.entities().get("project1"), null}, {"angdellun2@gmail.com", super.entities().get("project1"), ResponseStatusException.class}, {"testuser@gmail.com", 123456765, ResponseStatusException.class}};
+				{"testuser1@gmail.com", super.entities().get("project1"), null}, {"testuser2@gmail.com", super.entities().get("project1"), ResponseStatusException.class}, {"testuser1@gmail.com", 123456765, ResponseStatusException.class}};
 
 		Stream.of(objects).forEach(x -> driverSprintServiceListByProjectTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}
@@ -111,7 +111,7 @@ public class SprintServiceTest extends AbstractTest {
 		sprintDto6.setEndDate(endDate2);
 
 		Object[][] objects = {
-				{"testuser@gmail.com", sprintDto1, null}, {"testuser2@gmail.com", sprintDto1, ResponseStatusException.class}, {"testuser@gmail.com", sprintDto2, ResponseStatusException.class}, {"testuser@gmail.com", sprintDto3, ResponseStatusException.class}, {"testuser@gmail.com", sprintDto4, ResponseStatusException.class}, {"testuser@gmail.com", sprintDto5, ResponseStatusException.class}, {"testuser@gmail.com", sprintDto6, ResponseStatusException.class}};
+				{"testuser1@gmail.com", sprintDto1, null}, {"testuser4@gmail.com", sprintDto1, ResponseStatusException.class}, {"testuser1@gmail.com", sprintDto2, ResponseStatusException.class}, {"testuser1@gmail.com", sprintDto3, ResponseStatusException.class}, {"testuser1@gmail.com", sprintDto4, ResponseStatusException.class}, {"testuser1@gmail.com", sprintDto5, ResponseStatusException.class}, {"testuser1@gmail.com", sprintDto6, ResponseStatusException.class}};
 
 		Stream.of(objects).forEach(x -> driverSprintServiceSaveTest((String) x[0], (SprintDto) x[1], (Class<?>) x[2]));
 	}
@@ -177,7 +177,7 @@ public class SprintServiceTest extends AbstractTest {
 		sprintDto6.setEndDate(endDate1);
 		
 		Object[][] objects = {
-				{"testuser@gmail.com", sprintDto1, null}, {"testuser2@gmail.com", sprintDto1, ResponseStatusException.class}, {"testuser@gmail.com", sprintDto2, ResponseStatusException.class}, {"testuser@gmail.com", sprintDto3, ResponseStatusException.class}, {"testuser@gmail.com", sprintDto4, ResponseStatusException.class}, {"testuser@gmail.com", sprintDto5, ResponseStatusException.class}, {"testuser@gmail.com", sprintDto6, ResponseStatusException.class}};
+				{"testuser1@gmail.com", sprintDto1, null}, {"testuser4@gmail.com", sprintDto1, ResponseStatusException.class}, {"testuser1@gmail.com", sprintDto2, ResponseStatusException.class}, {"testuser1@gmail.com", sprintDto3, ResponseStatusException.class}, {"testuser1@gmail.com", sprintDto4, ResponseStatusException.class}, {"testuser1@gmail.com", sprintDto5, ResponseStatusException.class}, {"testuser1@gmail.com", sprintDto6, ResponseStatusException.class}};
 
 		Stream.of(objects).forEach(x -> driverSprintServiceUpdateTest((String) x[0], (SprintEditDto) x[1], (Class<?>) x[2]));
 	}
@@ -210,7 +210,7 @@ public class SprintServiceTest extends AbstractTest {
 		sprintDto1.setProject(this.projectService.findOne(super.entities().get("project1")));
 		
 		Object[][] objects = {
-				{"testuser@gmail.com", sprintDto1, null}};
+				{"testuser1@gmail.com", sprintDto1, null}};
 
 		Stream.of(objects).forEach(x -> driverSprintServiceAreValidDatesTest((String) x[0], (SprintDto) x[1], (Class<?>) x[2]));
 	}

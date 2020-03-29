@@ -36,9 +36,9 @@ public class SprintApiController extends AbstractApiController{
 		return this.sprintService.getStatistics(idSprint);
 	}
 	
-	@GetMapping("/check-dates/{idProject}")
+	@PostMapping("/check-dates/{idProject}")
 	public boolean areValidDates(@PathVariable Integer idProject, @RequestBody SprintDto sprintDto) {
-		super.logger.info("GET /api/sprint/check-dates/" + idProject);
+		super.logger.info("POST /api/sprint/check-dates/" + idProject);
 		Project project = new Project();
 		project.setId(idProject);
 		sprintDto.setProject(project);

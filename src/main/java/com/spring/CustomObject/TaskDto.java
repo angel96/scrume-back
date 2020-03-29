@@ -1,9 +1,9 @@
 package com.spring.CustomObject;
 
 import java.util.Set;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
@@ -16,7 +16,7 @@ public class TaskDto {
 	private Integer points;
 	private Integer project;
 
-	private Set<Integer> users;
+	private Set<UserForWorkspaceDto> users;
 
 	private Integer column;
 

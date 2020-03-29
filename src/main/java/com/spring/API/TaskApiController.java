@@ -1,5 +1,7 @@
 package com.spring.API;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -14,10 +16,9 @@ import com.spring.CustomObject.EstimationDto;
 import com.spring.CustomObject.ListAllTaskByProjectDto;
 import com.spring.CustomObject.TaskDto;
 import com.spring.CustomObject.TaskEditDto;
+import com.spring.CustomObject.UserProjectWorkspaceFromTaskDto;
 import com.spring.Service.EstimationService;
 import com.spring.Service.TaskService;
-
-import antlr.collections.List;
 
 @RestController
 @RequestMapping("api/task")
@@ -27,6 +28,12 @@ public class TaskApiController extends AbstractApiController {
 	
 	@Autowired
 	private EstimationService estimationService;
+	
+	@GetMapping("user")
+	public List<UserProjectWorkspaceFromTaskDto> findTaskByUser(){
+		super.logger.info("GET /api/task/user");
+		return this.taskService.findTaskByUser();
+	}
 	
 	@GetMapping("/{idTask}")
 	public TaskDto show(@PathVariable int idTask) {

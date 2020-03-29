@@ -7,7 +7,6 @@ import java.util.Optional;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.spring.CustomObject.UserOfATeamByWorspaceDto;
 import com.spring.Model.Team;
 import com.spring.Model.User;
 import com.spring.Model.UserRol;
@@ -36,4 +35,9 @@ public interface UserRolRepository extends AbstractRepository<UserRol> {
 	
 	@Query("select ur.user from UserRol ur where ur.team = ?1")
 	Collection<User> findUsersByTeam(Team team);
+	
+	@Query("select ur from UserRol ur where ur.user = ?1")
+	Collection<UserRol> findAllUserRolesByUser(User user);
+	
+	
 }

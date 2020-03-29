@@ -5,16 +5,11 @@ import java.util.stream.Stream;
 import javax.persistence.EntityNotFoundException;
 
 import org.junit.jupiter.api.Test;
-import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.ProjectDto;
-import com.spring.CustomObject.TeamDto;
-import com.spring.Model.Project;
-import com.spring.Model.Team;
-import com.spring.Repository.ProjectRepository;
 import com.spring.Service.ProjectService;
 import com.spring.Service.TeamService;
 
@@ -29,7 +24,7 @@ public class ProjectServiceTest extends AbstractTest {
 	@Test
 	public void findProjectsByTeamIdTest() throws Exception {
 		Object[][] objects = {
-				{ "testuser@gmail.com", super.entities().get("team1"), null }, //Caso positivo
+				{ "testuser1@gmail.com", super.entities().get("team1"), null }, //Caso positivo
 				{ "hola", super.entities().get("team1"), UsernameNotFoundException.class }}; //Caso negativo
 		
 		Stream.of(objects).forEach(x -> driverFindProjects((String) x[0], (Integer) x[1], (Class<?>) x[2]));
@@ -55,7 +50,7 @@ public class ProjectServiceTest extends AbstractTest {
 		projectDto.setName("Name 1");
 		projectDto.setDescription("Description 1");
 		Object[][] objects = {
-				{ "testuser@gmail.com", projectDto, super.entities().get("team1"), null }, //Caso positivo
+				{ "testuser1@gmail.com", projectDto, super.entities().get("team1"), null }, //Caso positivo
 				{ "hola", projectDto, super.entities().get("team1"), UsernameNotFoundException.class }}; //Caso negativo
 		
 		Stream.of(objects).forEach(x -> driverTestSave((String) x[0], (ProjectDto) x[1], (Integer) x[2], (Class<?>) x[3]));
@@ -83,7 +78,7 @@ public class ProjectServiceTest extends AbstractTest {
 		projectDto.setName("Name 1");
 		projectDto.setDescription("Description 1");
 		Object[][] objects = {
-				{ "testuser@gmail.com", projectDto, super.entities().get("team1"), super.entities().get("project1"), "NombreActualizado", null }, //Caso positivo
+				{ "testuser1@gmail.com", projectDto, super.entities().get("team1"), super.entities().get("project1"), "NombreActualizado", null }, //Caso positivo
 				{ "hola", projectDto, super.entities().get("team65"), super.entities().get("project1"), "NombreActualizado", UsernameNotFoundException.class }}; //Caso negativo
 		
 		Stream.of(objects).forEach(x -> driverTestUpdate((String) x[0], (ProjectDto) x[1], (Integer) x[2], (Integer) x[3], (String) x[4], (Class<?>) x[5]));
@@ -110,10 +105,10 @@ public class ProjectServiceTest extends AbstractTest {
 	public void projectTestDelete() throws Exception {
 
 		Object[][] objects = {
-				{ "testuser@gmail.com", super.entities().get("project1") , null}, //Caso positivo
+				{ "testuser1@gmail.com", super.entities().get("project1") , null}, //Caso positivo
 				{ "hola", super.entities().get("project1"), UsernameNotFoundException.class }, //Caso negativo
-				{ "testuser@gmail.com", super.entities().get("project1") , EntityNotFoundException.class}, //Caso positivo
-				{ "angdellun@gmail.com", super.entities().get("project2"), ResponseStatusException.class }}; //Caso negativo
+				{ "testuser1@gmail.com", super.entities().get("project1") , EntityNotFoundException.class}, //Caso positivo
+				{ "testuser3@gmail.com", super.entities().get("project2"), ResponseStatusException.class }}; //Caso negativo
 			
 		Stream.of(objects).forEach(x -> driverTestDelete((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}
