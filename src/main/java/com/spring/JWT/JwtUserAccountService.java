@@ -38,7 +38,7 @@ public class JwtUserAccountService implements UserDetailsService {
 		String username = authenticationRequest.getUsername();
 		String password = authenticationRequest.getPassword();
 
-		if (username.isBlank() || password.isBlank()) {
+		if (username.equals("") || password.equals("")) {
 			throw new ResponseStatusException(HttpStatus.PRECONDITION_REQUIRED,
 					"Username and Password can not be empty");
 		}
