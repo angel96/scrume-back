@@ -21,9 +21,11 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.PaymentEditDto;
 import com.spring.CustomObject.UserAccountDto;
+import com.spring.CustomObject.UserDto;
 import com.spring.CustomObject.UsernameDto;
 import com.spring.Model.UserAccount;
 import com.spring.Service.PaymentService;
+import com.spring.Service.UserService;
 import com.spring.Utiles.Utiles;
 
 @Service
@@ -35,6 +37,9 @@ public class UserAccountService implements UserDetailsService {
 
 	@Autowired
 	private PaymentService servicePayment;
+
+	@Autowired
+	private UserService serviceUser;
 
 	protected final Logger logger = Logger.getLogger(UserAccountService.class);
 
@@ -83,6 +88,11 @@ public class UserAccountService implements UserDetailsService {
 		userAccountDtoBack.setExpiredDate(payment.getExpiredDate());
 		userAccountDtoBack.setOrderId(payment.getOrderId());
 		userAccountDtoBack.setPayerId(payment.getPayerId());
+
+		UserDto userDto = new UserDto(0, userAccountDtoBack.getUsername(), userAccountDtoBack.getUsername(),
+				userAccountDtoBack.getUsername(), "", "", userAccountDB.getId());
+
+		userDto = this.serviceUser.save(userDto);
 
 		return userAccountDtoBack;
 	}
