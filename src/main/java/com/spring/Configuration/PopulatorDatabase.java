@@ -115,8 +115,8 @@ public class PopulatorDatabase implements CommandLineRunner {
 		SortedMap<String, Integer> entities = new TreeMap<>();
 		Utiles.escribeFichero(entities, properties);
 
-		estimationRepository.deleteAll();
 		historyTaskRepository.deleteAll();
+		estimationRepository.deleteAll();
 		paymentRepository.deleteAll();
 		invitationRepository.deleteAll();
 		taskRepository.deleteAll();
@@ -215,26 +215,32 @@ public class PopulatorDatabase implements CommandLineRunner {
 		Date localDate4 = Date.from(localDateTime4.atZone(ZoneId.systemDefault()).toInstant());
 
 		Invitation invitation1 = this.invitationRepository
-				.save(new Invitation("Buenas tardes, le invito a pertenecer a nuestro equipo Olimpia", localDate1, true, user1, user4, team1));
-		Invitation invitation2 = this.invitationRepository
-				.save(new Invitation("Hola, necesitamos sus servicios en Olimpia", localDate2, false, user1, user3, team1));
-		Invitation invitation3 = this.invitationRepository
-				.save(new Invitation("Hola, su perfil nos sería de gran ayuda en nuestro equipo", localDate3, null, user1, user2, team1));
+				.save(new Invitation("Buenas tardes, le invito a pertenecer a nuestro equipo Olimpia", localDate1, true,
+						user1, user4, team1));
+		Invitation invitation2 = this.invitationRepository.save(
+				new Invitation("Hola, necesitamos sus servicios en Olimpia", localDate2, false, user1, user3, team1));
+		Invitation invitation3 = this.invitationRepository.save(new Invitation(
+				"Hola, su perfil nos sería de gran ayuda en nuestro equipo", localDate3, null, user1, user2, team1));
 		Invitation invitation4 = this.invitationRepository
-				.save(new Invitation("Buenas tardes, sabemos que rechazó nuestra invitación pero le necesitamos", localDate4, null, user1, user3, team1));
+				.save(new Invitation("Buenas tardes, sabemos que rechazó nuestra invitación pero le necesitamos",
+						localDate4, null, user1, user3, team1));
 
 		entities.put("invitation1", invitation1.getId());
 		entities.put("invitation2", invitation2.getId());
 		entities.put("invitation3", invitation3.getId());
 		entities.put("invitation4", invitation4.getId());
 
-		Project project1 = projectRepository.save(new Project("Scrume", 
+		Project project1 = projectRepository.save(new Project("Scrume",
 				"Proyecto dedicado a la creación de una plataforma para la aplicación de scrum en proyectos", team1));
-		Project project2 = projectRepository.save(new Project("Hackathon", "Proyecto dedicado a aprender a utilizar la tecnología que usamos en la empresa", team2));
-		Project project3 = projectRepository.save(new Project("Acme-Handy-Worker", "Proyecto dedicado a la gestión de trabajos puntuales, como arreglos de averías", team3));
-		Project project4 = projectRepository.save(new Project("PureEmotionBox", "Proyecto dedicado a la creación de cajas sorpresa, de diferentes temáticas", team4));
-		Project project5 = projectRepository.save(new Project("Acme-Writers", 
-				"Proyecto dedicado a la creación de una plataforma para la publicación de libros de autores poco conocidos gracias a editoriales", team1));
+		Project project2 = projectRepository.save(new Project("Hackathon",
+				"Proyecto dedicado a aprender a utilizar la tecnología que usamos en la empresa", team2));
+		Project project3 = projectRepository.save(new Project("Acme-Handy-Worker",
+				"Proyecto dedicado a la gestión de trabajos puntuales, como arreglos de averías", team3));
+		Project project4 = projectRepository.save(new Project("PureEmotionBox",
+				"Proyecto dedicado a la creación de cajas sorpresa, de diferentes temáticas", team4));
+		Project project5 = projectRepository.save(new Project("Acme-Writers",
+				"Proyecto dedicado a la creación de una plataforma para la publicación de libros de autores poco conocidos gracias a editoriales",
+				team1));
 
 		entities.put("project1", project1.getId());
 		entities.put("project2", project2.getId());
@@ -277,7 +283,8 @@ public class PopulatorDatabase implements CommandLineRunner {
 
 		Workspace workspace1 = this.workspaceRepository.save(new Workspace("Fase de planificación", sprint1));
 		Workspace workspace2 = this.workspaceRepository.save(new Workspace("Tareas de formación", sprint2));
-		Workspace workspace3 = this.workspaceRepository.save(new Workspace("Tareas de análisis de requisitos", sprint3));
+		Workspace workspace3 = this.workspaceRepository
+				.save(new Workspace("Tareas de análisis de requisitos", sprint3));
 		Workspace workspace4 = this.workspaceRepository.save(new Workspace("Fase de cierre", sprint4));
 		Workspace workspace5 = this.workspaceRepository.save(new Workspace("Fase de desarrollo", sprint5));
 
@@ -341,12 +348,23 @@ public class PopulatorDatabase implements CommandLineRunner {
 		Set<User> list3 = new HashSet<>();
 		list3.add(user4);
 
-		Task task1 = this.taskRepository.save(new Task("Definición del producto", "Se deberá definir el caso de uso core y y el mínimo producto viable.", 10, project1, list1, done1));
-		Task task2 = this.taskRepository.save(new Task("Análisis de competidores", "Se deberá estudiar el mercado actual, observando los principales competidores de nuestro producto.", 8, project1, list1, inProgress1));
-		Task task3 = this.taskRepository.save(new Task("Métricas de rendimiento", "Se deben definir las métricas que determinarán el rendimiento de cada componente del grupo.", 18, project1, list3, toDo5));
-		Task task4 = this.taskRepository.save(new Task("CU2-Equipo", "Un equipo está formado por un nombre y usuarios que tengan el mismo paquete, además todos los usuarios se pueden salir del equipo, siempre que haya al menos un administrador.", 0, project1, list3, null));
-		Task task5 = this.taskRepository.save(new Task("CU4-Sprint", "Un sprint está formado por fecha de inicio, fecha de fin y un proyecto asociado. Un administrador puede crear y editar sprints.", 0, project1, list2, null));
-		Task task6 = this.taskRepository.save(new Task("CU3-Proyecto", "Un proyecto está formado por nombre, descripción, product backlog y el equipo que lo gestiona.", 0, project1, list1, null));
+		Task task1 = this.taskRepository.save(new Task("Definición del producto",
+				"Se deberá definir el caso de uso core y y el mínimo producto viable.", 10, project1, list1, done1));
+		Task task2 = this.taskRepository.save(new Task("Análisis de competidores",
+				"Se deberá estudiar el mercado actual, observando los principales competidores de nuestro producto.", 8,
+				project1, list1, inProgress1));
+		Task task3 = this.taskRepository.save(new Task("Métricas de rendimiento",
+				"Se deben definir las métricas que determinarán el rendimiento de cada componente del grupo.", 18,
+				project1, list3, toDo5));
+		Task task4 = this.taskRepository.save(new Task("CU2-Equipo",
+				"Un equipo está formado por un nombre y usuarios que tengan el mismo paquete, además todos los usuarios se pueden salir del equipo, siempre que haya al menos un administrador.",
+				0, project1, list3, null));
+		Task task5 = this.taskRepository.save(new Task("CU4-Sprint",
+				"Un sprint está formado por fecha de inicio, fecha de fin y un proyecto asociado. Un administrador puede crear y editar sprints.",
+				0, project1, list2, null));
+		Task task6 = this.taskRepository.save(new Task("CU3-Proyecto",
+				"Un proyecto está formado por nombre, descripción, product backlog y el equipo que lo gestiona.", 0,
+				project1, list1, null));
 
 		entities.put("task1", task1.getId());
 		entities.put("task2", task2.getId());
@@ -355,10 +373,17 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("task5", task5.getId());
 		entities.put("task6", task6.getId());
 
-		Document doc1 = this.documentRepository.save(new Document(DocumentType.DAILY, "Daily 1", "Hemos avanzado en la planificación del sprint, aunque el tiempo ha corrido en nuestra contra y vamos un poco atrasados.", sprint1));
-		Document doc2 = this.documentRepository.save(new Document(DocumentType.PLANNING_MEETING,"Planning meeting 1", "Se planifica acabar la definición del producto, el análisis de competidores y las métricas de rendimiento", sprint1));
-		Document doc3 = this.documentRepository.save(new Document(DocumentType.REVIEW, "Review", "Se han revisado las tareas entregadas encontrando fallos en la definición del producto.", sprint1));
-		Document doc4 = this.documentRepository.save(new Document(DocumentType.RETROSPECTIVE, "Retrospective", "Hemos trabajado de forma adecuada, aunque no de forma uniforme. Algunas tareas están a medio acabar por falta de planificación. Se propone utilizar slack como medio para aumentar la comunicación del equipo", sprint1));
+		Document doc1 = this.documentRepository.save(new Document(DocumentType.DAILY, "Daily 1",
+				"Hemos avanzado en la planificación del sprint, aunque el tiempo ha corrido en nuestra contra y vamos un poco atrasados.",
+				sprint1));
+		Document doc2 = this.documentRepository.save(new Document(DocumentType.PLANNING_MEETING, "Planning meeting 1",
+				"Se planifica acabar la definición del producto, el análisis de competidores y las métricas de rendimiento",
+				sprint1));
+		Document doc3 = this.documentRepository.save(new Document(DocumentType.REVIEW, "Review",
+				"Se han revisado las tareas entregadas encontrando fallos en la definición del producto.", sprint1));
+		Document doc4 = this.documentRepository.save(new Document(DocumentType.RETROSPECTIVE, "Retrospective",
+				"Hemos trabajado de forma adecuada, aunque no de forma uniforme. Algunas tareas están a medio acabar por falta de planificación. Se propone utilizar slack como medio para aumentar la comunicación del equipo",
+				sprint1));
 
 		entities.put("doc1", doc1.getId());
 		entities.put("doc2", doc2.getId());
@@ -393,17 +418,17 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("estimation9", estimation9.getId());
 
 		Payment payment1 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime1), basicBox,
-				user1.getUserAccount(), LocalDate.from(localDateTime2)));
+				user1.getUserAccount(), LocalDate.from(localDateTime2), "ABC123456", "ABC12345678"));
 		Payment payment2 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime2), proBox,
-				user1.getUserAccount(), LocalDate.from(localDateTime3)));
+				user1.getUserAccount(), LocalDate.from(localDateTime3), "ABC123456", "ABC12345678"));
 		Payment payment3 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime1), basicBox,
-				user4.getUserAccount(), LocalDate.from(localDateTime2)));
+				user4.getUserAccount(), LocalDate.from(localDateTime2), "ABC123456", "ABC12345678"));
 		Payment payment4 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime2), standardBox,
-				user4.getUserAccount(), LocalDate.from(localDateTime3)));
+				user4.getUserAccount(), LocalDate.from(localDateTime3), "ABC123456", "ABC12345678"));
 		Payment payment5 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime2), proBox,
-				user2.getUserAccount(), LocalDate.from(localDateTime3)));
+				user2.getUserAccount(), LocalDate.from(localDateTime3), "ABC123456", "ABC12345678"));
 		Payment payment6 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime2), proBox,
-				user3.getUserAccount(), LocalDate.from(localDateTime3)));
+				user3.getUserAccount(), LocalDate.from(localDateTime3), "ABC123456", "ABC12345678"));
 
 		entities.put("payment1", payment1.getId());
 		entities.put("payment2", payment2.getId());

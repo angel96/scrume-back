@@ -7,12 +7,10 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserForWorkspaceDto {
+public class UserWithNickDto {
 	
 	private Integer id;
 	
     private String nick;
-    
-    private String photo;
-
+   
 }

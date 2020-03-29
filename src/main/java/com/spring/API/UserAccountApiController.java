@@ -38,13 +38,13 @@ public class UserAccountApiController extends AbstractApiController {
 		super.authenticateOrUnauthenticate(null);
 		session.invalidate();
 	}
-	
+
 	@PostMapping
 	public UserAccountDto save(@RequestBody UserAccountDto userAccountDto) {
 		super.logger.info("POST /api/userAccount");
 		return this.service.save(userAccountDto);
 	}
-	
+
 	@PutMapping("/{idUserAccount}")
 	public UserAccountDto update(@PathVariable Integer idUserAccount, @RequestBody UserAccountDto userAccountDto) {
 		super.logger.info("UPDATE /api/userAccount");
@@ -58,7 +58,7 @@ public class UserAccountApiController extends AbstractApiController {
 		String auth = request.getHeader("authorization");
 		return service.isAValidUser(auth);
 	}
-	
+
 	@PostMapping("/isAValidEmail")
 	@CrossOrigin(origins = "*", methods = { RequestMethod.POST })
 	public Boolean isAValidEmail(@RequestBody UsernameDto usernameDto) {
