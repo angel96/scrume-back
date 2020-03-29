@@ -57,5 +57,10 @@ public class UserApiController extends AbstractApiController {
 		super.logger.info("UPDATE /api/user");
 		return this.userService.update(userDto, idUser);
 	}
-
+	
+	@GetMapping("/anonymize")
+	public void anonymize() {
+		super.logger.info("GET /api/user/anonymize");
+		this.userService.anonymize();
+	}
 }
