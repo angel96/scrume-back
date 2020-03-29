@@ -19,7 +19,6 @@ import com.spring.CustomObject.InvitationListDto;
 import com.spring.CustomObject.InvitationRecipientDto;
 import com.spring.CustomObject.InvitationSenderDto;
 import com.spring.CustomObject.TeamDto;
-import com.spring.CustomObject.UserForWorkspaceDto;
 import com.spring.CustomObject.UserWithNickDto;
 import com.spring.Service.InvitationService;
 import com.spring.Service.TeamService;

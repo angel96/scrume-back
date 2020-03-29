@@ -44,4 +44,9 @@ public class Payment extends BaseEntity {
 	@DateTimeFormat(pattern = "yyyy/MM/dd")
 	private LocalDate expiredDate;
 
+	
+	private String orderId;
+	
+	
+	private String payerId;
 }

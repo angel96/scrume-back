@@ -141,13 +141,9 @@ public class TaskService extends AbstractService {
 		checkUserOnTeam(UserAccountService.getPrincipal(), project.getTeam());
 		ModelMapper mapper = new ModelMapper();
 		Task taskEntity = mapper.map(task, Task.class);
-		Task taskDB = new Task();
-		taskDB.setTitle(taskEntity.getTitle());
-		taskDB.setDescription(taskEntity.getDescription());
-		taskDB.setProject(project);
+		Task taskDB = new Task(taskEntity.getTitle(), taskEntity.getDescription(), 0, project, new HashSet<>(), null);
 		taskDB = taskRepository.saveAndFlush(taskDB);
-		return new TaskDto(taskDB.getTitle(), taskDB.getDescription(), taskDB.getPoints(), projectId, new HashSet<>(),
-				null);
+		return new TaskDto(taskDB.getTitle(), taskDB.getDescription(), taskDB.getPoints(), projectId, new HashSet<>(),null);
 	}
 
 	public TaskEditDto update(TaskEditDto taskDto, int taskId) {
