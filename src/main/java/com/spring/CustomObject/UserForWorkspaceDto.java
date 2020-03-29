@@ -12,5 +12,7 @@ public class UserForWorkspaceDto {
 	private Integer id;
 	
     private String nick;
+    
+    private String photo;
 
 }

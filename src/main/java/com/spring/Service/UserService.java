@@ -2,6 +2,7 @@ package com.spring.Service;
 
 import java.lang.reflect.Type;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Collection;
@@ -14,6 +15,7 @@ import org.modelmapper.ModelMapper;
 import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -22,12 +24,14 @@ import com.spring.CustomObject.UserDto;
 import com.spring.CustomObject.UserForWorkspaceDto;
 import com.spring.CustomObject.UserLoginDto;
 import com.spring.CustomObject.UserOfATeamByWorspaceDto;
+import com.spring.CustomObject.UserUpdateDto;
 import com.spring.Model.Team;
 import com.spring.Model.User;
 import com.spring.Model.UserAccount;
 import com.spring.Model.Workspace;
 import com.spring.Repository.UserRepository;
 import com.spring.Security.UserAccountService;
+import com.spring.Utiles.Utiles;
 
 @Service
 @Transactional
@@ -65,6 +69,7 @@ public class UserService extends AbstractService {
 		}.getType();
 		return mapper.map(users, listType);
 	}
+	
 
 	public User getUserByPrincipal() {
 		UserAccount userAccount = UserAccountService.getPrincipal();
@@ -107,22 +112,31 @@ public class UserService extends AbstractService {
 		return userDto;
 	}
 
-	public UserDto update(UserDto userDto, Integer idUser) {
-		ModelMapper mapper = new ModelMapper();
-		User userEntity = mapper.map(userDto, User.class);
-		User userDB = this.findOne(idUser); // User from DB
+	public UserDto update(UserUpdateDto userDto, Integer idUser) {
+		User userDB = this.findOne(idUser); 
 		validatePermission(userDB);
-		UserAccount userAccountDB = this.userAccountService.findOne(userDB.getUserAccount().getId()); // UserAccount
-		userDB.setGitUser(userEntity.getGitUser());
-		userDB.setName(userEntity.getName());
-		userDB.setNick(userEntity.getNick());
-		userDB.setPhoto(userEntity.getPhoto());
-		userDB.setSurnames(userEntity.getSurnames());
+		UserAccount userAccountDB = this.userAccountService.findOne(userDB.getUserAccount().getId());
+		userDB.setGitUser(userDto.getGitUser());
+		userDB.setName(userDto.getName());
+		userDB.setNick(userDto.getNick());
+		userDB.setPhoto(userDto.getPhoto());
+		userDB.setSurnames(userDto.getSurnames());
+		if(userDto.getPreviousPassword() != null && userDto.getPreviousPassword() != "") {
+			this.validatePassword(userAccountDB, userDto.getPreviousPassword(), userDto.getNewPassword());
+			String password = Utiles.encryptedPassword(userDto.getNewPassword());
+			userAccountDB.setPassword(password);
+			userAccountDB.setCreatedAt(LocalDateTime.now());
+			userAccountDB.setLastPasswordChangeAt(LocalDateTime.now());
+			userAccountDB.setRoles(userAccountDB.getRoles());
+			userAccountDB = this.userAccountService.save(userAccountDB);
+		}
 		userDB.setUserAccount(userAccountDB);
 		validateUser(userDB);
 		this.userRepository.saveAndFlush(userDB);
-		return mapper.map(userDB, UserDto.class);
+		return new UserDto(userDB.getId(), userDB.getName(), userDB.getSurnames(), userDB.getNick(), userDB.getGitUser(), userDB.getPhoto(), userDB.getUserAccount().getId());
 	}
+
+
 
 	public void flush() {
 		userRepository.flush();
@@ -198,4 +212,15 @@ public class UserService extends AbstractService {
 		return res;
 	}
 
+	private void validatePassword(UserAccount userAccountDB, String previousPassword, String newPassword) {
+		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+		String pattern = "^.*(?=.{8,})(?=..*[0-9])(?=.*[a-z])(?=.*[A-Z]).*$";
+		if (!encoder.matches(previousPassword, userAccountDB.getPassword())) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The current password does not match the one stored in the database");
+		}
+		if (!newPassword.matches(pattern)) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new password must have an uppercase, a lowercase, a number and at least 8 characters");
+		}
+		
+	}
 }

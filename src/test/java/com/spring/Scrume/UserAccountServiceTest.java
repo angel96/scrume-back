@@ -20,20 +20,22 @@ public class UserAccountServiceTest extends AbstractTest{
 	@Test
 	public void userAccountTestSave() throws Exception {
 		Object[][] objects = {
-				{ "prueba@gmail.com", "Prueba12345", null }, //Caso positivo
-				{ "prueba", "Prueba12345", ResponseStatusException.class}, //Caso negativo: username invalido
-				{ "prueba@gmail.com", "prueba12345", ResponseStatusException.class}}; //Caso negativo: password invalida
+				{ "prueba@gmail.com", "Prueba12345", true, null }, //Caso positivo
+				{ "prueba", "Prueba12345", true, ResponseStatusException.class}, //Caso negativo: username invalido
+				{ "prueba@gmail.com", "prueba12345", true, ResponseStatusException.class}, //Caso negativo: password invalida
+				{ "prueba@gmail.com", "prueba12345", false, ResponseStatusException.class}}; //Caso negativo: no confirmación
 				 
 		
-		Stream.of(objects).forEach(x -> driverTestSave((String) x[0], (String) x[1], (Class<?>) x[2]));
+		Stream.of(objects).forEach(x -> driverTestSave((String) x[0], (String) x[1], (Boolean) x[2], (Class<?>) x[3]));
 	}
 	
-	protected void driverTestSave(String username, String password, Class<?> expected) {
+	protected void driverTestSave(String username, String password, Boolean confirmation, Class<?> expected) {
 		Class<?> caught = null;
 		try {
 			UserAccountDto userAccountDto = new UserAccountDto();
 			userAccountDto.setUsername(username);
 			userAccountDto.setPassword(password);
+			userAccountDto.setConfirmation(confirmation);
 			this.userAccountService.save(userAccountDto);
 		} catch (Exception oops) {
 			caught = oops.getClass();
@@ -44,21 +46,19 @@ public class UserAccountServiceTest extends AbstractTest{
 	@Test
 	public void userAccountTestUpdate() throws Exception {
 		Object[][] objects = {
-				{ super.entities().get("user1"), super.entities().get("account1"), "prueba22@gmail.com", null}}; //Caso positivo
+				{ super.entities().get("user1"), super.entities().get("account1"), "prueba22@gmail.com", true, null}}; //Caso positivo
 				 
 		
-		Stream.of(objects).forEach(x -> driverTestUpdate((Integer) x[0], (Integer) x[1], (String) x[2], (Class<?>) x[3]));
+		Stream.of(objects).forEach(x -> driverTestUpdate((Integer) x[0], (Integer) x[1], (String) x[2], (Boolean) x[3], (Class<?>) x[4]));
 	}
 	
-	protected void driverTestUpdate(Integer userId, Integer userAccountId, String username, Class<?> expected) {
+	protected void driverTestUpdate(Integer userId, Integer userAccountId, String username, Boolean confirmation, Class<?> expected) {
 		Class<?> caught = null;
 		try {
-			System.out.println(userId);
-			System.out.println(userAccountId);
 			UserAccount userAccountDB = this.userAccountService.findOne(userAccountId);
-			System.out.println(userAccountDB);
 			UserAccountDto userAccountDto = new UserAccountDto();
 			userAccountDto.setPassword(userAccountDB.getPassword());
+			userAccountDto.setConfirmation(confirmation);
 			userAccountDto.setRoles(null);
 			userAccountDto.setUsername(userAccountDB.getUsername());
 			userAccountDto.setUsername(username);
