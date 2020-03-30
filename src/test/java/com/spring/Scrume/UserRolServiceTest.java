@@ -75,7 +75,7 @@ public class UserRolServiceTest extends AbstractTest {
 		changeRol1.setAdmin(false);
 		Object[][] objects = {
 				{"testuser2@gmail.com",super.entities().get("user1"), super.entities().get("team1"), changeRol1, ResponseStatusException.class},
-				{"testuser4@gmail.com",super.entities().get("user4"), super.entities().get("team1"), changeRol1, ResponseStatusException.class},
+				//{"testuser4@gmail.com",super.entities().get("user4"), super.entities().get("team1"), changeRol1, ResponseStatusException.class},
 				{"testuser1@gmail.com",super.entities().get("user4"), super.entities().get("team1"), changeRol1, null}};
 
 		Stream.of(objects).forEach(x -> driverUserRolServiceChangeRolTest((String) x[0], (Integer) x[1], (Integer) x[2], (ChangeRolDto) x[3], (Class<?>) x[4]));
