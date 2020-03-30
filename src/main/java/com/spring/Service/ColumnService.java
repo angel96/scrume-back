@@ -32,7 +32,7 @@ public class ColumnService extends AbstractService {
 
 	public Collection<Column> saveDefaultColumns(Workspace workspace) {
 
-		Column toDo = new Column("To Do", workspace);
+		Column toDo = new Column("To do", workspace);
 		Column inProgress = new Column("In progress", workspace);
 		Column done = new Column("Done", workspace);
 
