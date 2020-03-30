@@ -25,13 +25,7 @@ public class BoxService extends AbstractService {
 	}
 
 	public Box getOne(int id) {
-		Box box = this.boxRepository.getOne(id);
-		if (box != null) {
-			return box;
-		} else {
-			return null;
-		}
-
+		return this.boxRepository.getOne(id);
 	}
 
 	public Box getMinimumBoxOfATeam(int team) {
