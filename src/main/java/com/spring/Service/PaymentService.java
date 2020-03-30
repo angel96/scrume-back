@@ -47,7 +47,28 @@ public class PaymentService extends AbstractService {
 		if (payment.getId() == 0) {
 			if (payment.getExpiredDate().isAfter(LocalDate.now())) {
 				saveTo = new Payment(LocalDate.now(), this.serviceBox.getOne(payment.getBox()),
-						this.serviceUser.getUserByPrincipal().getUserAccount(), payment.getExpiredDate());
+						this.serviceUser.getUserByPrincipal().getUserAccount(), payment.getExpiredDate(),
+						payment.getOrderId(), payment.getPayerId());
+				saveTo = repository.saveAndFlush(saveTo);
+				payment.setId(saveTo.getId());
+			} else {
+				throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED,
+						"Expired date is not later than currently");
+			}
+
+		}
+
+		return payment;
+	}
+
+	public PaymentEditDto save(UserAccount user, PaymentEditDto payment) {
+
+		Payment saveTo = null;
+
+		if (payment.getId() == 0) {
+			if (payment.getExpiredDate().isAfter(LocalDate.now())) {
+				saveTo = new Payment(LocalDate.now(), this.serviceBox.getOne(payment.getBox()), user,
+						payment.getExpiredDate(), payment.getOrderId(), payment.getPayerId());
 				saveTo = repository.saveAndFlush(saveTo);
 				payment.setId(saveTo.getId());
 			} else {

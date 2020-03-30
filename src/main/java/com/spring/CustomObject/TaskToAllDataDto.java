@@ -5,12 +5,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class InvitationRecipientDto {
- 		
-	private Integer id;
-	
-    private Boolean isAccepted;
+@NoArgsConstructor
+public class TaskToAllDataDto {
+
+	private String title;
+
+	private String description;
+
+	private Integer points;
 	
 }

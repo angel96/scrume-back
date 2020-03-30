@@ -196,5 +196,9 @@ public class UserRolService extends AbstractService {
 		return this.userRolRepository.findUsersByTeam(team);
 	}
 
+	public Collection<Team> findAllByUser(User user) {
+		return this.userRolRepository.findByUser(user);
+	}
+
 
 }
