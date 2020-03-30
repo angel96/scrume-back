@@ -62,9 +62,7 @@ public class Utiles {
 							: Integer.valueOf(x.split("=")[1]);
 				} catch (NumberFormatException e) {
 					entityName = x.split("=")[0].equals("null") || x.split("=")[0] == null ? "" : x.split("=")[0];
-				} finally {
-					input.close();
-				}
+				} 
 				result.put(entityName, id);
 			});
 
