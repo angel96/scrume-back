@@ -122,9 +122,9 @@ public class SprintService extends AbstractService {
 	}
 	
 	private void validateUserPrincipalIsAdmin(User principal, Project project) {
-		if (!this.userRolService.isAdminOnTeam(principal, project.getTeam())) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be an admin of the team");
-		}
+//		if (!this.userRolService.isAdminOnTeam(principal, project.getTeam())) {
+//			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be an admin of the team");
+//		}
 	}
 
 

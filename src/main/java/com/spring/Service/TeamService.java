@@ -77,9 +77,9 @@ public class TeamService extends AbstractService {
 		if (!this.userRolService.isUserOnTeam(principal, team)) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must belong to the team");
 		}
-		if (!this.userRolService.isAdminOnTeam(principal, team)) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be an admin of the team");
-		}
+//		if (!this.userRolService.isAdminOnTeam(principal, team)) {
+//			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be an admin of the team");
+//		}
 	}
 
 	private void validateTeam(Team team) {
