@@ -1,13 +1,17 @@
 package com.spring.Scrume;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.stream.Stream;
 
+import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.spring.CustomObject.FindByNickDto;
 import com.spring.CustomObject.UserDto;
 import com.spring.CustomObject.UserUpdateDto;
 import com.spring.Model.User;
@@ -161,6 +165,29 @@ public class UserServiceTest extends AbstractTest {
 			this.userService.getAllMyData();
 			userService.flush();
 			super.authenticateOrUnauthenticate(null);
+		} catch (Exception oops) {
+			caught = oops.getClass();
+		}
+		super.checkExceptions(expected, caught);
+	}
+
+	@Test
+	public void testFindByNickStartsWith() {
+		Object[][] objects = { { "angdellun", null }, { "jualorper", null }, { "ezeporjur", null } };
+
+		Stream.of(objects).forEach(x -> driverFindByNickStartsWith((String) x[0], (Class<?>) x[1]));
+	}
+
+	protected void driverFindByNickStartsWith(String nick, Class<?> expected) {
+		Class<?> caught = null;
+		try {
+			List<Integer> ids = new ArrayList<>();
+			ids.add(super.entities().get("user1"));
+			ids.add(super.entities().get("user2"));
+			ids.add(super.entities().get("user3"));
+			ids.add(super.entities().get("user4"));
+
+			this.userService.findByNickStartsWith(new FindByNickDto(nick, super.entities().get("team1"), ids));
 		} catch (Exception oops) {
 			caught = oops.getClass();
 		}
