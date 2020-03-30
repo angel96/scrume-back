@@ -23,7 +23,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.AllDataDto;
 import com.spring.CustomObject.FindByNickDto;
-import com.spring.CustomObject.TaskListDto;
 import com.spring.CustomObject.TaskToAllDataDto;
 import com.spring.CustomObject.UserDto;
 import com.spring.CustomObject.UserLoginDto;
@@ -54,7 +53,7 @@ public class UserService extends AbstractService {
 
 	@Autowired
 	private TeamService teamService;
-	
+
 	@Autowired
 	private TaskService taskService;
 
@@ -63,10 +62,7 @@ public class UserService extends AbstractService {
 
 	@Autowired
 	private PaymentService paymentService;
-	
-	@Autowired
-	private DocumentService documentService;
-	
+
 	public Collection<UserOfATeamByWorspaceDto> listUsersOfATeamByWorkspace(Integer idWorkspace) {
 		ModelMapper mapper = new ModelMapper();
 		User principal = this.getUserByPrincipal();
@@ -80,7 +76,6 @@ public class UserService extends AbstractService {
 		}.getType();
 		return mapper.map(users, listType);
 	}
-	
 
 	public User getUserByPrincipal() {
 		UserAccount userAccount = UserAccountService.getPrincipal();
@@ -124,7 +119,7 @@ public class UserService extends AbstractService {
 	}
 
 	public UserDto update(UserUpdateDto userDto, Integer idUser) {
-		User userDB = this.findOne(idUser); 
+		User userDB = this.findOne(idUser);
 		validatePermission(userDB);
 		UserAccount userAccountDB = this.userAccountService.findOne(userDB.getUserAccount().getId());
 		userDB.setGitUser(userDto.getGitUser());
@@ -132,7 +127,7 @@ public class UserService extends AbstractService {
 		userDB.setNick(userDto.getNick());
 		userDB.setPhoto(userDto.getPhoto());
 		userDB.setSurnames(userDto.getSurnames());
-		if(userDto.getPreviousPassword() != null && userDto.getPreviousPassword() != "") {
+		if (userDto.getPreviousPassword() != null && !userDto.getPreviousPassword().equals("")) {
 			this.validatePassword(userAccountDB, userDto.getPreviousPassword(), userDto.getNewPassword());
 			String password = Utiles.encryptedPassword(userDto.getNewPassword());
 			userAccountDB.setPassword(password);
@@ -144,10 +139,9 @@ public class UserService extends AbstractService {
 		userDB.setUserAccount(userAccountDB);
 		validateUser(userDB);
 		this.userRepository.saveAndFlush(userDB);
-		return new UserDto(userDB.getId(), userDB.getName(), userDB.getSurnames(), userDB.getNick(), userDB.getGitUser(), userDB.getPhoto(), userDB.getUserAccount().getId());
+		return new UserDto(userDB.getId(), userDB.getName(), userDB.getSurnames(), userDB.getNick(),
+				userDB.getGitUser(), userDB.getPhoto(), userDB.getUserAccount().getId());
 	}
-
-
 
 	public void flush() {
 		userRepository.flush();
@@ -156,12 +150,12 @@ public class UserService extends AbstractService {
 	public Collection<UserWithNickDto> findByNickStartsWith(FindByNickDto findByNickDto) {
 		List<User> users = this.userRepository.findByNickStartsWith(findByNickDto.getWord());
 		Collection<Integer> idUsers = new ArrayList<>();
-		if(findByNickDto.getUsers()!= null) {
+		if (findByNickDto.getUsers() != null) {
 			idUsers.addAll(findByNickDto.getUsers());
 		}
-		if(findByNickDto.getTeam() != null) {
+		if (findByNickDto.getTeam() != null) {
 			Team team = this.teamService.findOne(findByNickDto.getTeam());
-			if(team != null) {
+			if (team != null) {
 				idUsers.addAll(this.userRolService.findIdUsersByTeam(team));
 			}
 		}
@@ -197,16 +191,16 @@ public class UserService extends AbstractService {
 		principal.setUserAccount(userAccountAnonymous);
 		this.userRepository.saveAndFlush(principal);
 	}
-	
+
 	private void validateUser(User user) {
 		if (user == null) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user is null");
 		}
 	}
-	
+
 	private void validatePermission(User user) {
 		User principal = this.getUserByPrincipal();
-		if(!user.equals(principal)) {
+		if (!user.equals(principal)) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user does not match the logged in user");
 		}
 	}
@@ -226,7 +220,6 @@ public class UserService extends AbstractService {
 		}
 	}
 
-
 	public UserLoginDto getByAuthorization(String string) {
 		UserLoginDto res;
 		Base64.Decoder dec = Base64.getDecoder();
@@ -237,11 +230,13 @@ public class UserService extends AbstractService {
 			auth = string.split(" ")[1];
 			decodedAuth = new String(dec.decode(auth));
 			username = decodedAuth.split(":")[0];
-			User user = this.userRepository.findUserByUserName(username).orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authorized"));
+			User user = this.userRepository.findUserByUserName(username)
+					.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authorized"));
 			LocalDate endingBoxDate = this.paymentService.findByUserAccount(user.getUserAccount()).getExpiredDate();
 			res = new UserLoginDto(user.getId(), user.getUserAccount().getUsername(), endingBoxDate);
-		}catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The user has not been found or does not have any box payment record");
+		} catch (Exception e) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"The user has not been found or does not have any box payment record");
 		}
 		return res;
 	}
@@ -250,14 +245,15 @@ public class UserService extends AbstractService {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		String pattern = "^.*(?=.{8,})(?=..*[0-9])(?=.*[a-z])(?=.*[A-Z]).*$";
 		if (!encoder.matches(previousPassword, userAccountDB.getPassword())) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The current password does not match the one stored in the database");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"The current password does not match the one stored in the database");
 		}
 		if (!newPassword.matches(pattern)) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The new password must have an uppercase, a lowercase, a number and at least 8 characters");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"The new password must have an uppercase, a lowercase, a number and at least 8 characters");
 		}
-		
-	}
 
+	}
 
 	public AllDataDto getAllMyData() {
 		User principal = this.getUserByPrincipal();
@@ -265,14 +261,15 @@ public class UserService extends AbstractService {
 		Collection<Task> tasks = this.taskService.findAllTaskByUser(principal);
 		Collection<TaskToAllDataDto> tasksToAllDataDto = new ArrayList<>();
 		for (Task task : tasks) {
-			TaskToAllDataDto taskAllDataDto = new TaskToAllDataDto(task.getTitle(), task.getDescription(), task.getPoints());
+			TaskToAllDataDto taskAllDataDto = new TaskToAllDataDto(task.getTitle(), task.getDescription(),
+					task.getPoints());
 			tasksToAllDataDto.add(taskAllDataDto);
 		}
-				
-		Collection<Team> teams = this.userRolService.findAllByUser(principal);
-		Collection<String> teamsName = teams.stream().map(x -> x.getName()).collect(Collectors.toList());
-		return new AllDataDto(principal.getUserAccount().getUsername(), principal.getName(), principal.getSurnames(), principal.getNick(), principal.getGitUser(), principal.getPhoto(), tasksToAllDataDto, teamsName);
-	}
 
+		Collection<Team> teams = this.userRolService.findAllByUser(principal);
+		Collection<String> teamsName = teams.stream().map(Team::getName).collect(Collectors.toList());
+		return new AllDataDto(principal.getUserAccount().getUsername(), principal.getName(), principal.getSurnames(),
+				principal.getNick(), principal.getGitUser(), principal.getPhoto(), tasksToAllDataDto, teamsName);
+	}
 
 }
