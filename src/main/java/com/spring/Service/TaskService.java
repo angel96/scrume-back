@@ -174,14 +174,14 @@ public class TaskService extends AbstractService {
 		Task task = this.findOne(taskId);
 		Project project = task.getProject();
 		checkUserOnTeam(UserAccountService.getPrincipal(), project.getTeam());
-		boolean user = this.userRolService.isAdminOnTeam(this.userService.getUserByPrincipal(), project.getTeam());
-
-		if (user) {
+//		boolean user = this.userRolService.isAdminOnTeam(this.userService.getUserByPrincipal(), project.getTeam());
+//
+//		if (user) {
 			taskRepository.deleteById(taskId);
-		} else {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
-					"You are not admin of this team. You are not allowed to remove this task");
-		}
+//		} else {
+//			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+//					"You are not admin of this team. You are not allowed to remove this task");
+//		}
 
 	}
 

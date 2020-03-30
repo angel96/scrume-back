@@ -212,10 +212,10 @@ public class WorkspaceService extends AbstractService {
 
 		boolean uRol = this.serviceUserRol.isAdminOnTeam(u, this.findOne(workspace).getSprint().getProject().getTeam());
 
-		if (!uRol) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
-					"The user must be an administrator for this action");
-		}
+//		if (!uRol) {
+//			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+//					"The user must be an administrator for this action");
+//		}
 
 	}
 
