@@ -1,6 +1,8 @@
 package com.spring.Scrume;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -15,12 +17,19 @@ import com.spring.CustomObject.FindByNickDto;
 import com.spring.CustomObject.UserDto;
 import com.spring.CustomObject.UserUpdateDto;
 import com.spring.Model.User;
+import com.spring.Model.UserAccount;
+import com.spring.Security.Role;
+import com.spring.Security.UserAccountRepository;
 import com.spring.Service.UserService;
+import com.spring.Utiles.Utiles;
 
 public class UserServiceTest extends AbstractTest {
 
 	@Autowired
 	private UserService userService;
+	
+	@Autowired
+	private UserAccountRepository userAccountRepository;
 
 	@Test
 	public void userGet() throws Exception {
@@ -42,12 +51,15 @@ public class UserServiceTest extends AbstractTest {
 
 	@Test
 	public void userTestSave() throws Exception {
+		UserAccount account5 = this.userAccountRepository
+				.save(new UserAccount("testuser5@gmail.com", Utiles.encryptedPassword("1234565"), LocalDateTime.now(),
+						LocalDateTime.now(), new HashSet<Role>()));
 		Object[][] objects = {
 				{ "prueba", "Prueba", "pruebatestuser", "fotografía", "Prueba Surname",
-						super.entities().get("account5"), null },
+						account5.getId(), null },
 				{ "prueba", "Prueba", "pruebatestuser", "fotografía", "Prueba Surname",
-						super.entities().get("account5"), DataIntegrityViolationException.class },
-				{ "prueba", "Prueba", null, "fotografía", "Prueba Surname", super.entities().get("account5"),
+							account5.getId(), DataIntegrityViolationException.class },
+				{ "prueba", "Prueba", null, "fotografía", "Prueba Surname", account5.getId(),
 						DataIntegrityViolationException.class } };
 
 		Stream.of(objects).forEach(x -> driverTestSave((String) x[0], (String) x[1], (String) x[2], (String) x[3],
