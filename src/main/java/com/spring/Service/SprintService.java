@@ -1,5 +1,7 @@
 package com.spring.Service;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -120,9 +122,9 @@ public class SprintService extends AbstractService {
 	}
 	
 	private void validateUserPrincipalIsAdmin(User principal, Project project) {
-		if (!this.userRolService.isAdminOnTeam(principal, project.getTeam())) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be an admin of the team");
-		}
+//		if (!this.userRolService.isAdminOnTeam(principal, project.getTeam())) {
+//			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be an admin of the team");
+//		}
 	}
 
 
@@ -141,6 +143,9 @@ public class SprintService extends AbstractService {
 	private void validateDates(Sprint sprint) {
 		if (sprint.getStartDate() == null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "the start date cannot be null");
+		}
+		if (sprint.getStartDate().before(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()))) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Dates cannot be earlier than the current one");
 		}
 		if (sprint.getEndDate() == null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "the end date cannot be null");
