@@ -132,10 +132,10 @@ public class InvitationService extends AbstractService {
 		if (!this.userRolService.isUserOnTeam(sender, team)) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The sender must belong to the team");
 		}
-//		if (!this.userRolService.isAdminOnTeam(sender, team)) {
-//			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
-//					"The sender must be an administrator of the team");
-//		}
+		if (!this.userRolService.isAdminOnTeam(sender, team)) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"The sender must be an administrator of the team");
+		}
 	}
 
 	private void validateRecipient(User recipient, Team team) {
