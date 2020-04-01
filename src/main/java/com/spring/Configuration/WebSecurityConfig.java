@@ -43,7 +43,7 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.authenticated().antMatchers("/api/workspace/**").authenticated().antMatchers("/api/history-task/**")
 				.authenticated().antMatchers("/api/task/**").authenticated().antMatchers("/api/payment/**")
 				.authenticated().antMatchers("/api/box/**").authenticated().antMatchers("/api/user/**").authenticated()
-				.antMatchers("/api/document/**").authenticated();
+				.antMatchers("/api/document/**").authenticated().antMatchers("/api/personalList/**").authenticated();
 
 		// Probar si al cierre de sesion, sigue disponible la API
 		http.logout().logoutUrl("/api/login/logout").clearAuthentication(true).deleteCookies("JSESSIONID").and().csrf()

@@ -147,10 +147,10 @@ public class UserRolService extends AbstractService {
 	}
 
 	private void validateIsAdmin(User user, Team team) {
-//		if (!this.isAdminOnTeam(user, team)) {
-//			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
-//					"The user who performs the action must be an admin of the team");
-//		}
+		if (!this.isAdminOnTeam(user, team)) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"The user who performs the action must be an admin of the team");
+		}
 	}
 	
 	public void leaveAllTeams(User principal) {

@@ -141,10 +141,10 @@ public class ProjectService extends AbstractService {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The user must belong to the team to edit the project");
 		}
-//		if (!this.userRolService.isAdminOnTeam(principal, team)) {
-//			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
-//					"The user must be an admin of the team to edit the project");
-//		}
+		if (!this.userRolService.isAdminOnTeam(principal, team)) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"The user must be an admin of the team to edit the project");
+		}
 	}
 
 }
