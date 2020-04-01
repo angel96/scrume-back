@@ -62,8 +62,7 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
-		http.cors().and().httpBasic().and().exceptionHandling()
-				.authenticationEntryPoint(customBasicAuthenticationEntryPoint).and().sessionManagement()
+		http.cors().and().httpBasic().and().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests().and()
 				.authorizeRequests().antMatchers("/api/team/*").authenticated().antMatchers("/api/sprint/*")
 				.authenticated().antMatchers("/api/login/**").authenticated().antMatchers("/api/project/**")
