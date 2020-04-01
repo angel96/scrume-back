@@ -41,7 +41,7 @@ public class Document extends BaseEntity {
 	@JsonProperty
 	@SafeHtml
 	@NotBlank
-	@Column(length = 100000)
+	@Column(length=10000)
 	private String content;
 	
 	@ManyToOne

@@ -24,6 +24,7 @@ import com.spring.Model.Estimation;
 import com.spring.Model.HistoryTask;
 import com.spring.Model.Invitation;
 import com.spring.Model.Payment;
+import com.spring.Model.PersonalTaskList;
 import com.spring.Model.Project;
 import com.spring.Model.Sprint;
 import com.spring.Model.Task;
@@ -39,6 +40,7 @@ import com.spring.Repository.EstimationRepository;
 import com.spring.Repository.HistoryTaskRepository;
 import com.spring.Repository.InvitationRepository;
 import com.spring.Repository.PaymentRepository;
+import com.spring.Repository.PersonalTaskListRepository;
 import com.spring.Repository.ProjectRepository;
 import com.spring.Repository.SprintRepository;
 import com.spring.Repository.TaskRepository;
@@ -106,6 +108,9 @@ public class PopulatorDatabase implements CommandLineRunner {
 
 	@Autowired
 	private EstimationRepository estimationRepository;
+	
+	@Autowired
+	private PersonalTaskListRepository taskListRepository;
 
 	@Override
 	public void run(String... args) throws Exception {
@@ -130,6 +135,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		boxRepository.deleteAll();
 		accountRepository.deleteAll();
 		documentRepository.deleteAll();
+		taskListRepository.deleteAll();
 
 		UserAccount account1 = accountRepository
 				.save(new UserAccount("testuser1@gmail.com", Utiles.encryptedPassword("1234561"), LocalDateTime.now(),
@@ -146,16 +152,11 @@ public class PopulatorDatabase implements CommandLineRunner {
 		UserAccount account4 = accountRepository
 				.save(new UserAccount("testuser4@gmail.com", Utiles.encryptedPassword("1234564"), LocalDateTime.now(),
 						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_ADMIN))));
-		
-		UserAccount account5 = accountRepository
-				.save(new UserAccount("testuser5@gmail.com", Utiles.encryptedPassword("1234565"), LocalDateTime.now(),
-						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_ADMIN))));
 
 		entities.put("account1", account1.getId());
 		entities.put("account2", account2.getId());
 		entities.put("account3", account3.getId());
 		entities.put("account4", account4.getId());
-		entities.put("account5", account5.getId());
 
 		Box basicBox = boxRepository.save(new Box("BASIC", 0.0));
 		Box standardBox = boxRepository.save(new Box("STANDARD", 1.0));
@@ -436,7 +437,18 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("payment4", payment4.getId());
 		entities.put("payment5", payment5.getId());
 		entities.put("payment6", payment6.getId());
-
+		
+		PersonalTaskList personalList1 = new PersonalTaskList(user1, "Test List 1");
+		PersonalTaskList personalList2 = new PersonalTaskList(user1, "Test List 2");
+		PersonalTaskList personalList3 = new PersonalTaskList(user1, "Test List 3");
+		PersonalTaskList personalList4 = new PersonalTaskList(user1, "Test List 4");
+		
+		entities.put("personalLis1", personalList1.getId());
+		entities.put("personalLis2", personalList2.getId());
+		entities.put("personalLis3", personalList3.getId());
+		entities.put("personalLis4", personalList4.getId());
+		
+		
 		Utiles.escribeFichero(entities, properties);
 
 		log.info("The entities mapped are: \n" + entities.keySet().stream().map(x -> {
@@ -459,6 +471,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		historyTaskRepository.flush();
 		estimationRepository.flush();
 		documentRepository.flush();
+		taskListRepository.flush();
 	}
 
 }

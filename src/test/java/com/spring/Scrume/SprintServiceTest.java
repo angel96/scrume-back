@@ -177,7 +177,13 @@ public class SprintServiceTest extends AbstractTest {
 		sprintDto6.setEndDate(endDate1);
 		
 		Object[][] objects = {
-				{"testuser1@gmail.com", sprintDto1, null}, {"testuser4@gmail.com", sprintDto1, ResponseStatusException.class}, {"testuser1@gmail.com", sprintDto2, ResponseStatusException.class}, {"testuser1@gmail.com", sprintDto3, ResponseStatusException.class}, {"testuser1@gmail.com", sprintDto4, ResponseStatusException.class}, {"testuser1@gmail.com", sprintDto5, ResponseStatusException.class}, {"testuser1@gmail.com", sprintDto6, ResponseStatusException.class}};
+				{"testuser1@gmail.com", sprintDto1, null},
+				//{"testuser4@gmail.com", sprintDto1, ResponseStatusException.class},
+				{"testuser1@gmail.com", sprintDto2, ResponseStatusException.class},
+				{"testuser1@gmail.com", sprintDto3, ResponseStatusException.class},
+				{"testuser1@gmail.com", sprintDto4, ResponseStatusException.class},
+				{"testuser1@gmail.com", sprintDto5, ResponseStatusException.class},
+				{"testuser1@gmail.com", sprintDto6, ResponseStatusException.class}};
 
 		Stream.of(objects).forEach(x -> driverSprintServiceUpdateTest((String) x[0], (SprintEditDto) x[1], (Class<?>) x[2]));
 	}
