@@ -3,10 +3,8 @@ package com.spring.Service;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,7 +23,6 @@ import com.spring.CustomObject.AllDataDto;
 import com.spring.CustomObject.FindByNickDto;
 import com.spring.CustomObject.TaskToAllDataDto;
 import com.spring.CustomObject.UserDto;
-import com.spring.CustomObject.UserLoginDto;
 import com.spring.CustomObject.UserOfATeamByWorspaceDto;
 import com.spring.CustomObject.UserUpdateDto;
 import com.spring.CustomObject.UserWithNickDto;
@@ -59,9 +56,6 @@ public class UserService extends AbstractService {
 
 	@Autowired
 	private WorkspaceService workspaceService;
-
-	@Autowired
-	private PaymentService paymentService;
 
 	public Collection<UserOfATeamByWorspaceDto> listUsersOfATeamByWorkspace(Integer idWorkspace) {
 		ModelMapper mapper = new ModelMapper();
@@ -218,27 +212,6 @@ public class UserService extends AbstractService {
 		if (workspace == null) {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The workspace is not in the database");
 		}
-	}
-
-	public UserLoginDto getByAuthorization(String string) {
-		UserLoginDto res;
-		Base64.Decoder dec = Base64.getDecoder();
-		String auth;
-		String decodedAuth;
-		String username;
-		try {
-			auth = string.split(" ")[1];
-			decodedAuth = new String(dec.decode(auth));
-			username = decodedAuth.split(":")[0];
-			User user = this.userRepository.findUserByUserName(username)
-					.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authorized"));
-			LocalDate endingBoxDate = this.paymentService.findByUserAccount(user.getUserAccount()).getExpiredDate();
-			res = new UserLoginDto(user.getId(), user.getUserAccount().getUsername(), endingBoxDate);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"The user has not been found or does not have any box payment record");
-		}
-		return res;
 	}
 
 	private void validatePassword(UserAccount userAccountDB, String previousPassword, String newPassword) {

@@ -1,7 +1,6 @@
 package com.spring.JWT;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
 
@@ -48,8 +47,8 @@ public class JwtToken {
 		return getExpirationDateFromToken(token).before(new Date());
 	}
 
-	public String generateToken(UserAccount userDetails) {
-		return doGenerateToken(new HashMap<>(), userDetails.getUsername());
+	public String generateToken(Map<String, Object> objects, UserAccount userDetails) {
+		return doGenerateToken(objects, userDetails.getUsername());
 	}
 
 	private String doGenerateToken(Map<String, Object> claims, String subject) {

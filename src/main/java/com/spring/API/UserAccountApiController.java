@@ -1,6 +1,5 @@
 package com.spring.API;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -60,14 +59,6 @@ public class UserAccountApiController extends AbstractApiController {
 	public UserAccountDto update(@PathVariable Integer idUserAccount, @RequestBody UserAccountDto userAccountDto) {
 		super.logger.info("UPDATE /api/userAccount");
 		return this.service.update(idUserAccount, userAccountDto);
-	}
-
-	@GetMapping("/isAValidUser")
-	@CrossOrigin(origins = "*", methods = { RequestMethod.GET })
-	public Boolean isAValidUser(HttpServletRequest request) {
-		super.logger.info("GET /api/login/isAValidUser");
-		String auth = request.getHeader("authorization");
-		return service.isAValidUser(auth);
 	}
 
 	@PostMapping("/isAValidEmail")

@@ -1,5 +1,9 @@
 package com.spring.JWT;
 
+import java.time.LocalDate;
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +16,10 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.spring.CustomObject.UserLoginDto;
+import com.spring.Model.User;
 import com.spring.Model.UserAccount;
+import com.spring.Service.PaymentService;
 import com.spring.Utiles.Utiles;
 
 @Service
@@ -26,9 +33,12 @@ public class JwtUserAccountService implements UserDetailsService {
 	private AuthenticationManager authenticationManager;
 
 	@Autowired
+	private PaymentService paymentService;
+
+	@Autowired
 	private JwtToken jwtToken;
 
-	public UserAccount loadUserByUsername(String username) throws UsernameNotFoundException {
+	public UserAccount loadUserByUsername(String username) {
 		return repository.findByUsername(username)
 				.orElseThrow(() -> new UsernameNotFoundException(username + " no encontrado"));
 	}
@@ -50,7 +60,16 @@ public class JwtUserAccountService implements UserDetailsService {
 		if (checkUser) {
 			Authentication authentication = new UsernamePasswordAuthenticationToken(username, password);
 			authenticationManager.authenticate(authentication);
-			response.setToken(jwtToken.generateToken(account));
+
+			User user = this.repository.findUserByUserName(username)
+					.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authorized"));
+			LocalDate endingBoxDate = this.paymentService.findByUserAccount(user.getUserAccount()).getExpiredDate();
+
+			Map<String, Object> objects = new HashMap<>();
+
+			objects.put("userLoginDto", new UserLoginDto(user.getId(), username, endingBoxDate));
+
+			response.setToken(jwtToken.generateToken(objects, account));
 		} else {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid Username or Password");
 		}
