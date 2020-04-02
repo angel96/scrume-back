@@ -1,8 +1,11 @@
-package com.spring.Configuration;
+package com.spring.JWT;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -10,33 +13,56 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-
-import com.spring.Security.UserAccountService;
-
-import lombok.RequiredArgsConstructor;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
-@RequiredArgsConstructor
-public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
+@EnableGlobalMethodSecurity(prePostEnabled = true)
+public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-	private final CustomBasicAuthenticationPoint customBasicAuthenticationEntryPoint;
-	private final UserAccountService userDetailsService;
+	@Autowired
+	private JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
-	@Override
-	protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-		auth.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
+	@Autowired
+	private JwtUserAccountService service;
+
+	@Autowired
+	private JwtRequestFilter filter;
+
+	@Bean
+	public JwtAuthenticationEntryPoint jwtAuthenticationEntryPointBean() throws Exception {
+		return new JwtAuthenticationEntryPoint();
 	}
 
-	// For private access
+	@Bean
+	public PasswordEncoder passwordEncoder() {
+		return new BCryptPasswordEncoder();
+	}
+
+	@Bean
+	public AuthenticationManager authenticationManagerBean() throws Exception {
+		return super.authenticationManagerBean();
+	}
+
+	@Autowired
+	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+		auth.userDetailsService(service).passwordEncoder(passwordEncoder());
+	}
+
+	// For public urls
+	@Override
+	public void configure(WebSecurity web) {
+
+		web.ignoring().antMatchers("/api/login/**");
+		web.ignoring().antMatchers("/api/box/**");
+		web.ignoring().antMatchers("/api/user/find-by-authorization");
+		web.ignoring().antMatchers("/api/login/authenticate");
+	}
+
 	@Override
 	protected void configure(HttpSecurity http) throws Exception {
 
-		// No session will be created or used by spring security
-		http.sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
-		http.cors().and().httpBasic().and().exceptionHandling()
-				.authenticationEntryPoint(customBasicAuthenticationEntryPoint).and().sessionManagement()
+		http.cors().and().httpBasic().and().exceptionHandling().authenticationEntryPoint(jwtAuthenticationEntryPoint).and().sessionManagement()
 				.sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().authorizeRequests().and()
 				.authorizeRequests().antMatchers("/api/team/*").authenticated().antMatchers("/api/sprint/*")
 				.authenticated().antMatchers("/api/login/**").authenticated().antMatchers("/api/project/**")
@@ -49,19 +75,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 		http.logout().logoutUrl("/api/login/logout").clearAuthentication(true).deleteCookies("JSESSIONID").and().csrf()
 				.disable();
 
+		http.addFilterBefore(filter, UsernamePasswordAuthenticationFilter.class);
+
 	}
 
-	// For public urls
-	@Override
-	public void configure(WebSecurity web) {
-		
-		web.ignoring().antMatchers("/api/login/**");
-		web.ignoring().antMatchers("/api/box/**");
-		web.ignoring().antMatchers("/api/user/find-by-authorization");
-	}
-
-	@Bean
-	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder();
-	}
 }
