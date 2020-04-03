@@ -1,5 +1,7 @@
 package com.spring.Service;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -11,6 +13,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.itextpdf.text.BaseColor;
+import com.itextpdf.text.Chunk;
+import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.pdf.PdfWriter;
 import com.spring.CustomObject.DocumentDto;
 import com.spring.Model.Document;
 import com.spring.Model.DocumentType;
@@ -37,28 +45,32 @@ public class DocumentService extends AbstractService {
 		return this.documentRepo.findById(id).orElseThrow(
 				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested document not exists"));
 	}
-	
+
 	public DocumentDto findOneDto(int id) {
 		Document doc = this.findOne(id);
-		checkUserOnTeam(UserAccountService.getPrincipal(), doc.getSprint().getProject().getTeam());
-		return new DocumentDto(doc.getId(), doc.getName(), String.valueOf(doc.getType()), doc.getContent(), doc.getSprint().getId());
+		// checkUserOnTeam(UserAccountService.getPrincipal(),
+		// doc.getSprint().getProject().getTeam());
+		return new DocumentDto(doc.getId(), doc.getName(), String.valueOf(doc.getType()), doc.getContent(),
+				doc.getSprint().getId());
 	}
 
 	public List<DocumentDto> findAllBySprint(int sprintId) {
 		Sprint sprint = this.sprintService.getOne(sprintId);
 		checkUserOnTeam(UserAccountService.getPrincipal(), sprint.getProject().getTeam());
 		List<Document> docs = this.documentRepo.findBySprint(sprint);
-		return docs.stream().map(x -> new DocumentDto(x.getId(),x.getName(), String.valueOf(x.getType()), x.getContent(), sprint.getId()))
-				.collect(Collectors.toList());
+		return docs.stream().map(x -> new DocumentDto(x.getId(), x.getName(), String.valueOf(x.getType()),
+				x.getContent(), sprint.getId())).collect(Collectors.toList());
 	}
 
 	public DocumentDto save(DocumentDto document, int sprintId) {
 		checkType(document.getType());
 		Sprint sprint = this.sprintService.getOne(sprintId);
 		checkUserOnTeam(UserAccountService.getPrincipal(), sprint.getProject().getTeam());
-		Document entity = new Document(DocumentType.valueOf(document.getType()), document.getName(), document.getContent(), sprint);
+		Document entity = new Document(DocumentType.valueOf(document.getType()), document.getName(),
+				document.getContent(), sprint);
 		Document saved = this.documentRepo.saveAndFlush(entity);
-		return new DocumentDto(saved.getId(), saved.getName(), saved.getType().toString(), saved.getContent(), saved.getSprint().getId());
+		return new DocumentDto(saved.getId(), saved.getName(), saved.getType().toString(), saved.getContent(),
+				saved.getSprint().getId());
 	}
 
 	public DocumentDto update(DocumentDto dto, int documentId) {
@@ -69,7 +81,8 @@ public class DocumentService extends AbstractService {
 		db.setType(DocumentType.valueOf(dto.getType()));
 		db.setName(dto.getName());
 		db = this.documentRepo.saveAndFlush(db);
-		return new DocumentDto(db.getId(), db.getName(),db.getType().toString(), db.getContent(), db.getSprint().getId());
+		return new DocumentDto(db.getId(), db.getName(), db.getType().toString(), db.getContent(),
+				db.getSprint().getId());
 	}
 
 	public void delete(int idDoc) {
@@ -104,6 +117,32 @@ public class DocumentService extends AbstractService {
 		if (!this.documentRepo.existsById(check)) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested document is not avaiable");
 		}
+	}
+
+	public ByteArrayInputStream generatePdf(int doc) {
+		DocumentDto dto = this.findOneDto(doc);
+
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+
+		// 1. Configuración de cabeceras
+
+		// Necesario para no confundir el objeto documento de las entidades con el
+		// objeto documento de la libreria de PDF
+		com.itextpdf.text.Document document = new com.itextpdf.text.Document();
+		try {
+			PdfWriter writer = PdfWriter.getInstance(document, out);
+			document.open();
+			Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);
+			Chunk chunk = new Chunk("Hello World", font);
+			document.add(chunk);
+		} catch (DocumentException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		document.close();
+		return new ByteArrayInputStream(out.toByteArray());
+
 	}
 
 	public void flush() {
