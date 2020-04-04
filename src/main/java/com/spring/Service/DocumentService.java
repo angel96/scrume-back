@@ -2,7 +2,10 @@ package com.spring.Service;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -13,15 +16,20 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Chunk;
 import com.itextpdf.text.DocumentException;
+import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
-import com.itextpdf.text.FontFactory;
+import com.itextpdf.text.Image;
+import com.itextpdf.text.PageSize;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.spring.CustomObject.DocumentDto;
 import com.spring.Model.Document;
 import com.spring.Model.DocumentType;
+import com.spring.Model.Project;
 import com.spring.Model.Sprint;
 import com.spring.Model.Team;
 import com.spring.Model.User;
@@ -130,13 +138,50 @@ public class DocumentService extends AbstractService {
 		// objeto documento de la libreria de PDF
 		com.itextpdf.text.Document document = new com.itextpdf.text.Document();
 		try {
-			PdfWriter writer = PdfWriter.getInstance(document, out);
+
+			String type = dto.getType();
+			String title = dto.getName();
+			String content = dto.getContent();
+
+			Sprint sprint = sprintService.getOne(dto.getSprint());
+
+			Date start = sprint.getStartDate();
+			Date end = sprint.getEndDate();
+
+			Project project = sprint.getProject();
+			Team team = project.getTeam();
+
+			PdfWriter.getInstance(document, out);
 			document.open();
-			Font font = FontFactory.getFont(FontFactory.COURIER, 16, BaseColor.BLACK);
-			Chunk chunk = new Chunk("Hello World", font);
-			document.add(chunk);
+
+			document.setPageSize(PageSize.A4);
+
+			BaseFont helvetica = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.EMBEDDED);
+
+			Font fontTitle = new Font(helvetica, 16, Font.BOLD);
+			Font fontNormal = new Font(helvetica, 14, Font.NORMAL);
+
+			Image img = Image.getInstance("files/logo.png");
+			img.scalePercent(10);
+			img.setAlignment(Element.ALIGN_RIGHT);
+
+			// Cabecera
+			document.add(Chunk.NEWLINE);
+			Paragraph first = new Paragraph();
+			Phrase tipo = new Phrase(type, fontNormal);
+			first.add(tipo);
+			tipo.add(Chunk.NEWLINE);
+			first.add(img);
+			
+			document.add(first);
+
+			// Contenido
+
 		} catch (DocumentException e) {
-			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 

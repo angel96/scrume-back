@@ -108,7 +108,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 
 	@Autowired
 	private EstimationRepository estimationRepository;
-	
+
 	@Autowired
 	private PersonalTaskListRepository taskListRepository;
 
@@ -437,18 +437,17 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("payment4", payment4.getId());
 		entities.put("payment5", payment5.getId());
 		entities.put("payment6", payment6.getId());
-		
-		PersonalTaskList personalList1 = new PersonalTaskList(user1, "Test List 1");
-		PersonalTaskList personalList2 = new PersonalTaskList(user1, "Test List 2");
-		PersonalTaskList personalList3 = new PersonalTaskList(user1, "Test List 3");
-		PersonalTaskList personalList4 = new PersonalTaskList(user1, "Test List 4");
-		
+
+		PersonalTaskList personalList1 = this.taskListRepository.save(new PersonalTaskList(user1, "Test List 1"));
+		PersonalTaskList personalList2 = this.taskListRepository.save(new PersonalTaskList(user1, "Test List 2"));
+		PersonalTaskList personalList3 = this.taskListRepository.save(new PersonalTaskList(user1, "Test List 3"));
+		PersonalTaskList personalList4 = this.taskListRepository.save(new PersonalTaskList(user1, "Test List 4"));
+
 		entities.put("personalLis1", personalList1.getId());
 		entities.put("personalLis2", personalList2.getId());
 		entities.put("personalLis3", personalList3.getId());
 		entities.put("personalLis4", personalList4.getId());
-		
-		
+
 		Utiles.escribeFichero(entities, properties);
 
 		log.info("The entities mapped are: \n" + entities.keySet().stream().map(x -> {
