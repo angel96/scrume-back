@@ -185,6 +185,23 @@ public class UserService extends AbstractService {
 		principal.setUserAccount(userAccountAnonymous);
 		this.userRepository.saveAndFlush(principal);
 	}
+	
+	public AllDataDto getAllMyData() {
+		User principal = this.getUserByPrincipal();
+		this.validateUser(principal);
+		Collection<Task> tasks = this.taskService.findAllTaskByUser(principal);
+		Collection<TaskToAllDataDto> tasksToAllDataDto = new ArrayList<>();
+		for (Task task : tasks) {
+			TaskToAllDataDto taskAllDataDto = new TaskToAllDataDto(task.getTitle(), task.getDescription(),
+					task.getPoints());
+			tasksToAllDataDto.add(taskAllDataDto);
+		}
+		
+		Collection<Team> teams = this.userRolService.findAllByUser(principal);
+		Collection<String> teamsName = teams.stream().map(Team::getName).collect(Collectors.toList());
+		return new AllDataDto(principal.getUserAccount().getUsername(), principal.getName(), principal.getSurnames(),
+				principal.getNick(), principal.getGitUser(), principal.getPhoto(), tasksToAllDataDto, teamsName);
+	}
 
 	private void validateUser(User user) {
 		if (user == null) {
@@ -228,21 +245,5 @@ public class UserService extends AbstractService {
 
 	}
 
-	public AllDataDto getAllMyData() {
-		User principal = this.getUserByPrincipal();
-		this.validateUser(principal);
-		Collection<Task> tasks = this.taskService.findAllTaskByUser(principal);
-		Collection<TaskToAllDataDto> tasksToAllDataDto = new ArrayList<>();
-		for (Task task : tasks) {
-			TaskToAllDataDto taskAllDataDto = new TaskToAllDataDto(task.getTitle(), task.getDescription(),
-					task.getPoints());
-			tasksToAllDataDto.add(taskAllDataDto);
-		}
-
-		Collection<Team> teams = this.userRolService.findAllByUser(principal);
-		Collection<String> teamsName = teams.stream().map(Team::getName).collect(Collectors.toList());
-		return new AllDataDto(principal.getUserAccount().getUsername(), principal.getName(), principal.getSurnames(),
-				principal.getNick(), principal.getGitUser(), principal.getPhoto(), tasksToAllDataDto, teamsName);
-	}
 
 }
