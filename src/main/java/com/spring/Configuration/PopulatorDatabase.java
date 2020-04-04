@@ -197,7 +197,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		UserRol rol1 = this.userRolRepository.save(new UserRol(true, user1, team1));
 		UserRol rol2 = this.userRolRepository.save(new UserRol(true, user2, team2));
 		UserRol rol3 = this.userRolRepository.save(new UserRol(true, user3, team3));
-		UserRol rol4 = this.userRolRepository.save(new UserRol(false, user4, team4));
+		UserRol rol4 = this.userRolRepository.save(new UserRol(true, user4, team4));
 		UserRol rol5 = this.userRolRepository.save(new UserRol(false, user4, team1));
 
 		entities.put("rol1", rol1.getId());
