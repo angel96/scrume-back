@@ -1,13 +1,21 @@
 package com.spring.JWT;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
+import com.spring.CustomObject.UserLoginDto;
+import com.spring.Model.Payment;
+import com.spring.Model.User;
 import com.spring.Model.UserAccount;
+import com.spring.Service.PaymentService;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -18,8 +26,21 @@ public class JwtToken {
 
 	public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
 
+	@Autowired
+	private PaymentService paymentService;
+
+	@Autowired
+	private JwtUserAccountService service;
+
 	@Value("${jwt.secret}")
 	private String secret;
+
+	public UserLoginDto getUserLoginDtoFromToken(String token) {
+		LinkedHashMap linked = getClaimFromToken(token, x -> (LinkedHashMap) x.get("userLoginDto"));
+		return new UserLoginDto((Integer) linked.get("idUser"), (String) linked.get("username"),
+				(String) linked.get("nameBox"),
+				LocalDate.parse((String) linked.get("endingBoxDate"), DateTimeFormatter.ofPattern("yyyy-MM-dd")));
+	}
 
 	public String getUsernameFromToken(String token) {
 		return getClaimFromToken(token, Claims::getSubject);
@@ -65,7 +86,19 @@ public class JwtToken {
 
 		String username = getUsernameFromToken(token);
 
-		return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
+		UserLoginDto dto = getUserLoginDtoFromToken(token);
+
+		boolean checkUserAndExpiredDate = (username.equals(userDetails.getUsername()) && 
+				!isTokenExpired(token));
+
+		User user = this.service.findUserByUsername(username);
+		Payment payment = this.paymentService.findByUserAccount(user.getUserAccount());
+
+		boolean checkDto = dto.getNameBox().equals(payment.getBox().getName())
+				&& dto.getEndingBoxDate().equals(payment.getExpiredDate()) && user.getId().equals(dto.getIdUser())
+				&& username.equals(dto.getUsername());
+
+		return checkUserAndExpiredDate && checkDto;
 
 	}
 }
