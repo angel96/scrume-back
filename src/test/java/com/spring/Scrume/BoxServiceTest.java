@@ -4,6 +4,7 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.Service.BoxService;
 
@@ -25,10 +26,30 @@ public class BoxServiceTest extends AbstractTest {
 
 		try {
 			super.authenticateOrUnauthenticate(user);
-			
+
 			assert service.getMinimumBoxOfATeam(super.entities().get("team1")).getName() == "STANDARD";
-			
+			service.flush();
 			super.authenticateOrUnauthenticate(null);
+		} catch (Throwable oops) {
+			caught = oops.getClass();
+		}
+		super.checkExceptions(expected, caught);
+	}
+
+	@Test
+	public void testGetBox() {
+		Object[][] objects = { { super.entities().get("proBox"), null }, { -1, ResponseStatusException.class } };
+
+		Stream.of(objects).forEach(x -> driverGetBox((Integer) x[0], (Class<?>) x[1]));
+	}
+
+	protected void driverGetBox(Integer box, Class<?> expected) {
+
+		Class<?> caught = null;
+
+		try {
+			service.findOne(box);
+			service.flush();
 		} catch (Throwable oops) {
 			caught = oops.getClass();
 		}
