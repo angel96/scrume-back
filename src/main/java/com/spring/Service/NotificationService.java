@@ -127,16 +127,20 @@ public class NotificationService extends AbstractService {
 	}
 	
 	private void validateDate(Date date, Sprint sprint) {
-		if (sprint.getStartDate() == null) {
+		if (date == null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "the date cannot be null");
 		}
-		if (sprint.getStartDate().before(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()))) {
+		if (date.before(Date.from(LocalDate.now().atStartOfDay(ZoneId.systemDefault()).toInstant()))) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Date cannot be earlier than the current one");
 		}
 		if (date.before(sprint.getStartDate()) || date.after(sprint.getEndDate())) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 					"The date must be after the start date of the sprint and before the end date");
 		}		
+	}
+
+	public void flush() {
+		this.notificationRepository.flush();
 	}
 
 
