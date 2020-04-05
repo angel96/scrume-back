@@ -3,6 +3,7 @@ package com.spring.Service;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
@@ -15,9 +16,13 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.spring.CustomObject.NotificationListDto;
 import com.spring.CustomObject.NotificationSaveDto;
+import com.spring.CustomObject.ProjectIdNameDto;
+import com.spring.CustomObject.TeamDto;
 import com.spring.Model.Notification;
 import com.spring.Model.Sprint;
+import com.spring.Model.Team;
 import com.spring.Model.User;
 import com.spring.Repository.NotificationRepository;
 
@@ -41,6 +46,7 @@ public class NotificationService extends AbstractService {
 		User principal = this.userService.getUserByPrincipal();
 		Sprint sprint = this.sprintService.getOne(notificationSaveDto.getSprint());
 		this.validatePrincipalPermission(principal, sprint);
+		this.validatePrincipalIsLogged(principal);
 		this.validateDate(notificationSaveDto.getDate(), sprint);
 		Notification notificationEntity = new Notification(notificationSaveDto.getTitle(), notificationSaveDto.getDate(), sprint, null);
 		Notification notificationBD = this.notificationRepository.save(notificationEntity);
@@ -62,11 +68,29 @@ public class NotificationService extends AbstractService {
 			}
 		}
 	}
-
-	private void validatePrincipalPermission(User principal, Sprint sprint) {
+	
+	public Collection<NotificationListDto> listByPrincipal() {
+		User principal = this.userService.getUserByPrincipal();
+		this.validatePrincipalIsLogged(principal);
+		Collection<Team> teams = this.userRolService.findAllByUser(principal);
+		Collection<NotificationListDto> res = new ArrayList<>();
+		for (Team team : teams) {
+			Collection<Notification> notifications = this.notificationRepository.listByUser(principal, team);
+			for (Notification notification : notifications) {
+				res.add(new NotificationListDto(notification.getId(), notification.getTitle(), new TeamDto(team.getId(), team.getName()), new ProjectIdNameDto
+						(notification.getSprint().getProject().getId(), notification.getSprint().getProject().getName()),
+						notification.getDate()));
+			}
+		}
+		return res;
+	}
+	private void validatePrincipalIsLogged(User principal) {
 		if (principal == null) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
 		}
+	}
+	
+	private void validatePrincipalPermission(User principal, Sprint sprint) {
 		if (!this.userRolService.isUserOnTeam(principal, sprint.getProject().getTeam())) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The user who performs the action must belong to the team");
@@ -89,6 +113,7 @@ public class NotificationService extends AbstractService {
 					"The date must be after the start date of the sprint and before the end date");
 		}		
 	}
+
 
 	
 }
