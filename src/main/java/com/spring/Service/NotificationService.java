@@ -1,13 +1,17 @@
 package com.spring.Service;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -41,6 +45,22 @@ public class NotificationService extends AbstractService {
 		Notification notificationEntity = new Notification(notificationSaveDto.getTitle(), notificationSaveDto.getDate(), sprint, null);
 		Notification notificationBD = this.notificationRepository.save(notificationEntity);
 		return new NotificationSaveDto(notificationBD.getTitle(), notificationBD.getDate(), notificationBD.getSprint().getId());
+	}
+	
+	@Scheduled(cron = "0 0 0 * * ?")
+	public void createDailys() {
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.set(Calendar.HOUR, cal.get(Calendar.HOUR)+ 2);
+		Date actualDate = cal.getTime();
+		String title = "You must fill in the daily for the " + new SimpleDateFormat("dd/MM/yyyy").format(actualDate);
+		Collection<Sprint> sprints = this.sprintService.getActivesSprints();
+		for (Sprint sprint : sprints) {
+			Collection<User> users = this.userRolService.findUsersByTeam(sprint.getProject().getTeam());
+			for (User user : users) {
+				this.notificationRepository.saveAndFlush( new Notification(title, actualDate, sprint, user));
+			}
+		}
 	}
 
 	private void validatePrincipalPermission(User principal, Sprint sprint) {

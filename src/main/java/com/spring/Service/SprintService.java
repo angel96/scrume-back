@@ -2,6 +2,7 @@ package com.spring.Service;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -50,6 +51,9 @@ public class SprintService extends AbstractService {
 				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested sprint not exists"));
 	}
 
+	public Collection<Sprint> getActivesSprints(){
+		return this.sprintRepository.getActivesSprints();
+	}
 	public SprintStatisticsDto getStatistics(Integer idSprint) {
 		User principal = this.userService.getUserByPrincipal();
 		SprintStatisticsDto res = new SprintStatisticsDto();
