@@ -42,6 +42,11 @@ public class NotificationService extends AbstractService {
 	@Autowired
 	private UserRolService userRolService;
 	
+	public Notification getOne(int id) {
+		return this.notificationRepository.findById(id).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested notification not exists"));
+	}
+	
 	public NotificationSaveDto save(NotificationSaveDto notificationSaveDto) {
 		User principal = this.userService.getUserByPrincipal();
 		Sprint sprint = this.sprintService.getOne(notificationSaveDto.getSprint());
@@ -84,6 +89,26 @@ public class NotificationService extends AbstractService {
 		}
 		return res;
 	}
+	
+	public void delete(Integer idNotification) {
+		User principal = this.userService.getUserByPrincipal();
+		this.validatePrincipalIsLogged(principal);
+		Notification notificationEntity = this.getOne(idNotification);
+		this.validateDeletePermission(principal, notificationEntity);
+		this.notificationRepository.delete(notificationEntity);
+	}
+	
+	private void validateDeletePermission(User principal, Notification notificationEntity) {
+		if (!this.userRolService.isUserOnTeam(principal, notificationEntity.getSprint().getProject().getTeam())) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"The user does not have permission to delete the requested notification");
+		}
+		if (!(notificationEntity.getUser() == null || notificationEntity.getUser() == principal)) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"The user does not have permission to delete the requested notification");
+		}
+	}
+
 	private void validatePrincipalIsLogged(User principal) {
 		if (principal == null) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
@@ -113,6 +138,7 @@ public class NotificationService extends AbstractService {
 					"The date must be after the start date of the sprint and before the end date");
 		}		
 	}
+
 
 
 	
