@@ -58,7 +58,7 @@ public class NotificationService extends AbstractService {
 		return new NotificationSaveDto(notificationBD.getTitle(), notificationBD.getDate(), notificationBD.getSprint().getId());
 	}
 	
-	@Scheduled(cron = "0 20 12 * * *", zone = "GMT+2:00")
+	@Scheduled(cron = "0 0 0 * * *", zone = "GMT+2:00")
 	public void createDailys() {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
