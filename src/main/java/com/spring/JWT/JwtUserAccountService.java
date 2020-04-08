@@ -1,6 +1,5 @@
 package com.spring.JWT;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.UserLoginDto;
+import com.spring.Model.Payment;
 import com.spring.Model.User;
 import com.spring.Model.UserAccount;
 import com.spring.Service.PaymentService;
@@ -43,6 +43,11 @@ public class JwtUserAccountService implements UserDetailsService {
 				.orElseThrow(() -> new UsernameNotFoundException(username + " no encontrado"));
 	}
 
+	public User findUserByUsername(String username) {
+		return repository.findUserByUserName(username)
+				.orElseThrow(() -> new UsernameNotFoundException(username + " no encontrado"));
+	}
+
 	public JwtResponse generateToken(JwtRequest authenticationRequest) {
 
 		String username = authenticationRequest.getUsername();
@@ -63,11 +68,12 @@ public class JwtUserAccountService implements UserDetailsService {
 
 			User user = this.repository.findUserByUserName(username)
 					.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authorized"));
-			LocalDate endingBoxDate = this.paymentService.findByUserAccount(user.getUserAccount()).getExpiredDate();
+			Payment payment = this.paymentService.findByUserAccount(user.getUserAccount());
 
 			Map<String, Object> objects = new HashMap<>();
 
-			objects.put("userLoginDto", new UserLoginDto(user.getId(), username, endingBoxDate));
+			objects.put("userLoginDto",
+					new UserLoginDto(user.getId(), username, payment.getBox().getName(), payment.getExpiredDate()));
 
 			response.setToken(jwtToken.generateToken(objects, account));
 		} else {
