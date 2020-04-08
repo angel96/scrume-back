@@ -1,7 +1,5 @@
 package com.spring.CustomObject;
 
-import java.time.LocalDate;
-
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -9,13 +7,14 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserLoginDto {
-	
-	private Integer idUser;
-	
-	private String username;
-		
-    private LocalDate endingBoxDate;
+public class UserWithUserRolDto {
 
+	private Integer id;
 	
+	private String nickname;
+		
+    private String email;
+    
+    private Boolean isAdmin;
+
 }

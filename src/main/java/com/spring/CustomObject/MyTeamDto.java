@@ -7,10 +7,12 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class TeamDto {
+public class MyTeamDto {
 	
 	private Integer id;
 
 	private String name;
+	
+	private Boolean isAdmin;
 
 }

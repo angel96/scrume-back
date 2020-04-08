@@ -1,20 +1,19 @@
 package com.spring.Service;
 
-import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import javax.transaction.Transactional;
 
 import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.ChangeRolDto;
-import com.spring.CustomObject.TeamDto;
+import com.spring.CustomObject.MyTeamDto;
+import com.spring.CustomObject.UserWithUserRolDto;
 import com.spring.Model.Team;
 import com.spring.Model.User;
 import com.spring.Model.UserRol;
@@ -124,19 +123,21 @@ public class UserRolService extends AbstractService {
 	public void delete(UserRol userRol) {
 		this.userRolRepository.delete(userRol);
 	}
-	
+
 	public Collection<Integer> findIdUsersByTeam(Team team) {
 		return this.userRolRepository.findIdUsersByTeam(team);
 	}
 
-	public List<TeamDto> listAllTeamsOfAnUser() {
-		ModelMapper modelMapper = new ModelMapper();
+	public Collection<MyTeamDto> listAllTeamsOfAnUser() {
 		User principal = this.userService.getUserByPrincipal();
 		this.validatePrincipal(principal);
-		List<Team> teams = this.userRolRepository.findByUser(principal);
-		Type listType = new TypeToken<List<TeamDto>>() {
-		}.getType();
-		return modelMapper.map(teams, listType);
+		Collection<MyTeamDto> res = new ArrayList<>();
+		Collection<UserRol> userRoles = this.userRolRepository.findAllUserRolesByUser(principal);
+		for (UserRol userRol : userRoles) {
+			Team team = userRol.getTeam();
+			res.add(new MyTeamDto(team.getId(), team.getName(), userRol.getAdmin()));
+		}
+		return res;
 	}
 
 	private void validateUserRol(UserRol userRol) {
@@ -152,10 +153,25 @@ public class UserRolService extends AbstractService {
 					"The user who performs the action must be an admin of the team");
 		}
 	}
-	
+
 	public void leaveAllTeams(User principal) {
 		Collection<UserRol> userRoles = this.userRolRepository.findAllUserRolesByUser(principal);
-		this.userRolRepository.deleteAll(userRoles);
+
+		for (UserRol userRol : userRoles) {
+
+			if (this.isTheOnlyAdminOnTeam(userRol.getUser(), userRol.getTeam())) {
+				User newAdmin = this.getAnotherUserNoAdmin(userRol.getUser(), userRol.getTeam());
+				UserRol newAdminUserRol = this.findByUserAndTeam(newAdmin, userRol.getTeam());
+				newAdminUserRol.setAdmin(true);
+				this.userRolRepository.saveAndFlush(newAdminUserRol);
+			}
+			
+			this.userRolRepository.delete(userRol);
+			
+			if (this.getNumberOfUsersOfTeam(userRol.getTeam()) == 0) {
+				this.teamService.deleteVoid(userRol.getTeam().getId());
+			}
+		}
 		this.userRolRepository.flush();
 	}
 
@@ -167,6 +183,26 @@ public class UserRolService extends AbstractService {
 
 	public Integer getNumberOfUsersOfTeam(Team team) {
 		return this.userRolRepository.getNumberOfUsersOfTeam(team);
+	}
+	
+	public Collection<User> findUsersByTeam(Team team) {
+		return this.userRolRepository.findUsersByTeam(team);
+	}
+	
+	public Collection<Team> findAllByUser(User user) {
+		return this.userRolRepository.findByUser(user);
+	}
+	
+	public Collection<UserWithUserRolDto> listMembersOfATeam(Integer idTeam) {
+		Team teamDB = this.teamService.findOne(idTeam);
+		this.validateTeam(teamDB);
+		Collection<UserRol> userRoles = this.userRolRepository.findUserRolesByTeam(teamDB);
+		Collection<UserWithUserRolDto> res = new ArrayList<>();
+		for (UserRol userRol : userRoles) {
+			User user = userRol.getUser();
+			res.add(new UserWithUserRolDto(user.getId(), user.getNick(), user.getUserAccount().getUsername(), userRol.getAdmin()));
+		}
+		return res;
 	}
 
 	private void validateTeam(Team team) {
@@ -190,14 +226,6 @@ public class UserRolService extends AbstractService {
 
 	public void flush() {
 		userRolRepository.flush();
-	}
-
-	public Collection<User> findUsersByTeam(Team team) {
-		return this.userRolRepository.findUsersByTeam(team);
-	}
-
-	public Collection<Team> findAllByUser(User user) {
-		return this.userRolRepository.findByUser(user);
 	}
 
 
