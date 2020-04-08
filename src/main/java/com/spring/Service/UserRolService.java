@@ -124,7 +124,7 @@ public class UserRolService extends AbstractService {
 	public void delete(UserRol userRol) {
 		this.userRolRepository.delete(userRol);
 	}
-	
+
 	public Collection<Integer> findIdUsersByTeam(Team team) {
 		return this.userRolRepository.findIdUsersByTeam(team);
 	}
@@ -151,6 +151,27 @@ public class UserRolService extends AbstractService {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The user who performs the action must be an admin of the team");
 		}
+	}
+
+	public void leaveAllTeams(User principal) {
+		Collection<UserRol> userRoles = this.userRolRepository.findAllUserRolesByUser(principal);
+
+		for (UserRol userRol : userRoles) {
+
+			if (this.isTheOnlyAdminOnTeam(userRol.getUser(), userRol.getTeam())) {
+				User newAdmin = this.getAnotherUserNoAdmin(userRol.getUser(), userRol.getTeam());
+				UserRol newAdminUserRol = this.findByUserAndTeam(newAdmin, userRol.getTeam());
+				newAdminUserRol.setAdmin(true);
+				this.userRolRepository.saveAndFlush(newAdminUserRol);
+			}
+			
+			this.userRolRepository.delete(userRol);
+			
+			if (this.getNumberOfUsersOfTeam(userRol.getTeam()) == 0) {
+				this.teamService.deleteVoid(userRol.getTeam().getId());
+			}
+		}
+		this.userRolRepository.flush();
 	}
 
 	public boolean isTheOnlyAdminOnTeam(User user, Team team) {
@@ -188,6 +209,10 @@ public class UserRolService extends AbstractService {
 
 	public Collection<User> findUsersByTeam(Team team) {
 		return this.userRolRepository.findUsersByTeam(team);
+	}
+
+	public Collection<Team> findAllByUser(User user) {
+		return this.userRolRepository.findByUser(user);
 	}
 
 }

@@ -5,6 +5,7 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.PaymentEditDto;
 import com.spring.Service.PaymentService;
@@ -36,16 +37,19 @@ public class PaymentServiceTest extends AbstractTest {
 
 	@Test
 	public void testPago() {
-		Object[][] objects = { { "testuser1@gmail.com", null }, { null, AssertionError.class } };
-		Stream.of(objects).forEach(x -> driverPago((String) x[0], (Class<?>) x[1]));
+		Object[][] objects = { { "testuser1@gmail.com", LocalDate.of(2020, 04, 24), null },
+				{ null, LocalDate.of(2020, 04, 24), AssertionError.class },
+				{ "testuser1@gmail.com", LocalDate.of(2020, 01, 24), ResponseStatusException.class } };
+		Stream.of(objects).forEach(x -> driverPago((String) x[0], (LocalDate) x[1], (Class<?>) x[2]));
 	}
 
-	protected void driverPago(String user, Class<?> expected) {
+	protected void driverPago(String user, LocalDate date, Class<?> expected) {
 		Class<?> caught = null;
 
 		try {
 			super.authenticateOrUnauthenticate(user);
-			PaymentEditDto payment = new PaymentEditDto(0, super.entities().get("proBox"), LocalDate.of(2020, 04, 24));
+			PaymentEditDto payment = new PaymentEditDto(0, super.entities().get("proBox"), date, "ABCD1234",
+					"ASFDFD59842");
 			this.service.save(payment);
 			service.flush();
 			super.authenticateOrUnauthenticate(null);

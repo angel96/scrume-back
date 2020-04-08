@@ -1,5 +1,6 @@
 package com.spring.Model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
@@ -40,6 +41,7 @@ public class Document extends BaseEntity {
 	@JsonProperty
 	@SafeHtml
 	@NotBlank
+	@Column(length=10000)
 	private String content;
 	
 	@ManyToOne
