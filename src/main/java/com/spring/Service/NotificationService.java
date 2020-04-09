@@ -1,5 +1,6 @@
 package com.spring.Service;
 
+import java.lang.reflect.Type;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.ZoneId;
@@ -10,14 +11,18 @@ import java.util.Date;
 
 import javax.transaction.Transactional;
 
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.spring.CustomObject.NotificationDto;
 import com.spring.CustomObject.NotificationListDto;
 import com.spring.CustomObject.NotificationSaveDto;
+import com.spring.CustomObject.NotificationUpdateDto;
 import com.spring.CustomObject.ProjectIdNameDto;
 import com.spring.CustomObject.TeamDto;
 import com.spring.Model.Notification;
@@ -54,13 +59,28 @@ public class NotificationService extends AbstractService {
 		User principal = this.userService.getUserByPrincipal();
 		this.validateSprint(notificationSaveDto.getSprint());
 		Sprint sprint = this.sprintService.getOne(notificationSaveDto.getSprint());
-		this.validatePrincipalPermission(principal, sprint);
 		this.validatePrincipalIsLogged(principal);
+		this.validatePrincipalPermission(principal, sprint);
 		this.validateDate(notificationSaveDto.getDate(), sprint);
 		Notification notificationEntity = new Notification(notificationSaveDto.getTitle(), notificationSaveDto.getDate(), sprint, null);
 		Notification notificationBD = this.notificationRepository.save(notificationEntity);
 		return new NotificationSaveDto(notificationBD.getTitle(), notificationBD.getDate(), notificationBD.getSprint().getId());
 	}
+	
+	public NotificationDto update(Integer idNotification, NotificationUpdateDto notificationUpdateDto) {
+		User principal = this.userService.getUserByPrincipal();
+		Notification notificationEntity = this.getOne(idNotification);
+		Sprint sprint = notificationEntity.getSprint();
+		this.validatePrincipalIsLogged(principal);
+		this.validatePrincipalPermission(principal, sprint);
+		this.validateUpdatePermission(principal, notificationEntity);
+		notificationEntity.setTitle(notificationUpdateDto.getTitle());
+		notificationEntity.setDate(notificationUpdateDto.getDate());
+		this.validateDate(notificationUpdateDto.getDate(), sprint);
+		Notification notificationBD = this.notificationRepository.save(notificationEntity);
+		return new NotificationDto(notificationBD.getId(), notificationBD.getTitle(), notificationBD.getDate());
+	}
+
 	
 
 	@Scheduled(cron = "0 0 0 ? * MON-FRI", zone = "GMT+2:00")
@@ -96,6 +116,18 @@ public class NotificationService extends AbstractService {
 		return res;
 	}
 	
+	public Collection<NotificationDto> listAllNotifications(Integer idSprint) {
+		User principal = this.userService.getUserByPrincipal();
+		this.validatePrincipalIsLogged(principal);
+		Sprint sprint = this.sprintService.getOne(idSprint);
+		this.validatePrincipalPermission(principal, sprint);
+		Collection<Notification> notifications = this.notificationRepository.listAllInactiveNotifications(sprint);
+		ModelMapper mapper = new ModelMapper();
+		Type listType = new TypeToken<Collection<NotificationDto>>() {
+		}.getType();
+		return mapper.map(notifications, listType);
+	}
+	
 	public void delete(Integer idNotification) {
 		User principal = this.userService.getUserByPrincipal();
 		this.validatePrincipalIsLogged(principal);
@@ -104,16 +136,43 @@ public class NotificationService extends AbstractService {
 		this.notificationRepository.delete(notificationEntity);
 	}
 	
+	public NotificationDto getNotification(Integer idNotification) {
+		User principal = this.userService.getUserByPrincipal();
+		this.validatePrincipalIsLogged(principal);
+		Notification notificationDB = this.getOne(idNotification);
+		this.validatePrincipalPermission(principal, notificationDB.getSprint());
+		return new NotificationDto(notificationDB.getId(), notificationDB.getTitle(), notificationDB.getDate());
+	}
+	
+	private void validateUpdatePermission(User principal, Notification notificationEntity) {
+		if (!this.userRolService.isAdminOnTeam(principal, notificationEntity.getSprint().getProject().getTeam())) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"The user must be a team administrator to perform this action");
+		}if (notificationEntity.getUser() != null) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"The user does not have permission to perform this action");
+		}
+		if (notificationEntity.getDate().before(new Date()) && notificationEntity.getUser() == null) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"The notification has already been sent to the users, it is not possible to edit it");
+		}			
+	}
+	
 	private void validateDeletePermission(User principal, Notification notificationEntity) {
 		if (!this.userRolService.isUserOnTeam(principal, notificationEntity.getSprint().getProject().getTeam())) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, 
 					"The user does not have permission to delete the requested notification");
+		}
+		if(notificationEntity.getUser() == null && notificationEntity.getDate().after(new Date()) && !this.userRolService.isAdminOnTeam(principal, notificationEntity.getSprint().getProject().getTeam())) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, 
+				"The user does not have permission to delete the requested notification");
 		}
 		if (!(notificationEntity.getUser() == null || notificationEntity.getUser() == principal)) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The user does not have permission to delete the requested notification");
 		}
 	}
+	
 
 	private void validatePrincipalIsLogged(User principal) {
 		if (principal == null) {
@@ -154,6 +213,9 @@ public class NotificationService extends AbstractService {
 	public void flush() {
 		this.notificationRepository.flush();
 	}
+
+
+
 
 
 
