@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
@@ -13,6 +14,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 @EnableJpaRepositories(value = { "com.spring.Security","com.spring.JWT", "com.spring.Repository" })
 @EntityScan(value = { "com.spring.Model" })
 @SpringBootApplication
+@EnableScheduling
 public class ScrumeApplication {
 
 	public static void main(String[] args) {

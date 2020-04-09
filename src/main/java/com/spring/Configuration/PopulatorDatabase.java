@@ -23,6 +23,7 @@ import com.spring.Model.DocumentType;
 import com.spring.Model.Estimation;
 import com.spring.Model.HistoryTask;
 import com.spring.Model.Invitation;
+import com.spring.Model.Notification;
 import com.spring.Model.Payment;
 import com.spring.Model.PersonalTaskList;
 import com.spring.Model.Project;
@@ -39,6 +40,7 @@ import com.spring.Repository.DocumentRepository;
 import com.spring.Repository.EstimationRepository;
 import com.spring.Repository.HistoryTaskRepository;
 import com.spring.Repository.InvitationRepository;
+import com.spring.Repository.NotificationRepository;
 import com.spring.Repository.PaymentRepository;
 import com.spring.Repository.PersonalTaskListRepository;
 import com.spring.Repository.ProjectRepository;
@@ -108,6 +110,9 @@ public class PopulatorDatabase implements CommandLineRunner {
 
 	@Autowired
 	private EstimationRepository estimationRepository;
+	
+	@Autowired
+	private NotificationRepository notificationRepository;
 
 	@Autowired
 	private PersonalTaskListRepository taskListRepository;
@@ -120,6 +125,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		SortedMap<String, Integer> entities = new TreeMap<>();
 		Utiles.escribeFichero(entities, properties);
 
+		notificationRepository.deleteAll();
 		historyTaskRepository.deleteAll();
 		estimationRepository.deleteAll();
 		paymentRepository.deleteAll();
@@ -251,7 +257,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 
 		LocalDateTime localDateTime5 = LocalDateTime.of(2020, 3, 25, 10, 15);
 		Date localDate5 = Date.from(localDateTime5.atZone(ZoneId.systemDefault()).toInstant());
-		LocalDateTime localDateTime6 = LocalDateTime.of(2020, 4, 05, 10, 15);
+		LocalDateTime localDateTime6 = LocalDateTime.of(2020, 4, 15, 10, 15);
 		Date localDate6 = Date.from(localDateTime6.atZone(ZoneId.systemDefault()).toInstant());
 		LocalDateTime localDateTime7 = LocalDateTime.of(2020, 10, 25, 10, 15);
 		Date localDate7 = Date.from(localDateTime7.atZone(ZoneId.systemDefault()).toInstant());
@@ -269,7 +275,13 @@ public class PopulatorDatabase implements CommandLineRunner {
 		Date localDate13 = Date.from(localDateTime13.atZone(ZoneId.systemDefault()).toInstant());
 		LocalDateTime localDateTime14 = LocalDateTime.of(2020, 12, 25, 10, 15);
 		Date localDate14 = Date.from(localDateTime14.atZone(ZoneId.systemDefault()).toInstant());
-
+		LocalDateTime localDateTime15 = LocalDateTime.of(2020, 8, 26, 10, 15);
+		Date localDate15 = Date.from(localDateTime15.atZone(ZoneId.systemDefault()).toInstant());
+		LocalDateTime localDateTime16 = LocalDateTime.of(2020, 3, 26, 10, 15);
+		Date localDate16 = Date.from(localDateTime16.atZone(ZoneId.systemDefault()).toInstant());
+		LocalDateTime localDateTime17 = LocalDateTime.of(2050, 3, 26, 10, 15);
+		Date localDate17 = Date.from(localDateTime17.atZone(ZoneId.systemDefault()).toInstant());
+		
 		Sprint sprint1 = this.sprintRepository.save(new Sprint(localDate5, localDate6, project1));
 		Sprint sprint2 = this.sprintRepository.save(new Sprint(localDate7, localDate8, project2));
 		Sprint sprint3 = this.sprintRepository.save(new Sprint(localDate9, localDate10, project3));
@@ -418,17 +430,17 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("estimation8", estimation8.getId());
 		entities.put("estimation9", estimation9.getId());
 
-		Payment payment1 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime1), basicBox,
+		Payment payment1 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime17), proBox,
 				user1.getUserAccount(), LocalDate.from(localDateTime2), "ABC123456", "ABC12345678"));
-		Payment payment2 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime2), proBox,
+		Payment payment2 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime17), proBox,
 				user1.getUserAccount(), LocalDate.from(localDateTime3), "ABC123456", "ABC12345678"));
-		Payment payment3 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime1), basicBox,
+		Payment payment3 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime17), proBox,
 				user4.getUserAccount(), LocalDate.from(localDateTime2), "ABC123456", "ABC12345678"));
-		Payment payment4 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime2), standardBox,
+		Payment payment4 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime17), proBox,
 				user4.getUserAccount(), LocalDate.from(localDateTime3), "ABC123456", "ABC12345678"));
-		Payment payment5 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime2), proBox,
+		Payment payment5 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime17), proBox,
 				user2.getUserAccount(), LocalDate.from(localDateTime3), "ABC123456", "ABC12345678"));
-		Payment payment6 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime2), proBox,
+		Payment payment6 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime17), proBox,
 				user3.getUserAccount(), LocalDate.from(localDateTime3), "ABC123456", "ABC12345678"));
 
 		entities.put("payment1", payment1.getId());
@@ -447,6 +459,11 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("personalLis2", personalList2.getId());
 		entities.put("personalLis3", personalList3.getId());
 		entities.put("personalLis4", personalList4.getId());
+		
+		Notification notification1 = this.notificationRepository.save(new Notification("Realizar sprint planning meeting", localDate15, sprint5, null));
+		Notification notification2 = this.notificationRepository.save(new Notification("You must fill in the daily for the 26/03/2020", localDate16, sprint1, user1));
+		entities.put("notification1", notification1.getId());
+		entities.put("notification2", notification2.getId());
 
 		Utiles.escribeFichero(entities, properties);
 
@@ -471,6 +488,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		estimationRepository.flush();
 		documentRepository.flush();
 		taskListRepository.flush();
+		notificationRepository.flush();
 	}
 
 }

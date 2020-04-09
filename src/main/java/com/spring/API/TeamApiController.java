@@ -18,8 +18,10 @@ import com.spring.CustomObject.FindByNickDto;
 import com.spring.CustomObject.InvitationListDto;
 import com.spring.CustomObject.InvitationRecipientDto;
 import com.spring.CustomObject.InvitationSenderDto;
+import com.spring.CustomObject.MyTeamDto;
 import com.spring.CustomObject.TeamDto;
 import com.spring.CustomObject.UserWithNickDto;
+import com.spring.CustomObject.UserWithUserRolDto;
 import com.spring.Service.InvitationService;
 import com.spring.Service.TeamService;
 import com.spring.Service.UserRolService;
@@ -73,16 +75,15 @@ public class TeamApiController extends AbstractApiController {
 	}
 
 	@GetMapping("/list")
-	public List<TeamDto> list() {
+	public Collection<MyTeamDto> list() {
 		super.logger.info("GET /api/team/list/");
 		return this.userRolService.listAllTeamsOfAnUser();
 	}
 
-	@PostMapping("/change-rol/{idUser}/{idTeam}")
-	public ChangeRolDto changeRol(@PathVariable Integer idUser, @PathVariable Integer idTeam,
-			@RequestBody ChangeRolDto changeRolDto) {
-		super.logger.info("GET /api/team/change-rol/" + idUser + "/" + idTeam);
-		return this.userRolService.changeRol(idUser, idTeam, changeRolDto);
+	@PostMapping("/change-rol")
+	public void changeRol(@RequestBody ChangeRolDto changeRolDto) {
+		super.logger.info("POST /api/team/change-rol");
+		this.userRolService.changeRol(changeRolDto);
 	}
 
 	@PostMapping("/invite")
@@ -103,6 +104,18 @@ public class TeamApiController extends AbstractApiController {
 	public List<InvitationListDto> listInvitations() {
 		super.logger.info("GET /api/team/list-invitations");
 		return this.invitationService.listAllByPrincipal();
+	}
+	
+	@GetMapping("/{idTeam}")
+	public MyTeamDto getTeam(@PathVariable Integer idTeam) {
+		super.logger.info("GET /api/team/" + idTeam);
+		return this.teamService.getTeam(idTeam);
+	}
+	
+	@GetMapping("/list-members/{idTeam}")
+	public Collection<UserWithUserRolDto> listMembersOfATeam(@PathVariable Integer idTeam) {
+		super.logger.info("GET /api/team/list-members/" + idTeam);
+		return this.userRolService.listMembersOfATeam(idTeam);
 	}
 	
 	@PostMapping("/findByNick")

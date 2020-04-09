@@ -7,12 +7,16 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChangeRolDto {
+public class UserWithUserRolDto {
+
+	private Integer id;
+	
+	private String nickname;
+	
+	private String photo;
 		
-	private Integer idUser;
-	
-	private Integer idTeam;
-	
-	private Boolean admin;
+    private String email;
+    
+    private Boolean isAdmin;
 
 }

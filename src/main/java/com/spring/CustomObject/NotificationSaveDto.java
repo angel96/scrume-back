@@ -1,5 +1,7 @@
 package com.spring.CustomObject;
 
+import java.util.Date;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -7,12 +9,12 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChangeRolDto {
-		
-	private Integer idUser;
+public class NotificationSaveDto {
 	
-	private Integer idTeam;
-	
-	private Boolean admin;
+	private String title;
 
+    private Date date;
+	
+    private Integer sprint;
+	
 }
