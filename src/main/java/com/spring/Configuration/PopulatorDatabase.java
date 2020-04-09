@@ -279,6 +279,8 @@ public class PopulatorDatabase implements CommandLineRunner {
 		Date localDate15 = Date.from(localDateTime15.atZone(ZoneId.systemDefault()).toInstant());
 		LocalDateTime localDateTime16 = LocalDateTime.of(2020, 3, 26, 10, 15);
 		Date localDate16 = Date.from(localDateTime16.atZone(ZoneId.systemDefault()).toInstant());
+		LocalDateTime localDateTime17 = LocalDateTime.of(2050, 3, 26, 10, 15);
+		Date localDate17 = Date.from(localDateTime17.atZone(ZoneId.systemDefault()).toInstant());
 		
 		Sprint sprint1 = this.sprintRepository.save(new Sprint(localDate5, localDate6, project1));
 		Sprint sprint2 = this.sprintRepository.save(new Sprint(localDate7, localDate8, project2));
@@ -428,17 +430,17 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("estimation8", estimation8.getId());
 		entities.put("estimation9", estimation9.getId());
 
-		Payment payment1 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime1), basicBox,
+		Payment payment1 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime17), proBox,
 				user1.getUserAccount(), LocalDate.from(localDateTime2), "ABC123456", "ABC12345678"));
-		Payment payment2 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime2), proBox,
+		Payment payment2 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime17), proBox,
 				user1.getUserAccount(), LocalDate.from(localDateTime3), "ABC123456", "ABC12345678"));
-		Payment payment3 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime1), basicBox,
+		Payment payment3 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime17), proBox,
 				user4.getUserAccount(), LocalDate.from(localDateTime2), "ABC123456", "ABC12345678"));
-		Payment payment4 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime2), standardBox,
+		Payment payment4 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime17), proBox,
 				user4.getUserAccount(), LocalDate.from(localDateTime3), "ABC123456", "ABC12345678"));
-		Payment payment5 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime2), proBox,
+		Payment payment5 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime17), proBox,
 				user2.getUserAccount(), LocalDate.from(localDateTime3), "ABC123456", "ABC12345678"));
-		Payment payment6 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime2), proBox,
+		Payment payment6 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime17), proBox,
 				user3.getUserAccount(), LocalDate.from(localDateTime3), "ABC123456", "ABC12345678"));
 
 		entities.put("payment1", payment1.getId());
