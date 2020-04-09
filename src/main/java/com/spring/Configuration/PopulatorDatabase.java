@@ -257,7 +257,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 
 		LocalDateTime localDateTime5 = LocalDateTime.of(2020, 3, 25, 10, 15);
 		Date localDate5 = Date.from(localDateTime5.atZone(ZoneId.systemDefault()).toInstant());
-		LocalDateTime localDateTime6 = LocalDateTime.of(2020, 4, 10, 10, 15);
+		LocalDateTime localDateTime6 = LocalDateTime.of(2020, 4, 15, 10, 15);
 		Date localDate6 = Date.from(localDateTime6.atZone(ZoneId.systemDefault()).toInstant());
 		LocalDateTime localDateTime7 = LocalDateTime.of(2020, 10, 25, 10, 15);
 		Date localDate7 = Date.from(localDateTime7.atZone(ZoneId.systemDefault()).toInstant());

@@ -40,6 +40,9 @@ public class NotificationService extends AbstractService {
 	private UserService userService;
 	
 	@Autowired
+	private DocumentService documentService;
+	
+	@Autowired
 	private UserRolService userRolService;
 	
 	public Notification getOne(int id) {
@@ -60,7 +63,7 @@ public class NotificationService extends AbstractService {
 	}
 	
 
-	@Scheduled(cron = "0 0 0 * * *", zone = "GMT+2:00")
+	@Scheduled(cron = "0 0 0 ? * MON-FRI", zone = "GMT+2:00")
 	public void createDailys() {
 		Calendar cal = Calendar.getInstance();
 		cal.setTime(new Date());
@@ -69,6 +72,7 @@ public class NotificationService extends AbstractService {
 		String title = "You must fill in the daily for the " + new SimpleDateFormat("dd/MM/yyyy").format(actualDate);
 		Collection<Sprint> sprints = this.sprintService.getActivesSprints();
 		for (Sprint sprint : sprints) {
+			this.documentService.saveDaily("Daily " + new SimpleDateFormat("dd/MM/yyyy").format(actualDate), sprint);
 			Collection<User> users = this.userRolService.findUsersByTeam(sprint.getProject().getTeam());
 			for (User user : users) {
 				this.notificationRepository.saveAndFlush( new Notification(title, actualDate, sprint, user));
