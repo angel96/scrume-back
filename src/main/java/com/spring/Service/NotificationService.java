@@ -49,6 +49,7 @@ public class NotificationService extends AbstractService {
 	
 	public NotificationSaveDto save(NotificationSaveDto notificationSaveDto) {
 		User principal = this.userService.getUserByPrincipal();
+		this.validateSprint(notificationSaveDto.getSprint());
 		Sprint sprint = this.sprintService.getOne(notificationSaveDto.getSprint());
 		this.validatePrincipalPermission(principal, sprint);
 		this.validatePrincipalIsLogged(principal);
@@ -58,6 +59,7 @@ public class NotificationService extends AbstractService {
 		return new NotificationSaveDto(notificationBD.getTitle(), notificationBD.getDate(), notificationBD.getSprint().getId());
 	}
 	
+
 	@Scheduled(cron = "0 0 0 * * *", zone = "GMT+2:00")
 	public void createDailys() {
 		Calendar cal = Calendar.getInstance();
@@ -139,6 +141,12 @@ public class NotificationService extends AbstractService {
 		}		
 	}
 
+
+	private void validateSprint(Integer idSprint) {
+		if (idSprint == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "the sprint id cannot be null");
+		}
+	}
 	public void flush() {
 		this.notificationRepository.flush();
 	}
