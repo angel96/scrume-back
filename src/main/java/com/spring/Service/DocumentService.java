@@ -70,6 +70,10 @@ public class DocumentService extends AbstractService {
 				x.getContent(), sprint.getId())).collect(Collectors.toList());
 	}
 
+	public void saveDaily(String name, Sprint sprint) {
+		this.documentRepo.saveAndFlush(new Document(DocumentType.DAILY, name, "[]", sprint));
+	}
+	
 	public DocumentDto save(DocumentDto document, int sprintId) {
 		checkType(document.getType());
 		Sprint sprint = this.sprintService.getOne(sprintId);
