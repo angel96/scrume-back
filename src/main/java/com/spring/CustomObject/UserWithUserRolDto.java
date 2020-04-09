@@ -12,6 +12,8 @@ public class UserWithUserRolDto {
 	private Integer id;
 	
 	private String nickname;
+	
+	private String photo;
 		
     private String email;
     
