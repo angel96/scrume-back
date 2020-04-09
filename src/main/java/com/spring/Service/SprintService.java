@@ -124,7 +124,10 @@ public class SprintService extends AbstractService {
 		this.validateProject(project);
 		this.validateUserPrincipal(principal, project);
 		List<Integer> sprints = this.sprintRepository.findBySprintsOrdered(project);
-		if(this.boxService.getMinimumBoxOfATeam(project.getTeam().getId()).getName() == "BASIC") {
+		if (this.boxService.getMinimumBoxOfATeam(project.getTeam().getId()).getName() == null) {
+			sprints = new ArrayList<>();
+		}
+		else if(this.boxService.getMinimumBoxOfATeam(project.getTeam().getId()).getName() == "BASIC") {
 			sprints = this.getFirstSprintsOfATeam(project.getTeam(), 1).stream().map(x -> x.getId()).collect(Collectors.toList());
 		}
 		return sprints.stream().map(x -> this.getStatistics(x))
