@@ -1,7 +1,9 @@
 package com.spring.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -21,6 +23,7 @@ import com.spring.CustomObject.SprintStatisticsDto;
 import com.spring.Model.Project;
 import com.spring.Model.Sprint;
 import com.spring.Model.Task;
+import com.spring.Model.Team;
 import com.spring.Model.User;
 import com.spring.Repository.SprintRepository;
 
@@ -34,6 +37,9 @@ public class SprintService extends AbstractService {
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private BoxService boxService;
+	
 	@Autowired
 	private ProjectService projectService;
 
@@ -58,6 +64,9 @@ public class SprintService extends AbstractService {
 		User principal = this.userService.getUserByPrincipal();
 		SprintStatisticsDto res = new SprintStatisticsDto();
 		Sprint sprint = this.getOne(idSprint);
+		LocalDateTime validDate = sprint.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+		validDate = validDate.plusDays(30);
+		this.validateBoxPrivileges(sprint.getProject().getTeam(), sprint, validDate);
 		this.validateSprint(sprint);
 		this.validateUserPrincipal(principal, sprint.getProject());
 		List<Task> tasksOfSprint = this.taskService.findBySprint(sprint);
@@ -81,6 +90,7 @@ public class SprintService extends AbstractService {
 		Sprint sprintEntity = modelMapper.map(sprintCreateDto, Sprint.class);
 		Project project = this.projectService.findOne(sprintEntity.getProject().getId());
 		this.validateProject(project);
+		this.validateBoxPrivilegesToSave(project.getTeam());
 		sprintEntity.setProject(project);
 		this.validateDates(sprintEntity);
 		this.validateUserPrincipal(principal, sprintEntity.getProject());
@@ -101,6 +111,9 @@ public class SprintService extends AbstractService {
 		sprintEntity.setStartDate(sprintEditDto.getStartDate());
 		sprintEntity.setEndDate(sprintEditDto.getEndDate());
 		this.validateDates(sprintEntity);
+		LocalDateTime validDate = sprintEntity.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+		validDate = validDate.plusDays(30);
+		this.validateBoxPrivileges(sprintEntity.getProject().getTeam(), sprintEntity, validDate);
 		Sprint sprintDB = this.sprintRepository.saveAndFlush(sprintEntity);
 		return modelMapper.map(sprintDB, SprintEditDto.class);
 	}
@@ -110,7 +123,14 @@ public class SprintService extends AbstractService {
 		Project project = this.projectService.findOne(idProject);
 		this.validateProject(project);
 		this.validateUserPrincipal(principal, project);
-		return this.sprintRepository.findBySprintsOrdered(project).stream().map(x -> this.getStatistics(x))
+		List<Integer> sprints = this.sprintRepository.findBySprintsOrdered(project);
+		if (this.boxService.getMinimumBoxOfATeam(project.getTeam().getId()).getName() == null) {
+			sprints = new ArrayList<>();
+		}
+		else if(this.boxService.getMinimumBoxOfATeam(project.getTeam().getId()).getName() == "BASIC") {
+			sprints = this.getFirstSprintsOfATeam(project.getTeam(), 1).stream().map(x -> x.getId()).collect(Collectors.toList());
+		}
+		return sprints.stream().map(x -> this.getStatistics(x))
 				.collect(Collectors.toList());
 	}
 
@@ -186,6 +206,45 @@ public class SprintService extends AbstractService {
 		this.validateUserPrincipal(principal, project);
 		return areValidDates(startDate, endDate, project, 0);
 	}
+
+	private List<Sprint> getFirstSprintsOfATeam(Team team, Integer number) {
+		List<Sprint> res = new ArrayList<>();
+		List<Sprint> sprints = this.sprintRepository.getFirstSprintsOfATeam(team);
+		if(sprints.size() >= number) {
+			Integer i = 0;
+			while (i < number) {
+				res.add(sprints.get(i));
+				i++;
+			}
+		}
+		return res;
+	}
+	
+	private void validateBoxPrivilegesToSave(Team team) {
+		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == null) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"There is no payment record in the database, so you cannot manage sprints");
+		}
+		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == "BASIC" 
+				&& this.getFirstSprintsOfATeam(team, 1).size() > 0) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"The minimum team box is basic, so you can only manage a 30-day sprint");
+		}
+	}
+	
+	private void validateBoxPrivileges(Team team, Sprint sprint, LocalDateTime validDate) {
+		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == null) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"There is no payment record in the database, so you cannot manage sprints");
+		}
+		
+		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == "BASIC" 
+				&& (!this.getFirstSprintsOfATeam(team, 1).contains(sprint) || validDate.isBefore(LocalDateTime.now(ZoneId.systemDefault())))) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"The minimum team box is basic, so you can only manage a 30-day sprint");
+		}
+	}
+	
 
 	public void flush() {
 		sprintRepository.flush();
