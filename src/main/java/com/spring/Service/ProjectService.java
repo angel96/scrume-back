@@ -178,6 +178,10 @@ public class ProjectService extends AbstractService {
 	}
 	
 	private void validateBoxPrivilegesToSave(Team team) {
+		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == null) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"There is no payment record in the database, so you cannot manage the project");
+		}
 		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == "BASIC" 
 				&& this.getFirstProjectsOfATeam(team, 1).size() > 0) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
@@ -187,10 +191,6 @@ public class ProjectService extends AbstractService {
 				&& this.getFirstProjectsOfATeam(team, 3).size() > 2) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The minimum team box is standard, so you can only manage three project");
-		}
-		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == null) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
-					"There is no payment record in the database, so you cannot manage the project");
 		}
 	}
 	
