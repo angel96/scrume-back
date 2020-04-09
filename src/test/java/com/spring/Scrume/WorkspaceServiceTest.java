@@ -122,16 +122,25 @@ public class WorkspaceServiceTest extends AbstractTest {
 
 	@Test
 	public void testSave() {
-		Object[][] objects = { { "testuser1@gmail.com", 0, null },
-				{ "testuser2@gmail.com", super.entities().get("workspace1"), ResponseStatusException.class },
-				{ "testuser1@gmail.com", super.entities().get("workspace1"), null } };
+		ZoneId defaultZoneId = ZoneId.systemDefault();
+		Date startDate1 = Date.from(LocalDate.of(2040, 04, 15).atStartOfDay(defaultZoneId).toInstant());
+		Date startDate2 = Date.from(LocalDate.of(2050, 04, 15).atStartOfDay(defaultZoneId).toInstant());
+		Date startDate3 = Date.from(LocalDate.of(2060, 04, 15).atStartOfDay(defaultZoneId).toInstant());
 
-		Stream.of(objects).forEach(x -> driverSave((String) x[0], (Integer) x[1], (Class<?>) x[2]));
+		Date endDate1 = Date.from(LocalDate.of(2040, 04, 15).atStartOfDay(defaultZoneId).toInstant());
+		Date endDate2 = Date.from(LocalDate.of(2050, 04, 15).atStartOfDay(defaultZoneId).toInstant());
+		Date endDate3 = Date.from(LocalDate.of(2060, 04, 15).atStartOfDay(defaultZoneId).toInstant());
+
+		
+		Object[][] objects = { { "testuser1@gmail.com", 0, startDate1, endDate1, null },
+				{ "testuser2@gmail.com", super.entities().get("workspace1"), startDate2, endDate2, ResponseStatusException.class },
+				{ "testuser1@gmail.com", super.entities().get("workspace1"), startDate3, endDate3, null } };
+
+		Stream.of(objects).forEach(x -> driverSave((String) x[0], (Integer) x[1], (Date) x[2], (Date) x[3],(Class<?>) x[4]));
 	}
 
-	protected void driverSave(String user, Integer entity, Class<?> expected) {
+	protected void driverSave(String user, Integer entity, Date startDate,  Date endDate, Class<?> expected) {
 		Class<?> caught = null;
-		ZoneId defaultZoneId = ZoneId.systemDefault();
 
 		try {
 
@@ -143,8 +152,8 @@ public class WorkspaceServiceTest extends AbstractTest {
 
 			dto.setName("Changing name");
 			dto.setSprint(serviceSprint.save(
-					new SprintDto(0, Date.from(LocalDate.of(2020, 04, 15).atStartOfDay(defaultZoneId).toInstant()),
-							Date.from(LocalDate.of(2020, 04, 30).atStartOfDay(defaultZoneId).toInstant()),
+					new SprintDto(0, startDate,
+							endDate,
 							serviceProject.findOne(super.entities().get("project1"))))
 					.getId());
 
