@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.spring.CustomObject.MyTeamDto;
 import com.spring.CustomObject.TeamDto;
 import com.spring.Model.Team;
 import com.spring.Model.User;
@@ -27,6 +28,15 @@ public class TeamService extends AbstractService {
 	@Autowired
 	private UserRolService userRolService;
 
+	public MyTeamDto getTeam(Integer idTeam) {
+		User principal = this.userService.getUserByPrincipal();
+		this.validateUserPrincipal(principal);
+		Team teamDB = this.findOne(idTeam);
+		this.validateTeam(teamDB);
+		Boolean isAdmin = this.userRolService.isAdminOnTeam(principal, teamDB);
+		return new MyTeamDto(teamDB.getId(), teamDB.getName(), isAdmin);
+	}
+	
 	public TeamDto save(TeamDto teamDto) {
 		ModelMapper modelMapper = new ModelMapper();
 		User principal = this.userService.getUserByPrincipal();
@@ -70,7 +80,8 @@ public class TeamService extends AbstractService {
 	}
 
 	public Team findOne(int teamId) {
-		return this.teamRepository.findById(teamId).orElse(null);
+		return this.teamRepository.findById(teamId).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested team not exists"));
 	}
 
 	private void validateEditPermission(User principal, Team team) {
@@ -104,4 +115,5 @@ public class TeamService extends AbstractService {
 	public void flush() {
 		teamRepository.flush();
 	}
+
 }

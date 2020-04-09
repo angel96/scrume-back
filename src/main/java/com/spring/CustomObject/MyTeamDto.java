@@ -5,14 +5,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class ChangeRolDto {
-		
-	private Integer idUser;
+@NoArgsConstructor
+public class MyTeamDto {
 	
-	private Integer idTeam;
+	private Integer id;
+
+	private String name;
 	
-	private Boolean admin;
+	private Boolean isAdmin;
 
 }
