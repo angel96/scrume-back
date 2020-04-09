@@ -80,7 +80,8 @@ public class TeamService extends AbstractService {
 	}
 
 	public Team findOne(int teamId) {
-		return this.teamRepository.findById(teamId).orElse(null);
+		return this.teamRepository.findById(teamId).orElseThrow(
+				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested team not exists"));
 	}
 
 	private void validateEditPermission(User principal, Team team) {
