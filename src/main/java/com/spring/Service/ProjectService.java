@@ -51,9 +51,9 @@ public class ProjectService extends AbstractService {
 		if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == null) {
 			this.validateBoxPrivileges(team, null);
 		}
-		else if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == "BASIC") {
+		else if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("BASIC")) {
 			lista = this.getFirstProjectsOfATeam(team, 1);
-		}else if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == "STANDARD") {
+		}else if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("STANDARD")) {
 			lista = this.getFirstProjectsOfATeam(team, 3);
 		}
 		ModelMapper mapper = new ModelMapper();
@@ -182,12 +182,12 @@ public class ProjectService extends AbstractService {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"There is no payment record in the database, so you cannot manage the project");
 		}
-		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == "BASIC" 
+		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("BASIC") 
 				&& this.getFirstProjectsOfATeam(team, 1).size() > 0) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The minimum team box is basic, so you can only manage one project");
 		}
-		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == "STANDARD" 
+		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("STANDARD") 
 				&& this.getFirstProjectsOfATeam(team, 3).size() > 2) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The minimum team box is standard, so you can only manage three project");
@@ -199,12 +199,12 @@ public class ProjectService extends AbstractService {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"There is no payment record in the database, so you cannot manage projects");
 		}
-		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == "BASIC" 
+		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("BASIC") 
 				&& !this.getFirstProjectsOfATeam(team, 1).contains(project)) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The minimum team box is basic, so you can only manage the first of your projects");
 		}
-		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == "STANDARD" 
+		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("STANDARD") 
 				&& !this.getFirstProjectsOfATeam(team, 3).contains(project)) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The minimum team box is standard, so you are only allowed to manage your first three projects");
