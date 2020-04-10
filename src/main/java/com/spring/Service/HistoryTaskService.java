@@ -106,12 +106,12 @@ public class HistoryTaskService extends AbstractService {
 		}
 		LocalDateTime validDate = sprint.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 		validDate = validDate.plusDays(30);
-		if (this.boxService.getMinimumBoxOfATeam(sprint.getProject().getTeam().getId()).getName() == "BASIC" 
+		if (this.boxService.getMinimumBoxOfATeam(sprint.getProject().getTeam().getId()).getName().equals("BASIC") 
 				&& (!this.serviceWorkspace.getFirstWorkspacesOfASprint(sprint, 1).contains(workspace) || validDate.isBefore(LocalDateTime.now(ZoneId.systemDefault())))) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The minimum team box is basic, so you can only manage the first of your workspaces during the 30 days of the sprint");
 		}
-		if (this.boxService.getMinimumBoxOfATeam(sprint.getProject().getTeam().getId()).getName() == "STANDARD" 
+		if (this.boxService.getMinimumBoxOfATeam(sprint.getProject().getTeam().getId()).getName().equals("STANDARD") 
 				&& !this.serviceWorkspace.getFirstWorkspacesOfASprint(sprint, 2).contains(workspace)) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The minimum team box is standard, so you are only allowed to manage your first two workspaces");

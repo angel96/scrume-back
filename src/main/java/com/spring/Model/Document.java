@@ -6,6 +6,7 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -48,6 +49,7 @@ public class Document extends BaseEntity {
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JsonProperty
 	@NotNull
+	@JoinColumn(name = "sprint", nullable = false)
 	private Sprint sprint;
 
 }

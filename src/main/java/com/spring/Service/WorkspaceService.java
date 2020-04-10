@@ -124,13 +124,13 @@ public class WorkspaceService extends AbstractService {
 			workspaces = new ArrayList<>();
 		}else {
 			for (Workspace workspace : workspaces) {
-				if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == "BASIC") {
+				if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("BASIC")) {
 					LocalDateTime validDate = workspace.getSprint().getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 					validDate = validDate.plusDays(30);
 					if(!(this.getFirstWorkspacesOfASprint(workspace.getSprint(), 1).contains(workspace) && validDate.isAfter(LocalDateTime.now(ZoneId.systemDefault())))){
 						workspaces.remove(workspace);
 					}
-				}else if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == "BASIC") {
+				}else if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("BASIC")) {
 					if(!(this.getFirstWorkspacesOfASprint(workspace.getSprint(), 2).contains(workspace))){
 						workspaces.remove(workspace);
 					}
@@ -167,11 +167,11 @@ public class WorkspaceService extends AbstractService {
 			for (Column column : columns) {
 				Boolean isValid = true;
 				Workspace workspace = column.getWorkspace();
-				if(this.boxService.getMinimumBoxOfATeam(project.getTeam().getId()).getName() == "BASIC") {
+				if(this.boxService.getMinimumBoxOfATeam(project.getTeam().getId()).getName().equals("BASIC")) {
 					LocalDateTime validDate = workspace.getSprint().getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 					validDate = validDate.plusDays(30);
 					isValid = this.getFirstWorkspacesOfASprint(workspace.getSprint(), 1).contains(workspace) && validDate.isAfter(LocalDateTime.now(ZoneId.systemDefault()));
-				}else if(this.boxService.getMinimumBoxOfATeam(project.getTeam().getId()).getName() == "BASIC") {
+				}else if(this.boxService.getMinimumBoxOfATeam(project.getTeam().getId()).getName().equals("BASIC")) {
 					isValid = this.getFirstWorkspacesOfASprint(workspace.getSprint(), 2).contains(workspace);
 				}
 				if(isValid) {
@@ -267,10 +267,10 @@ public class WorkspaceService extends AbstractService {
 		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == null) {
 			workspaces = new ArrayList<>();
 		}
-		else if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == "BASIC") {
+		else if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("BASIC")) {
 			workspaces = this.getFirstWorkspacesOfASprint(sprint, 1);
 		}
-		else if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == "STANDARD") {
+		else if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("STANDARD")) {
 			workspaces = this.getFirstWorkspacesOfASprint(sprint, 2);
 		}
 		return workspaces.stream()
@@ -319,12 +319,12 @@ public class WorkspaceService extends AbstractService {
 		}
 		LocalDateTime validDate = sprint.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 		validDate = validDate.plusDays(30);
-		if (this.boxService.getMinimumBoxOfATeam(sprint.getProject().getTeam().getId()).getName() == "BASIC" 
+		if (this.boxService.getMinimumBoxOfATeam(sprint.getProject().getTeam().getId()).getName().equals("BASIC") 
 				&& (!this.getFirstWorkspacesOfASprint(sprint, 1).contains(workspace) || validDate.isBefore(LocalDateTime.now(ZoneId.systemDefault())))) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The minimum team box is basic, so you can only manage the first of your workspaces during the 30 days of the sprint");
 		}
-		if (this.boxService.getMinimumBoxOfATeam(sprint.getProject().getTeam().getId()).getName() == "STANDARD" 
+		if (this.boxService.getMinimumBoxOfATeam(sprint.getProject().getTeam().getId()).getName().equals("STANDARD") 
 				&& !this.getFirstWorkspacesOfASprint(sprint, 2).contains(workspace)) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The minimum team box is standard, so you are only allowed to manage your first two workspaces");
@@ -338,12 +338,12 @@ public class WorkspaceService extends AbstractService {
 		}
 		LocalDateTime validDate = sprint.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 		validDate = validDate.plusDays(30);
-		if (this.boxService.getMinimumBoxOfATeam(sprint.getProject().getTeam().getId()).getName() == "BASIC" 
+		if (this.boxService.getMinimumBoxOfATeam(sprint.getProject().getTeam().getId()).getName().equals("BASIC") 
 				&& (this.getFirstWorkspacesOfASprint(sprint, 1).size() > 0 || validDate.isBefore(LocalDateTime.now(ZoneId.systemDefault())))) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The minimum team box is basic, so you can only manage one workspace during the 30 days of the sprint");
 		}
-		if (this.boxService.getMinimumBoxOfATeam(sprint.getProject().getTeam().getId()).getName() == "STANDARD" 
+		if (this.boxService.getMinimumBoxOfATeam(sprint.getProject().getTeam().getId()).getName().equals("STANDARD") 
 				&& this.getFirstWorkspacesOfASprint(sprint, 2).size() > 1) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The minimum team box is standard, so you can only manage two workspace during the 30 days of the sprint");

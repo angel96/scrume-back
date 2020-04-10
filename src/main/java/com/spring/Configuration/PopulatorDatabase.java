@@ -403,7 +403,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("task5", task5.getId());
 		entities.put("task6", task6.getId());
 
-		Document doc1 = this.documentRepository.save(new Document(DocumentType.DAILY, "Daily 1",
+		Document doc1 = this.documentRepository.save(new Document(DocumentType.DAILY, "Daily 26/03/2020",
 				"Hemos avanzado en la planificación del sprint, aunque el tiempo ha corrido en nuestra contra y vamos un poco atrasados.",
 				sprint1));
 		Document doc2 = this.documentRepository.save(new Document(DocumentType.PLANNING_MEETING, "Planning meeting 1",
