@@ -25,12 +25,13 @@ public class SecurityBreachService extends AbstractService {
 	
 	public SecurityBreach getSecurityBreach() {
 		User principal = this.userService.getUserByPrincipal();
-		this.validatePrincipal(principal);
+		this.validateIsLogged(principal);
 		return this.securityBreachRepository.findAll().get(0);
 	}
 
 	public SecurityBreach updateSecurityBreach(SecurityBreachDto securityBreachDto) {
 		User principal = this.userService.getUserByPrincipal();
+		this.validateIsLogged(principal);
 		this.validatePrincipal(principal);
 		SecurityBreach securityBreachEntity = this.securityBreachRepository.findAll().get(0);
 		securityBreachEntity.setMessage(securityBreachDto.getMessage());
@@ -38,11 +39,13 @@ public class SecurityBreachService extends AbstractService {
 		return this.securityBreachRepository.saveAndFlush(securityBreachEntity);
 	}
 	
-	private void validatePrincipal(User principal) {
+	private void validateIsLogged(User principal) {
 		if(principal == null) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, 
 					"The user must be logged in");
 		}
+	}
+	private void validatePrincipal(User principal) {
 		if(!principal.getUserAccount().getRoles().contains(Role.ROLE_ADMIN)) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, 
 				"The user does not have permission to manage the security breach");

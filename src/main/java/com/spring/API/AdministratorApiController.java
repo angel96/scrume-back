@@ -18,11 +18,6 @@ public class AdministratorApiController extends AbstractApiController {
 	@Autowired
 	private SecurityBreachService securityBreachService;
 	
-	@GetMapping
-	public SecurityBreach getSecurityBreach(){
-		return this.securityBreachService.getSecurityBreach();
-	}
-	
 	@PutMapping
 	public SecurityBreach updateSecurityBreach(@RequestBody SecurityBreachDto securityBreachDto){
 		return this.securityBreachService.updateSecurityBreach(securityBreachDto);
