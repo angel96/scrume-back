@@ -98,7 +98,7 @@ public class NotificationService extends AbstractService {
 		String title = "You must fill in the daily for the " + new SimpleDateFormat("dd/MM/yyyy").format(actualDate);
 		Collection<Sprint> sprints = this.sprintService.getActivesSprints();
 		for (Sprint sprint : sprints) {
-			if(this.boxService.getMinimumBoxOfATeam(sprint.getProject().getTeam().getId()).getName() == "PRO") {
+			if(this.boxService.getMinimumBoxOfATeam(sprint.getProject().getTeam().getId()).getName().equals("PRO")) {
 				this.documentService.saveDaily("Daily " + new SimpleDateFormat("dd/MM/yyyy").format(actualDate), sprint);
 				Collection<User> users = this.userRolService.findUsersByTeam(sprint.getProject().getTeam());
 				for (User user : users) {
@@ -114,7 +114,7 @@ public class NotificationService extends AbstractService {
 		Collection<Team> teams = this.userRolService.findAllByUser(principal);
 		Collection<NotificationListDto> res = new ArrayList<>();
 		for (Team team : teams) {
-			if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == "PRO") {
+			if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("PRO")) {
 				Collection<Notification> notifications = this.notificationRepository.listByUser(principal, team);
 				for (Notification notification : notifications) {
 					res.add(new NotificationListDto(notification.getId(), notification.getTitle(), new TeamDto(team.getId(), team.getName()), new ProjectIdNameDto
@@ -162,7 +162,8 @@ public class NotificationService extends AbstractService {
 		if (!this.userRolService.isAdminOnTeam(principal, notificationEntity.getSprint().getProject().getTeam())) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The user must be a team administrator to perform this action");
-		}if (notificationEntity.getUser() != null) {
+		}
+		if (notificationEntity.getUser() != null) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The user does not have permission to perform this action");
 		}
@@ -226,7 +227,7 @@ public class NotificationService extends AbstractService {
 	}
 	
 	private void validateBoxPrivileges(Integer idTeam) {
-		if (this.boxService.getMinimumBoxOfATeam(idTeam).getName() != "PRO") {
+		if (!this.boxService.getMinimumBoxOfATeam(idTeam).getName().equals("PRO")) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "To use the notifications it is necessary to have the pro box");
 		}
 	}
