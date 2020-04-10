@@ -32,6 +32,7 @@ import com.spring.Model.User;
 import com.spring.Model.UserAccount;
 import com.spring.Model.Workspace;
 import com.spring.Repository.UserRepository;
+import com.spring.Security.Role;
 import com.spring.Security.UserAccountService;
 import com.spring.Utiles.Utiles;
 
@@ -186,6 +187,10 @@ public class UserService extends AbstractService {
 		this.userRepository.saveAndFlush(principal);
 	}
 	
+	public Boolean getIsAdminOfSystem() {
+		return this.getUserByPrincipal().getUserAccount().getRoles().contains(Role.ROLE_ADMIN);
+	}
+	
 	public AllDataDto getAllMyData() {
 		User principal = this.getUserByPrincipal();
 		this.validateUser(principal);
@@ -244,6 +249,7 @@ public class UserService extends AbstractService {
 		}
 
 	}
+
 
 
 }
