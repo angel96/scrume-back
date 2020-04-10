@@ -127,7 +127,7 @@ public class SprintService extends AbstractService {
 		if (this.boxService.getMinimumBoxOfATeam(project.getTeam().getId()).getName() == null) {
 			sprints = new ArrayList<>();
 		}
-		else if(this.boxService.getMinimumBoxOfATeam(project.getTeam().getId()).getName() == "BASIC") {
+		else if(this.boxService.getMinimumBoxOfATeam(project.getTeam().getId()).getName().equals("BASIC")) {
 			sprints = this.getFirstSprintsOfATeam(project.getTeam(), 1).stream().map(x -> x.getId()).collect(Collectors.toList());
 		}
 		return sprints.stream().map(x -> this.getStatistics(x))
@@ -225,7 +225,7 @@ public class SprintService extends AbstractService {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"There is no payment record in the database, so you cannot manage sprints");
 		}
-		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == "BASIC" 
+		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("BASIC") 
 				&& this.getFirstSprintsOfATeam(team, 1).size() > 0) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The minimum team box is basic, so you can only manage a 30-day sprint");
@@ -238,7 +238,7 @@ public class SprintService extends AbstractService {
 					"There is no payment record in the database, so you cannot manage sprints");
 		}
 		
-		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == "BASIC" 
+		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("BASIC") 
 				&& (!this.getFirstSprintsOfATeam(team, 1).contains(sprint) || validDate.isBefore(LocalDateTime.now(ZoneId.systemDefault())))) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The minimum team box is basic, so you can only manage a 30-day sprint");
