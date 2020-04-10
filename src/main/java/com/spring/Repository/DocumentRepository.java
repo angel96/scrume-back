@@ -13,7 +13,7 @@ import com.spring.Model.Sprint;
 public interface DocumentRepository extends AbstractRepository<Document> {
 	List<Document> findBySprint(Sprint sprint);
 
-	@Query(value = "select d.id from Document d where d.sprint_id = ?1 and d.type = 'DAILY' order by d.id desc LIMIT 1", nativeQuery = true)
+	@Query(value = "select d.id from Document d where d.sprint_id = ?1 and d.name like '%DAILY%' order by d.id desc LIMIT 1", nativeQuery = true)
 	Optional<Integer> getDaily(Sprint sprint);
 	
 		
