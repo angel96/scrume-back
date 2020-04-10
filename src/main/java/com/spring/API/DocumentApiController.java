@@ -38,6 +38,12 @@ public class DocumentApiController extends AbstractApiController {
 		super.logger.info("GET /api/document/sprint/" + idSprint);
 		return this.documentService.findAllBySprint(idSprint);
 	}
+	
+	@GetMapping("daily/{idSprint}")
+	public Integer getDaily(@PathVariable int idSprint) {
+		super.logger.info("GET /api/document/daily/" + idSprint);
+		return this.documentService.getDaily(idSprint);
+	}
 
 	@PostMapping("{idSprint}")
 	public DocumentDto save(@PathVariable int idSprint, @RequestBody DocumentDto dto) {
