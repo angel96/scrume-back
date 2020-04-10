@@ -1,6 +1,7 @@
 package com.spring.Service;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -16,6 +17,7 @@ import com.spring.CustomObject.HistoryTaskDto;
 import com.spring.Model.Column;
 import com.spring.Model.HistoryTask;
 import com.spring.Model.Project;
+import com.spring.Model.Sprint;
 import com.spring.Model.Task;
 import com.spring.Model.Workspace;
 import com.spring.Repository.HistoryTaskRepository;
@@ -35,6 +37,9 @@ public class HistoryTaskService extends AbstractService {
 	@Autowired
 	private TaskService serviceTask;
 
+	@Autowired
+	private BoxService boxService;
+	
 	@Autowired
 	private WorkspaceService serviceWorkspace;
 
@@ -56,6 +61,7 @@ public class HistoryTaskService extends AbstractService {
 	public HistoryTaskDto save(HistoryTaskDto dto) {
 
 		Column destiny = this.serviceColumn.findOne(dto.getDestiny());
+		this.validateBoxPrivileges(destiny.getWorkspace().getSprint(), destiny.getWorkspace());
 		Task task = serviceTask.findOne(dto.getTask());
 		Column origin = task.getColumn();
 		Project projectColumnDestiny = destiny.getWorkspace().getSprint().getProject();
@@ -91,6 +97,25 @@ public class HistoryTaskService extends AbstractService {
 		}
 
 		return dtoToReturn;
+	}
+
+	private void validateBoxPrivileges(Sprint sprint, Workspace workspace) {
+		if (this.boxService.getMinimumBoxOfATeam(sprint.getProject().getTeam().getId()).getName() == null) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"There is no payment record in the database, so you cannot manage workspaces");
+		}
+		LocalDateTime validDate = sprint.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+		validDate = validDate.plusDays(30);
+		if (this.boxService.getMinimumBoxOfATeam(sprint.getProject().getTeam().getId()).getName().equals("BASIC") 
+				&& (!this.serviceWorkspace.getFirstWorkspacesOfASprint(sprint, 1).contains(workspace) || validDate.isBefore(LocalDateTime.now(ZoneId.systemDefault())))) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"The minimum team box is basic, so you can only manage the first of your workspaces during the 30 days of the sprint");
+		}
+		if (this.boxService.getMinimumBoxOfATeam(sprint.getProject().getTeam().getId()).getName().equals("STANDARD") 
+				&& !this.serviceWorkspace.getFirstWorkspacesOfASprint(sprint, 2).contains(workspace)) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"The minimum team box is standard, so you are only allowed to manage your first two workspaces");
+		}
 	}
 
 	public void flush() {
