@@ -4,6 +4,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -70,6 +74,10 @@ public class DocumentService extends AbstractService {
 				x.getContent(), sprint.getId())).collect(Collectors.toList());
 	}
 
+	public void saveDaily(String name, Sprint sprint) {
+		this.documentRepo.saveAndFlush(new Document(DocumentType.DAILY, name, "[]", sprint));
+	}
+	
 	public DocumentDto save(DocumentDto document, int sprintId) {
 		checkType(document.getType());
 		Sprint sprint = this.sprintService.getOne(sprintId);
@@ -92,6 +100,28 @@ public class DocumentService extends AbstractService {
 		return new DocumentDto(db.getId(), db.getName(), db.getType().toString(), db.getContent(),
 				db.getSprint().getId());
 	}
+	
+	public Integer getDaily(int idSprint) {
+		Integer res;
+		Sprint  sprint = this.sprintService.getOne(idSprint);
+		LocalDate endDate = sprint.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalTime endTime = LocalTime.of(23, 59, 59);
+		LocalDateTime endDateOfSprint = LocalDateTime.of(endDate, endTime);
+		LocalDate startDate = sprint.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalTime startTime = LocalTime.of(0, 0, 0);
+		LocalDateTime startDateOfSprint = LocalDateTime.of(startDate, startTime);
+		this.validateDatesOfSprint(startDateOfSprint, endDateOfSprint);
+		List<Integer> dailys = this.documentRepo.getDaily(sprint);
+		if(!dailys.isEmpty()) {
+			res = dailys.get(0);
+		}
+		else {
+			res = null;
+		}
+		return res;
+	}
+
+	
 
 	public void delete(int idDoc) {
 		checkEntityExists(idDoc);
@@ -100,6 +130,15 @@ public class DocumentService extends AbstractService {
 		this.documentRepo.delete(doc);
 	}
 
+	private void validateDatesOfSprint(LocalDateTime startDateOfSprint, LocalDateTime endDateOfSprint) {
+		if (endDateOfSprint.isBefore(LocalDateTime.now()))
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"The sprint is over so there is no daily for today");
+		if (startDateOfSprint.isAfter(LocalDateTime.now()))
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"The sprint has not yet started so there is no daily");
+	}
+	
 	private void checkUserOnTeam(UserAccount user, Team team) {
 		User usuario = this.userService.getUserByPrincipal();
 		if (!this.userRolService.isUserOnTeam(usuario, team))
@@ -193,5 +232,6 @@ public class DocumentService extends AbstractService {
 	public void flush() {
 		this.documentRepo.flush();
 	}
+
 
 }

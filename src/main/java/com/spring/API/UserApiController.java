@@ -48,6 +48,11 @@ public class UserApiController extends AbstractApiController {
 		return this.userService.update(userDto, idUser);
 	}
 	
+	@GetMapping("/isAdmin")
+	public Boolean isAdmin(){
+		return this.userService.getIsAdminOfSystem();
+	}
+	
 	@GetMapping("/anonymize")
 	public void anonymize() {
 		super.logger.info("GET /api/user/anonymize");

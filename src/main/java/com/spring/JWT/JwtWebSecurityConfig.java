@@ -70,7 +70,8 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.authenticated().antMatchers("/api/login/**").authenticated().antMatchers("/api/project/**")
 				.authenticated().antMatchers("/api/workspace/**").authenticated().antMatchers("/api/history-task/**")
 				.authenticated().antMatchers("/api/task/**").authenticated().antMatchers("/api/payment/**")
-				.authenticated().antMatchers("/api/box/**").authenticated().antMatchers("/api/user/**").authenticated()
+				.authenticated().antMatchers("/api/box/**").authenticated().antMatchers("/api/user/**").authenticated().antMatchers("/api/notification/**").authenticated()
+				.antMatchers("/api/administrator/**").hasRole("ADMIN")
 				.antMatchers("/api/document/**").authenticated().antMatchers("/api/personalList/**").authenticated();
 
 		// Probar si al cierre de sesion, sigue disponible la API

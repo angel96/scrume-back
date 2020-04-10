@@ -56,9 +56,9 @@ public class TeamApiController extends AbstractApiController {
 		return this.teamService.update(teamEditDto);
 	}
 
-	@PostMapping("/team-out/{idTeam}")
+	@GetMapping("/team-out/{idTeam}")
 	public void teamOut(@PathVariable Integer idTeam) {
-		super.logger.info("POST /api/team/team-out/" + idTeam);
+		super.logger.info("GET /api/team/team-out/" + idTeam);
 		this.userRolService.teamOut(idTeam);
 	}
 
@@ -80,11 +80,10 @@ public class TeamApiController extends AbstractApiController {
 		return this.userRolService.listAllTeamsOfAnUser();
 	}
 
-	@PostMapping("/change-rol/{idUser}/{idTeam}")
-	public ChangeRolDto changeRol(@PathVariable Integer idUser, @PathVariable Integer idTeam,
-			@RequestBody ChangeRolDto changeRolDto) {
-		super.logger.info("POST /api/team/change-rol/" + idUser + "/" + idTeam);
-		return this.userRolService.changeRol(idUser, idTeam, changeRolDto);
+	@PostMapping("/change-rol")
+	public void changeRol(@RequestBody ChangeRolDto changeRolDto) {
+		super.logger.info("POST /api/team/change-rol");
+		this.userRolService.changeRol(changeRolDto);
 	}
 
 	@PostMapping("/invite")

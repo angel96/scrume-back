@@ -7,12 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChangeRolDto {
+public class SecurityBreachDto {
 		
-	private Integer idUser;
-	
-	private Integer idTeam;
-	
-	private Boolean admin;
+	private String message;
 
+    private Boolean activated;
+	
+	
 }
