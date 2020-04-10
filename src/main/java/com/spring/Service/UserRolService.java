@@ -76,7 +76,7 @@ public class UserRolService extends AbstractService {
 			this.validatePrincipal(principal);
 			this.validatePrincipalTeam(principal, team);
 			this.validateIsAdmin(principal, team);
-			this.userRolRepository.delete(this.findByUserAndTeam(principal, team));
+			this.userRolRepository.delete(this.findByUserAndTeam(user, team));
 		}
 	}
 	
