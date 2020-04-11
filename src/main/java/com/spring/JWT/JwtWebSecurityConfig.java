@@ -56,6 +56,7 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 		web.ignoring().antMatchers("/api/login/**");
 		web.ignoring().antMatchers("/api/box/**");
 		web.ignoring().antMatchers("/api/user/find-by-authorization");
+		web.ignoring().antMatchers("/api/user/security-breach");
 		web.ignoring().antMatchers("/api/login/authenticate");
 		web.ignoring().antMatchers("/api/document/doc-pdf/**");
 		
@@ -70,7 +71,8 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 				.authenticated().antMatchers("/api/login/**").authenticated().antMatchers("/api/project/**")
 				.authenticated().antMatchers("/api/workspace/**").authenticated().antMatchers("/api/history-task/**")
 				.authenticated().antMatchers("/api/task/**").authenticated().antMatchers("/api/payment/**")
-				.authenticated().antMatchers("/api/box/**").authenticated().antMatchers("/api/user/**").authenticated()
+				.authenticated().antMatchers("/api/box/**").authenticated().antMatchers("/api/user/**").authenticated().antMatchers("/api/notification/**").authenticated()
+				.antMatchers("/api/administrator/**").hasRole("ADMIN")
 				.antMatchers("/api/document/**").authenticated().antMatchers("/api/personalList/**").authenticated();
 
 		// Probar si al cierre de sesion, sigue disponible la API

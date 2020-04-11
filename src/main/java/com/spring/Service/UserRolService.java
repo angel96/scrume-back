@@ -76,7 +76,7 @@ public class UserRolService extends AbstractService {
 			this.validatePrincipal(principal);
 			this.validatePrincipalTeam(principal, team);
 			this.validateIsAdmin(principal, team);
-			this.userRolRepository.delete(this.findByUserAndTeam(principal, team));
+			this.userRolRepository.delete(this.findByUserAndTeam(user, team));
 		}
 	}
 	
@@ -136,10 +136,15 @@ public class UserRolService extends AbstractService {
 	}
 	
 	private void validateIsTheOnlyAdmin(User principal, User user, Team team) {
-		if (principal.getId() == user.getId() && this.isTheOnlyAdminOnTeam(principal, team)) {
+		if (principal.getId() == user.getId() && this.isTheOnlyAdminOnTeamValidation(principal, team)) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 					"You can't stop being the admin if you don't appoint someone else first");
 		}		
+	}
+
+	private boolean isTheOnlyAdminOnTeamValidation(User user, Team team) {
+		Integer adminsOfTeam = this.userRolRepository.getNumberOfAdminsOfTeam(team);
+		return this.isAdminOnTeam(user, team) && adminsOfTeam == 1;
 	}
 
 	private void validateUser(Integer idUser) {

@@ -56,9 +56,9 @@ public class TeamApiController extends AbstractApiController {
 		return this.teamService.update(teamEditDto);
 	}
 
-	@PostMapping("/team-out/{idTeam}")
+	@GetMapping("/team-out/{idTeam}")
 	public void teamOut(@PathVariable Integer idTeam) {
-		super.logger.info("POST /api/team/team-out/" + idTeam);
+		super.logger.info("GET /api/team/team-out/" + idTeam);
 		this.userRolService.teamOut(idTeam);
 	}
 

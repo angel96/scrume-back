@@ -102,6 +102,7 @@ public class DocumentService extends AbstractService {
 	}
 	
 	public Integer getDaily(int idSprint) {
+		Integer res;
 		Sprint  sprint = this.sprintService.getOne(idSprint);
 		LocalDate endDate = sprint.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		LocalTime endTime = LocalTime.of(23, 59, 59);
@@ -110,7 +111,14 @@ public class DocumentService extends AbstractService {
 		LocalTime startTime = LocalTime.of(0, 0, 0);
 		LocalDateTime startDateOfSprint = LocalDateTime.of(startDate, startTime);
 		this.validateDatesOfSprint(startDateOfSprint, endDateOfSprint);
-		return this.documentRepo.getDaily(sprint).orElse(null);
+		List<Integer> dailys = this.documentRepo.getDaily(sprint);
+		if(!dailys.isEmpty()) {
+			res = dailys.get(0);
+		}
+		else {
+			res = null;
+		}
+		return res;
 	}
 
 	
