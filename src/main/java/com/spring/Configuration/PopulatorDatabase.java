@@ -168,13 +168,60 @@ public class PopulatorDatabase implements CommandLineRunner {
 		UserAccount account4 = accountRepository
 				.save(new UserAccount("testuser4@gmail.com", Utiles.encryptedPassword("1234564"), LocalDateTime.now(),
 						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_USER))));
-
+		
 		entities.put("account0", account0.getId());
 		entities.put("account1", account1.getId());
 		entities.put("account2", account2.getId());
 		entities.put("account3", account3.getId());
 		entities.put("account4", account4.getId());
+		
+		//USERACCOUNTS CON PAQUETE CADUCADO
+		
+		UserAccount account5 = accountRepository
+				.save(new UserAccount("testuser5@gmail.com", Utiles.encryptedPassword("1234565"), LocalDateTime.now(),
+						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_USER))));
+		UserAccount account6 = accountRepository
+				.save(new UserAccount("testuser6@gmail.com", Utiles.encryptedPassword("1234566"), LocalDateTime.now(),
+						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_USER))));
+		UserAccount account7 = accountRepository
+				.save(new UserAccount("testuser7@gmail.com", Utiles.encryptedPassword("1234567"), LocalDateTime.now(),
+						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_USER))));
+		UserAccount account8 = accountRepository
+				.save(new UserAccount("testuser8@gmail.com", Utiles.encryptedPassword("1234568"), LocalDateTime.now(),
+						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_USER))));
+		UserAccount account9 = accountRepository
+				.save(new UserAccount("testuser9@gmail.com", Utiles.encryptedPassword("1234569"), LocalDateTime.now(),
+						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_USER))));
+		
 
+		entities.put("account5", account5.getId());
+		entities.put("account6", account6.getId());
+		entities.put("account7", account7.getId());
+		entities.put("account8", account8.getId());
+		entities.put("account9", account9.getId());
+
+		//USERACCOUNTS CON PAQUETE BASIC
+		UserAccount account10 = accountRepository
+				.save(new UserAccount("testuser10@gmail.com", Utiles.encryptedPassword("12345610"), LocalDateTime.now(),
+						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_USER))));
+		UserAccount account11 = accountRepository
+				.save(new UserAccount("testuser11@gmail.com", Utiles.encryptedPassword("12345611"), LocalDateTime.now(),
+						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_USER))));
+	
+		entities.put("account10", account10.getId());
+		entities.put("account11", account11.getId());
+		
+		//USERACCOUNTS CON PAQUETE STANDARD
+				UserAccount account12 = accountRepository
+						.save(new UserAccount("testuser12@gmail.com", Utiles.encryptedPassword("12345612"), LocalDateTime.now(),
+								LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_USER))));
+				UserAccount account13 = accountRepository
+						.save(new UserAccount("testuser13@gmail.com", Utiles.encryptedPassword("12345613"), LocalDateTime.now(),
+								LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_USER))));
+			
+				entities.put("account12", account12.getId());
+				entities.put("account13", account13.getId());
+		
 		Box basicBox = boxRepository.save(new Box("BASIC", 0.0));
 		Box standardBox = boxRepository.save(new Box("STANDARD", 1.0));
 		Box proBox = boxRepository.save(new Box("PRO", 2.0));
@@ -205,15 +252,83 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("user3", user3.getId());
 		entities.put("user4", user4.getId());
 
+		
+		//USERS CON PAQUETE CADUCADO 
+		
+		User user5 = new User("Juan", "Perez Alvarez", "juaperalv", "juaperalv", null);
+		user5.setUserAccount(account5);
+		user5 = userRepository.save(user5);
+
+		User user6 = new User("Manuel", "Benitez Carranco", "manbencar", "manbencar", null);
+		user6.setUserAccount(account6);
+		user6 = userRepository.save(user6);
+
+		User user7 = new User("Inma", "Gutierrez Martinez", "inmgutmar", "inmgutmar", null);
+		user7.setUserAccount(account7);
+		user7 = userRepository.save(user7);
+
+		User user8 = new User("Laura", "Mora Ruiz", "laumorrui", "laumorrui", null);
+		user8.setUserAccount(account8);
+		user8 = userRepository.save(user8);
+
+		User user9 = new User("Maria", "Gracia Montes", "margramon", "margramon", null);
+		user9.setUserAccount(account9);
+		user9 = userRepository.save(user9);
+
+		
+		entities.put("user5", user5.getId());
+		entities.put("user6", user6.getId());
+		entities.put("user7", user7.getId());
+		entities.put("user8", user8.getId());
+		entities.put("user9", user9.getId());
+		
+		//USERS CON PAQUETE BASIC 
+		
+		User user10 = new User("Pilar", "Marquez Carmona", "pilmarcar", "pilmarcar", null);
+		user10.setUserAccount(account10);
+		user10 = userRepository.save(user10);
+
+		User user11 = new User("Rafael", "Gil Corchuelo", "rafgilcor", "rafgilcor", null);
+		user11.setUserAccount(account11);
+		user11 = userRepository.save(user11);
+
+		
+		entities.put("user10", user10.getId());
+		entities.put("user11", user11.getId());
+		
+		//USERS CON PAQUETE STANDARD 
+		
+		User user12 = new User("Alejandro", "Bejarano Fuentes", "alberfue", "alberfue", null);
+		user12.setUserAccount(account12);
+		user12 = userRepository.save(user12);
+
+		User user13 = new User("Luisa", "Torres Chacon", "luitorcha", "luitorcha", null);
+		user13.setUserAccount(account13);
+		user13 = userRepository.save(user13);
+
+		
+		entities.put("user12", user12.getId());
+		entities.put("user13", user13.getId());
+		
 		Team team1 = teamRepository.save(new Team("Olimpia"));
 		Team team2 = teamRepository.save(new Team("Innovae"));
 		Team team3 = teamRepository.save(new Team("DEL5"));
 		Team team4 = teamRepository.save(new Team("Fujitsu"));
 
+		//TEAM BASIC
+		Team team5 = teamRepository.save(new Team("BasicTeam"));
+		//TEAM STANDARD
+		Team team6 = teamRepository.save(new Team("StandardTeam"));
+		//TEAM BASIC-STANDARD
+		Team team7 = teamRepository.save(new Team("BasicStandardTeam"));
+
 		entities.put("team1", team1.getId());
 		entities.put("team2", team2.getId());
 		entities.put("team3", team3.getId());
 		entities.put("team4", team4.getId());
+		entities.put("team5", team5.getId());
+		entities.put("team6", team6.getId());
+		entities.put("team7", team7.getId());
 
 		UserRol rol1 = this.userRolRepository.save(new UserRol(true, user1, team1));
 		UserRol rol2 = this.userRolRepository.save(new UserRol(true, user2, team2));
@@ -221,12 +336,30 @@ public class PopulatorDatabase implements CommandLineRunner {
 		UserRol rol4 = this.userRolRepository.save(new UserRol(true, user4, team4));
 		UserRol rol5 = this.userRolRepository.save(new UserRol(false, user4, team1));
 
+		//USER ROLES TEAM BASIC
+		UserRol rol6 = this.userRolRepository.save(new UserRol(true, user10, team5));
+		UserRol rol7 = this.userRolRepository.save(new UserRol(true, user11, team5));
+		
+		//USER ROLES TEAM STANDARD
+		UserRol rol8 = this.userRolRepository.save(new UserRol(true, user12, team6));
+		UserRol rol9 = this.userRolRepository.save(new UserRol(true, user13, team6));
+		
+		//USER ROLES TEAM BASIC-STANDARD
+		UserRol rol10 = this.userRolRepository.save(new UserRol(true, user10, team7));
+		UserRol rol11 = this.userRolRepository.save(new UserRol(true, user13, team7));
+
 		entities.put("rol1", rol1.getId());
 		entities.put("rol2", rol2.getId());
 		entities.put("rol3", rol3.getId());
 		entities.put("rol4", rol4.getId());
 		entities.put("rol5", rol5.getId());
-
+		entities.put("rol6", rol6.getId());
+		entities.put("rol7", rol7.getId());
+		entities.put("rol8", rol8.getId());
+		entities.put("rol9", rol9.getId());
+		entities.put("rol10", rol10.getId());
+		entities.put("rol11", rol11.getId());
+		
 		LocalDateTime localDateTime0 = LocalDateTime.of(0, 2, 03, 10, 15);
 		LocalDateTime localDateTime00 = LocalDateTime.of(9999, 2, 03, 10, 15);
 		
@@ -297,7 +430,6 @@ public class PopulatorDatabase implements CommandLineRunner {
 		Date localDate15 = Date.from(localDateTime15.atZone(ZoneId.systemDefault()).toInstant());
 		LocalDateTime localDateTime16 = LocalDateTime.of(2020, 3, 26, 10, 15);
 		Date localDate16 = Date.from(localDateTime16.atZone(ZoneId.systemDefault()).toInstant());
-		LocalDateTime localDateTime17 = LocalDateTime.of(2050, 3, 26, 10, 15);
 		
 		Sprint sprint1 = this.sprintRepository.save(new Sprint(localDate5, localDate6, project1));
 		Sprint sprint2 = this.sprintRepository.save(new Sprint(localDate7, localDate8, project2));
@@ -448,18 +580,18 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("estimation9", estimation9.getId());
 		Payment payment0 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
 				user0.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
-		Payment payment1 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime1), proBox,
-				user1.getUserAccount(), LocalDate.from(localDateTime17), "ABC123456", "ABC12345678"));
-		Payment payment2 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime1), proBox,
-				user1.getUserAccount(), LocalDate.from(localDateTime17), "ABC123456", "ABC12345678"));
-		Payment payment3 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime1), proBox,
-				user4.getUserAccount(), LocalDate.from(localDateTime17), "ABC123456", "ABC12345678"));
+		Payment payment1 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
+				user1.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
+		Payment payment2 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
+				user1.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
+		Payment payment3 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
+				user4.getUserAccount(), LocalDate.from(localDateTime1), "ABC123456", "ABC12345678"));
 		Payment payment4 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime1), proBox,
-				user4.getUserAccount(), LocalDate.from(localDateTime17), "ABC123456", "ABC12345678"));
-		Payment payment5 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime1), proBox,
-				user2.getUserAccount(), LocalDate.from(localDateTime17), "ABC123456", "ABC12345678"));
-		Payment payment6 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime1), proBox,
-				user3.getUserAccount(), LocalDate.from(localDateTime17), "ABC123456", "ABC12345678"));
+				user4.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
+		Payment payment5 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
+				user2.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
+		Payment payment6 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
+				user3.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
 
 		entities.put("payment0", payment0.getId());
 		entities.put("payment1", payment1.getId());
@@ -468,6 +600,40 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("payment4", payment4.getId());
 		entities.put("payment5", payment5.getId());
 		entities.put("payment6", payment6.getId());
+		
+		//PAYMENTS CADUCADOS
+		Payment payment7 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
+				user5.getUserAccount(), LocalDate.from(localDateTime0), "ABC123456", "ABC12345678"));
+		Payment payment8 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
+				user6.getUserAccount(), LocalDate.from(localDateTime0), "ABC123456", "ABC12345678"));
+		Payment payment9 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
+				user7.getUserAccount(), LocalDate.from(localDateTime0), "ABC123456", "ABC12345678"));
+		Payment payment10 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
+				user8.getUserAccount(), LocalDate.from(localDateTime0), "ABC123456", "ABC12345678"));
+		Payment payment11 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
+				user9.getUserAccount(), LocalDate.from(localDateTime0), "ABC123456", "ABC12345678"));
+		
+		//PAYMENTS BASIC
+		Payment payment12 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), basicBox,
+				user10.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
+		Payment payment13 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), basicBox,
+				user11.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
+		
+		//PAYMENTS STANDARD
+		Payment payment14 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), standardBox,
+				user12.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
+		Payment payment15 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), standardBox,
+				user13.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));	
+		
+		entities.put("payment7", payment7.getId());
+		entities.put("payment8", payment8.getId());
+		entities.put("payment9", payment9.getId());
+		entities.put("payment10", payment10.getId());
+		entities.put("payment11", payment11.getId());
+		entities.put("payment12", payment12.getId());
+		entities.put("payment13", payment13.getId());
+		entities.put("payment14", payment14.getId());
+		entities.put("payment15", payment15.getId());
 
 		PersonalTaskList personalList1 = this.taskListRepository.save(new PersonalTaskList(user1, "Test List 1"));
 		PersonalTaskList personalList2 = this.taskListRepository.save(new PersonalTaskList(user1, "Test List 2"));
