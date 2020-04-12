@@ -1,7 +1,5 @@
 package com.spring.Model;
 
-import java.time.LocalDateTime;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -16,8 +14,8 @@ import javax.validation.constraints.NotNull;
 import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.SafeHtml;
-import org.springframework.format.annotation.DateTimeFormat;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -55,9 +53,9 @@ public class Document extends BaseEntity {
 	@JoinColumn(name = "sprint", nullable = false)
 	private Sprint sprint;
 	
-	@DateTimeFormat
 	@NotNull
-	@Column(name = "date", nullable = false)
-    private LocalDateTime date;
+	@JsonIgnore
+	@Column(name = "notified", nullable = false)
+	private Boolean notified;
 
 }

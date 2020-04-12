@@ -4,11 +4,9 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -41,8 +39,6 @@ import com.spring.Model.User;
 import com.spring.Model.UserAccount;
 import com.spring.Repository.DocumentRepository;
 import com.spring.Security.UserAccountService;
-
-import ch.qos.logback.core.subst.Token.Type;
 
 @Service
 @Transactional
@@ -78,7 +74,7 @@ public class DocumentService extends AbstractService {
 	}
 
 	public void saveDaily(String name, Sprint sprint) {
-		this.documentRepo.saveAndFlush(new Document(DocumentType.DAILY, name, "[]", sprint, LocalDateTime.now()));
+		this.documentRepo.saveAndFlush(new Document(DocumentType.DAILY, name, "[]", sprint, false));
 	}
 	
 	public DocumentDto save(DocumentDto document, int sprintId) {
@@ -86,7 +82,7 @@ public class DocumentService extends AbstractService {
 		Sprint sprint = this.sprintService.getOne(sprintId);
 		checkUserOnTeam(UserAccountService.getPrincipal(), sprint.getProject().getTeam());
 		Document entity = new Document(DocumentType.valueOf(document.getType()), document.getName(),
-				document.getContent(), sprint, LocalDateTime.now());
+				document.getContent(), sprint, false);
 		Document saved = this.documentRepo.saveAndFlush(entity);
 		return new DocumentDto(saved.getId(), saved.getName(), saved.getType().toString(), saved.getContent(),
 				saved.getSprint().getId());
@@ -107,12 +103,13 @@ public class DocumentService extends AbstractService {
 	public Integer getDaily(int idSprint) {
 		Integer res;
 		Sprint  sprint = this.sprintService.getOne(idSprint);
-		LocalDate localDate = LocalDate.now();
-		LocalTime localTimeStart = LocalTime.of(0, 0, 0);
-		LocalTime localTimeEnd = LocalTime.of(23, 59, 59);
-		LocalDateTime startDate = LocalDateTime.of(localDate, localTimeStart);
-		LocalDateTime endDate = LocalDateTime.of(localDate, localTimeEnd);
-		List<Integer> dailys = this.documentRepo.getDaily(sprint, startDate, endDate);
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.set(Calendar.HOUR, cal.get(Calendar.HOUR)+ 2);
+		Date actualDate = cal.getTime();
+		String date = new SimpleDateFormat("dd/MM/yyyy").format(actualDate);
+		String name = "Daily " + date;
+		List<Integer> dailys = this.documentRepo.getDaily(sprint, name);
 		if(!dailys.isEmpty()) {
 			res = dailys.get(0);
 		}
@@ -225,20 +222,25 @@ public class DocumentService extends AbstractService {
 		this.documentRepo.flush();
 	}
 
-	public boolean checkDocumentIsCreated(String title, Date date, Sprint sprint) {
-		LocalDate localDate = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		LocalTime localTimeStart = LocalTime.of(0, 0, 0);
-		LocalTime localTimeEnd = LocalTime.of(23, 59, 59);
-		LocalDateTime startDate = LocalDateTime.of(localDate, localTimeStart);
-		LocalDateTime endDate = LocalDateTime.of(localDate, localTimeEnd);
+	public Boolean checkDocumentIsCreated(String title, Sprint sprint) {
+		
 		title = title.toLowerCase();
 		DocumentType type = null;
-		if(title.contains("review")) {
+		if(title.contains("middle") && title.contains("review")) {
+			type = DocumentType.MIDDLE_REVIEW;
+		}else if(title.contains("middle") && title.contains("retrospective")) {
+			type = DocumentType.MIDDLE_RETROSPECTIVE;
+		}else if(title.contains("review")) {
 			type = DocumentType.REVIEW;
 		}else if(title.contains("retrospective")) {
 			type = DocumentType.RETROSPECTIVE;
 		}
-		Collection<Document> documents = this.documentRepo.findByDateAndSprintAndType(startDate, endDate, sprint, type);
+		List<Document> documents = this.documentRepo.findBySprintAndTypeAndNotified(sprint, type, false);
+		if(!documents.isEmpty()) {
+			Document document = documents.get(0);
+			document.setNotified(true);
+			this.documentRepo.saveAndFlush(document);
+		}
 		return documents.size() > 0;
 	}
 
