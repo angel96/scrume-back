@@ -14,6 +14,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.PaymentEditDto;
 import com.spring.CustomObject.PaymentListDto;
+import com.spring.JWT.JwtResponse;
 import com.spring.JWT.JwtUserAccountService;
 import com.spring.Model.Payment;
 import com.spring.Model.User;
@@ -45,7 +46,7 @@ public class PaymentService extends AbstractService {
 				.collect(Collectors.toList());
 	}
 
-	public String save(PaymentEditDto payment) {
+	public JwtResponse save(PaymentEditDto payment) {
 
 		Payment saveTo = null;
 
