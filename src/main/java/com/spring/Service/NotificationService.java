@@ -117,15 +117,19 @@ public class NotificationService extends AbstractService {
 			if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("PRO")) {
 				Collection<Notification> notifications = this.notificationRepository.listByUser(principal, team);
 				for (Notification notification : notifications) {
-					res.add(new NotificationListDto(notification.getId(), notification.getTitle(), new TeamDto(team.getId(), team.getName()), new ProjectIdNameDto
-							(notification.getSprint().getProject().getId(), notification.getSprint().getProject().getName()),
-							notification.getDate()));
+					if(this.checkDocumentIsCreated(notification)) {
+						this.notificationRepository.delete(notification);
+					}else {
+						res.add(new NotificationListDto(notification.getId(), notification.getTitle(), new TeamDto(team.getId(), team.getName()), new ProjectIdNameDto
+								(notification.getSprint().getProject().getId(), notification.getSprint().getProject().getName()),
+								notification.getDate()));
+					}
 				}
 			}
 		}
 		return res;
 	}
-	
+
 	public Collection<NotificationDto> listAllNotifications(Integer idSprint) {
 		User principal = this.userService.getUserByPrincipal();
 		this.validatePrincipalIsLogged(principal);
@@ -156,6 +160,10 @@ public class NotificationService extends AbstractService {
 		this.validateBoxPrivileges(notificationDB.getSprint().getProject().getTeam().getId());
 		this.validatePrincipalPermission(principal, notificationDB.getSprint());
 		return new NotificationDto(notificationDB.getId(), notificationDB.getTitle(), notificationDB.getDate());
+	}
+	
+	private boolean checkDocumentIsCreated(Notification notification) {
+		return this.documentService.checkDocumentIsCreated(notification.getTitle(), notification.getSprint());
 	}
 	
 	private void validateUpdatePermission(User principal, Notification notificationEntity) {

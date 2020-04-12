@@ -535,22 +535,20 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("task5", task5.getId());
 		entities.put("task6", task6.getId());
 
-		Document doc1 = this.documentRepository.save(new Document(DocumentType.DAILY, "Daily 26/03/2020",
-				"Hemos avanzado en la planificación del sprint, aunque el tiempo ha corrido en nuestra contra y vamos un poco atrasados.",
-				sprint1));
-		Document doc2 = this.documentRepository.save(new Document(DocumentType.PLANNING_MEETING, "Planning meeting 1",
-				"Se planifica acabar la definición del producto, el análisis de competidores y las métricas de rendimiento",
-				sprint1));
-		Document doc3 = this.documentRepository.save(new Document(DocumentType.REVIEW, "Review",
-				"Se han revisado las tareas entregadas encontrando fallos en la definición del producto.", sprint1));
-		Document doc4 = this.documentRepository.save(new Document(DocumentType.RETROSPECTIVE, "Retrospective",
+		
+		Document doc1 = this.documentRepository.save(new Document(DocumentType.DAILY, "Daily 12/04/2020",
+				"[{\"name\": \"testUser4\", \"done\": \"Terminar populate\", \"doing\": \"Empezar mi primer caso de uso\", \"problems\": \"No se usar spring boot\"}]",
+				sprint1, false));
+		Document doc2 = this.documentRepository.save(new Document(DocumentType.REVIEW, "Review",
+				"Se han revisado las tareas entregadas encontrando fallos en la definición del producto.",
+				sprint1, false));
+		Document doc3 = this.documentRepository.save(new Document(DocumentType.RETROSPECTIVE, "Retrospective",
 				"Hemos trabajado de forma adecuada, aunque no de forma uniforme. Algunas tareas están a medio acabar por falta de planificación. Se propone utilizar slack como medio para aumentar la comunicación del equipo",
-				sprint1));
+				sprint1, false));
 
 		entities.put("doc1", doc1.getId());
 		entities.put("doc2", doc2.getId());
 		entities.put("doc3", doc3.getId());
-		entities.put("doc4", doc4.getId());
 
 		HistoryTask historyTask1 = this.historyTaskRepository
 				.save(new HistoryTask(localDateTime5, toDo1, inProgress1, task2));
