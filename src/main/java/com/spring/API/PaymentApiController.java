@@ -26,7 +26,7 @@ public class PaymentApiController extends AbstractApiController {
 	}
 
 	@PostMapping("/pay")
-	public PaymentEditDto pay(@RequestBody PaymentEditDto payment) {
+	public String pay(@RequestBody PaymentEditDto payment) {
 		return service.save(payment);
 	}
 
