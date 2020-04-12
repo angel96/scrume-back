@@ -537,7 +537,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 
 		
 		Document doc1 = this.documentRepository.save(new Document(DocumentType.DAILY, "Daily 12/04/2020",
-				"[{name: 'testUser4', done: 'Terminar populate', doing: 'Empezar mi primer caso de uso', problems: 'No se usar spring boot'}]",
+				"[{'name': 'testUser4', 'done': 'Terminar populate', 'doing': 'Empezar mi primer caso de uso', 'problems': 'No se usar spring boot'}]",
 				sprint1, false));
 		Document doc2 = this.documentRepository.save(new Document(DocumentType.REVIEW, "Review",
 				"Se han revisado las tareas entregadas encontrando fallos en la definición del producto.",
