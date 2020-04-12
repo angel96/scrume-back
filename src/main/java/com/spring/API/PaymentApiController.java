@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.CustomObject.PaymentEditDto;
 import com.spring.CustomObject.PaymentListDto;
+import com.spring.JWT.JwtResponse;
 import com.spring.Service.PaymentService;
 
 @RestController
@@ -26,7 +27,7 @@ public class PaymentApiController extends AbstractApiController {
 	}
 
 	@PostMapping("/pay")
-	public String pay(@RequestBody PaymentEditDto payment) {
+	public JwtResponse pay(@RequestBody PaymentEditDto payment) {
 		return service.save(payment);
 	}
 

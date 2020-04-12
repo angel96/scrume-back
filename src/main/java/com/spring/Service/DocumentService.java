@@ -10,11 +10,18 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import javax.transaction.Transactional;
 
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -225,20 +232,9 @@ public class DocumentService extends AbstractService {
 
 			document.add(Chunk.NEWLINE);
 
-			PdfPTable contentTable1 = new PdfPTable(1);
-			contentTable1.setWidthPercentage(100);
-			PdfPCell fieldTable = getCell("Contenido", PdfPCell.ALIGN_LEFT, fontTitle);
-			contentTable1.addCell(fieldTable);
-			document.add(contentTable1);
+			// Contenido para cada campo
 
-			document.add(Chunk.NEWLINE);
-
-			PdfPTable contentTable2 = new PdfPTable(1);
-			contentTable2.setWidthPercentage(100);
-			PdfPCell fieldTable2 = getCell(content, PdfPCell.ALIGN_LEFT, fontNormal);
-			contentTable2.addCell(fieldTable2);
-
-			document.add(contentTable2);
+			generateFieldsByType(document, DocumentType.valueOf(type), content, fontTitle, fontNormal);
 
 		} catch (DocumentException e) {
 			e.printStackTrace();
@@ -250,6 +246,102 @@ public class DocumentService extends AbstractService {
 
 		document.close();
 		return new ByteArrayInputStream(out.toByteArray());
+
+	}
+
+	private void generateFieldsByType(com.itextpdf.text.Document document, DocumentType type, String content,
+			Font fontTitle, Font fontNormal) {
+
+		JSONParser parser = new JSONParser();
+		JSONObject object = null;
+		JSONArray array = null;
+
+		try {
+			if (type.equals(DocumentType.DAILY)) {
+				array = (JSONArray) parser.parse(content);
+			} else {
+				object = (JSONObject) parser.parse(content);
+			}
+		} catch (ParseException e) {
+			throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Parsing content action has not been possible");
+		}
+
+		Map<String, String> values = new HashMap<>();
+
+		switch (type) {
+
+		case DAILY:
+			array.stream().forEach(x -> {
+				JSONObject o = (JSONObject) x;
+				String name = (String) o.get("name");
+				String done = (String) o.get("done");
+				String problems = (String) o.get("problems");
+				values.put("Nombre", name);
+				values.put("Realizado", done);
+				values.put("Problemas", problems);
+				crearBody(document, values, fontTitle, fontNormal);
+			});
+			break;
+		case PLANNING_MEETING:
+			String entrega = (String) object.get("entrega");
+			String conseguir = (String) object.get("conseguir");
+			values.put("Entregado", entrega);
+			values.put("Conseguir", conseguir);
+			crearBody(document, values, fontTitle, fontNormal);
+			break;
+		case MIDDLE_REVIEW:
+		case REVIEW:
+			String done = (String) object.get("done");
+			String noDone = (String) object.get("noDone");
+			String rePlanning = (String) object.get("rePlanning");
+			values.put("Realizado", done);
+			values.put("No realizado", noDone);
+			values.put("Re-Planificación", rePlanning);
+			crearBody(document, values, fontTitle, fontNormal);
+			break;
+		case MIDDLE_RETROSPECTIVE:
+		case RETROSPECTIVE:
+			String good = (String) object.get("good");
+			String bad = (String) object.get("bad");
+			String improvement = (String) object.get("improvement");
+			values.put("Bien", good);
+			values.put("Mal", bad);
+			values.put("Mejora", improvement);
+			crearBody(document, values, fontTitle, fontNormal);
+			break;
+		default:
+			break;
+		}
+
+	}
+
+	public void crearBody(com.itextpdf.text.Document document, Map<String, String> values, Font fontTitle,
+			Font fontNormal) {
+
+		values.keySet().forEach(x -> {
+			try {
+				String titulo = x;
+				String contenido = values.get(x);
+
+				PdfPTable contentTable1 = new PdfPTable(1);
+				contentTable1.setWidthPercentage(100);
+				PdfPCell fieldTable = getCell(titulo, PdfPCell.ALIGN_LEFT, fontTitle);
+				contentTable1.addCell(fieldTable);
+				document.add(contentTable1);
+
+				document.add(Chunk.NEWLINE);
+
+				PdfPTable contentTable2 = new PdfPTable(1);
+				contentTable2.setWidthPercentage(100);
+				PdfPCell fieldTable2 = getCell(contenido, PdfPCell.ALIGN_LEFT, fontNormal);
+				contentTable2.addCell(fieldTable2);
+
+				document.add(contentTable2);
+				document.add(Chunk.NEWLINE);
+			} catch (DocumentException e) {
+				e.printStackTrace();
+			}
+		});
 
 	}
 
