@@ -638,10 +638,10 @@ public class PopulatorDatabase implements CommandLineRunner {
 		PersonalTaskList personalList3 = this.taskListRepository.save(new PersonalTaskList(user1, "Test List 3"));
 		PersonalTaskList personalList4 = this.taskListRepository.save(new PersonalTaskList(user1, "Test List 4"));
 
-		entities.put("personalLis1", personalList1.getId());
-		entities.put("personalLis2", personalList2.getId());
-		entities.put("personalLis3", personalList3.getId());
-		entities.put("personalLis4", personalList4.getId());
+		entities.put("personalList1", personalList1.getId());
+		entities.put("personalList2", personalList2.getId());
+		entities.put("personalList3", personalList3.getId());
+		entities.put("personalList4", personalList4.getId());
 		
 		Notification notification1 = this.notificationRepository.save(new Notification("Realizar sprint planning meeting", localDate15, sprint5, null));
 		Notification notification2 = this.notificationRepository.save(new Notification("You must fill in the daily for the 26/03/2020", localDate16, sprint1, user1));
