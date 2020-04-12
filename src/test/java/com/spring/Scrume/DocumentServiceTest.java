@@ -29,6 +29,14 @@ public class DocumentServiceTest extends AbstractTest {
 
 	}
 
+	@Test 
+	public void getDaily() { 
+		Object[][] objectsShow = { 
+		{ "testuser1@gmail.com", super.entities().get("sprint1"), null }}; 
+		Stream.of(objectsShow).forEach(x -> driverGetDaily((String) x[0], (Integer) x[1], (Class<?>) x[2])); 
+ 
+	}
+	 
 	@Test
 	public void saveTest() {
 		Object[][] objectsSave = {
@@ -72,7 +80,7 @@ public class DocumentServiceTest extends AbstractTest {
 
 	}
 	
-	//@Test
+	@Test
 	public void showDtoTest() {
 		Object[][] objectsShowDto = {
 				// Caso positivo
@@ -96,7 +104,20 @@ public class DocumentServiceTest extends AbstractTest {
 		}
 		super.checkExceptions(expected, caught);
 	}
-
+	
+	protected void driverGetDaily(String user, Integer idSprint, Class<?> expected) { 
+		Class<?> caught = null; 
+ 
+		try { 
+			super.authenticateOrUnauthenticate(user); 
+			this.documentService.getDaily(idSprint); 
+			super.authenticateOrUnauthenticate(null); 
+		} catch (Exception oops) { 
+			caught = oops.getClass(); 
+		} 
+		super.checkExceptions(expected, caught); 
+	}
+	 
 	protected void driverSave(String user, Integer entity, Class<?> expected, String type) {
 		Class<?> caught = null;
 

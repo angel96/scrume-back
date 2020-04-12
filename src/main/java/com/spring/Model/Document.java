@@ -15,6 +15,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.SafeHtml;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -51,5 +52,10 @@ public class Document extends BaseEntity {
 	@NotNull
 	@JoinColumn(name = "sprint", nullable = false)
 	private Sprint sprint;
+	
+	@NotNull
+	@JsonIgnore
+	@Column(name = "notified", nullable = false)
+	private Boolean notified;
 
 }

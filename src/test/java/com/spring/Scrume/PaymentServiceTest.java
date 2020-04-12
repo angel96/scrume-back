@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.PaymentEditDto;
+import com.spring.Model.Payment;
+import com.spring.Security.UserAccountService;
 import com.spring.Service.PaymentService;
 
 public class PaymentServiceTest extends AbstractTest {
@@ -48,6 +50,9 @@ public class PaymentServiceTest extends AbstractTest {
 
 		try {
 			super.authenticateOrUnauthenticate(user);
+
+			Payment paymentUser = this.service.findByUserAccount(UserAccountService.getPrincipal());
+			paymentUser.setExpiredDate(LocalDate.of(2020, 03, 12));
 			PaymentEditDto payment = new PaymentEditDto(0, super.entities().get("proBox"), date, "ABCD1234",
 					"ASFDFD59842");
 			this.service.save(payment);
