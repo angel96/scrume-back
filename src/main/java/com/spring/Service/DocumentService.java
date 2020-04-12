@@ -4,11 +4,10 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -75,7 +74,7 @@ public class DocumentService extends AbstractService {
 	}
 
 	public void saveDaily(String name, Sprint sprint) {
-		this.documentRepo.saveAndFlush(new Document(DocumentType.DAILY, name, "[]", sprint));
+		this.documentRepo.saveAndFlush(new Document(DocumentType.DAILY, name, "[]", sprint, false));
 	}
 	
 	public DocumentDto save(DocumentDto document, int sprintId) {
@@ -83,7 +82,7 @@ public class DocumentService extends AbstractService {
 		Sprint sprint = this.sprintService.getOne(sprintId);
 		checkUserOnTeam(UserAccountService.getPrincipal(), sprint.getProject().getTeam());
 		Document entity = new Document(DocumentType.valueOf(document.getType()), document.getName(),
-				document.getContent(), sprint);
+				document.getContent(), sprint, false);
 		Document saved = this.documentRepo.saveAndFlush(entity);
 		return new DocumentDto(saved.getId(), saved.getName(), saved.getType().toString(), saved.getContent(),
 				saved.getSprint().getId());
@@ -104,19 +103,18 @@ public class DocumentService extends AbstractService {
 	public Integer getDaily(int idSprint) {
 		Integer res;
 		Sprint  sprint = this.sprintService.getOne(idSprint);
-		LocalDate endDate = sprint.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		LocalTime endTime = LocalTime.of(23, 59, 59);
-		LocalDateTime endDateOfSprint = LocalDateTime.of(endDate, endTime);
-		LocalDate startDate = sprint.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		LocalTime startTime = LocalTime.of(0, 0, 0);
-		LocalDateTime startDateOfSprint = LocalDateTime.of(startDate, startTime);
-		this.validateDatesOfSprint(startDateOfSprint, endDateOfSprint);
-		List<Integer> dailys = this.documentRepo.getDaily(sprint);
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.set(Calendar.HOUR, cal.get(Calendar.HOUR)+ 2);
+		Date actualDate = cal.getTime();
+		String date = new SimpleDateFormat("dd/MM/yyyy").format(actualDate);
+		String name = "Daily " + date;
+		List<Integer> dailys = this.documentRepo.getDaily(sprint, name);
 		if(!dailys.isEmpty()) {
 			res = dailys.get(0);
 		}
 		else {
-			res = null;
+			res = -1;
 		}
 		return res;
 	}
@@ -128,15 +126,6 @@ public class DocumentService extends AbstractService {
 		Document doc = this.findOne(idDoc);
 		checkUserOnTeam(UserAccountService.getPrincipal(), doc.getSprint().getProject().getTeam());
 		this.documentRepo.delete(doc);
-	}
-
-	private void validateDatesOfSprint(LocalDateTime startDateOfSprint, LocalDateTime endDateOfSprint) {
-		if (endDateOfSprint.isBefore(LocalDateTime.now()))
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"The sprint is over so there is no daily for today");
-		if (startDateOfSprint.isAfter(LocalDateTime.now()))
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"The sprint has not yet started so there is no daily");
 	}
 	
 	private void checkUserOnTeam(UserAccount user, Team team) {
@@ -231,6 +220,28 @@ public class DocumentService extends AbstractService {
 
 	public void flush() {
 		this.documentRepo.flush();
+	}
+
+	public Boolean checkDocumentIsCreated(String title, Sprint sprint) {
+		
+		title = title.toLowerCase();
+		DocumentType type = null;
+		if(title.contains("middle") && title.contains("review")) {
+			type = DocumentType.MIDDLE_REVIEW;
+		}else if(title.contains("middle") && title.contains("retrospective")) {
+			type = DocumentType.MIDDLE_RETROSPECTIVE;
+		}else if(title.contains("review")) {
+			type = DocumentType.REVIEW;
+		}else if(title.contains("retrospective")) {
+			type = DocumentType.RETROSPECTIVE;
+		}
+		List<Document> documents = this.documentRepo.findBySprintAndTypeAndNotified(sprint, type, false);
+		if(!documents.isEmpty()) {
+			Document document = documents.get(0);
+			document.setNotified(true);
+			this.documentRepo.saveAndFlush(document);
+		}
+		return documents.size() > 0;
 	}
 
 
