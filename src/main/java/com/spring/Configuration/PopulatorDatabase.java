@@ -63,7 +63,7 @@ import com.spring.Utiles.Utiles;
  *
  */
 
-//@Component
+@Component
 public class PopulatorDatabase implements CommandLineRunner {
 
 	protected final Logger log = Logger.getLogger(PopulatorDatabase.class);
