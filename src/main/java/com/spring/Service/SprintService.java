@@ -1,12 +1,18 @@
 package com.spring.Service;
 
+import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -17,6 +23,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import com.spring.CustomObject.BurnUpDto;
+import com.spring.CustomObject.BurndownDto;
 import com.spring.CustomObject.SprintDto;
 import com.spring.CustomObject.SprintEditDto;
 import com.spring.CustomObject.SprintStatisticsDto;
@@ -39,7 +47,7 @@ public class SprintService extends AbstractService {
 
 	@Autowired
 	private BoxService boxService;
-	
+
 	@Autowired
 	private ProjectService projectService;
 
@@ -52,14 +60,21 @@ public class SprintService extends AbstractService {
 	@Autowired
 	private TaskService taskService;
 
+	@Autowired
+	private HistoryTaskService historyTaskService;
+
+	@Autowired
+	public ColumnService columnService;
+
 	public Sprint getOne(int id) {
 		return this.sprintRepository.findById(id).orElseThrow(
 				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested sprint not exists"));
 	}
 
-	public Collection<Sprint> getActivesSprints(){
+	public Collection<Sprint> getActivesSprints() {
 		return this.sprintRepository.getActivesSprints();
 	}
+
 	public SprintStatisticsDto getStatistics(Integer idSprint) {
 		User principal = this.userService.getUserByPrincipal();
 		SprintStatisticsDto res = new SprintStatisticsDto();
@@ -111,7 +126,8 @@ public class SprintService extends AbstractService {
 		sprintEntity.setStartDate(sprintEditDto.getStartDate());
 		sprintEntity.setEndDate(sprintEditDto.getEndDate());
 		this.validateDates(sprintEntity);
-		LocalDateTime validDate = sprintEntity.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+		LocalDateTime validDate = sprintEntity.getStartDate().toInstant().atZone(ZoneId.systemDefault())
+				.toLocalDateTime();
 		validDate = validDate.plusDays(30);
 		this.validateBoxPrivileges(sprintEntity.getProject().getTeam(), sprintEntity, validDate);
 		Sprint sprintDB = this.sprintRepository.saveAndFlush(sprintEntity);
@@ -126,12 +142,11 @@ public class SprintService extends AbstractService {
 		List<Integer> sprints = this.sprintRepository.findBySprintsOrdered(project);
 		if (this.boxService.getMinimumBoxOfATeam(project.getTeam().getId()).getName() == null) {
 			sprints = new ArrayList<>();
+		} else if (this.boxService.getMinimumBoxOfATeam(project.getTeam().getId()).getName().equals("BASIC")) {
+			sprints = this.getFirstSprintsOfATeam(project.getTeam(), 1).stream().map(x -> x.getId())
+					.collect(Collectors.toList());
 		}
-		else if(this.boxService.getMinimumBoxOfATeam(project.getTeam().getId()).getName().equals("BASIC")) {
-			sprints = this.getFirstSprintsOfATeam(project.getTeam(), 1).stream().map(x -> x.getId()).collect(Collectors.toList());
-		}
-		return sprints.stream().map(x -> this.getStatistics(x))
-				.collect(Collectors.toList());
+		return sprints.stream().map(x -> this.getStatistics(x)).collect(Collectors.toList());
 	}
 
 	private void validateUserPrincipal(User principal, Project project) {
@@ -144,13 +159,12 @@ public class SprintService extends AbstractService {
 					"The user must belong to the team of the project");
 		}
 	}
-	
+
 	private void validateUserPrincipalIsAdmin(User principal, Project project) {
 		if (!this.userRolService.isAdminOnTeam(principal, project.getTeam())) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be an admin of the team");
 		}
 	}
-
 
 	private void validateProject(Project project) {
 		if (project == null) {
@@ -186,7 +200,7 @@ public class SprintService extends AbstractService {
 
 	public boolean areValidDates(Date startDate, Date endDate, Project project, Integer idSprint) {
 		boolean res;
-		if(idSprint == null) {
+		if (idSprint == null) {
 			idSprint = 0;
 		}
 		if (this.sprintRepository.areValidDates(startDate, endDate, project, idSprint) == 0) {
@@ -207,10 +221,49 @@ public class SprintService extends AbstractService {
 		return areValidDates(startDate, endDate, project, 0);
 	}
 
+	public List<BurndownDto> getBurnDown(int idSprint) {
+		Sprint sprint = this.getOne(idSprint);
+		LocalDate startDate = sprint.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalDate endDate = sprint.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		
+		long totalDates = ChronoUnit.DAYS.between(startDate, endDate);
+		
+		int i = 0;
+		List<BurndownDto> list = new ArrayList<>();
+		Long remainingPointsBySprint = this.taskService.findBySprint(sprint).stream().mapToLong(Task::getPoints).sum();
+		while(i < totalDates) {
+			long pointsBurnDown = this.historyTaskService.getPointsBurndown(sprint, i, remainingPointsBySprint);
+			list.add(new BurndownDto("Day "+String.valueOf(i+1), pointsBurnDown, totalDates));
+			remainingPointsBySprint = pointsBurnDown;
+			i++;
+		}
+		return list;	
+	}
+	
+	public List<BurnUpDto> getBurnUp(int idSprint) {
+		Sprint sprint = this.getOne(idSprint);
+		LocalDate startDate = sprint.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		LocalDate endDate = sprint.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+		
+		long totalDates = ChronoUnit.DAYS.between(startDate, endDate);
+		
+		int i = 0;
+		List<BurnUpDto> list = new ArrayList<>();
+		Long accumulatedPointsBySprint = 0L;
+		while(i < totalDates) {
+			long pointsBurnUp = this.historyTaskService.getPointsBurnup(sprint, i, accumulatedPointsBySprint);
+			list.add(new BurnUpDto("Day "+String.valueOf(i+1), pointsBurnUp, totalDates));
+			accumulatedPointsBySprint = pointsBurnUp;
+			i++;
+		}
+		return list;	
+	}
+
+
 	private List<Sprint> getFirstSprintsOfATeam(Team team, Integer number) {
 		List<Sprint> res = new ArrayList<>();
 		List<Sprint> sprints = this.sprintRepository.getFirstSprintsOfATeam(team);
-		if(sprints.size() >= number) {
+		if (sprints.size() >= number) {
 			Integer i = 0;
 			while (i < number) {
 				res.add(sprints.get(i));
@@ -219,32 +272,32 @@ public class SprintService extends AbstractService {
 		}
 		return res;
 	}
-	
+
 	private void validateBoxPrivilegesToSave(Team team) {
 		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == null) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"There is no payment record in the database, so you cannot manage sprints");
 		}
-		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("BASIC") 
+		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("BASIC")
 				&& this.getFirstSprintsOfATeam(team, 1).size() > 0) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The minimum team box is basic, so you can only manage a 30-day sprint");
 		}
 	}
-	
+
 	private void validateBoxPrivileges(Team team, Sprint sprint, LocalDateTime validDate) {
 		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == null) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"There is no payment record in the database, so you cannot manage sprints");
 		}
-		
-		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("BASIC") 
-				&& (!this.getFirstSprintsOfATeam(team, 1).contains(sprint) || validDate.isBefore(LocalDateTime.now(ZoneId.systemDefault())))) {
+
+		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("BASIC")
+				&& (!this.getFirstSprintsOfATeam(team, 1).contains(sprint)
+						|| validDate.isBefore(LocalDateTime.now(ZoneId.systemDefault())))) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The minimum team box is basic, so you can only manage a 30-day sprint");
 		}
 	}
-	
 
 	public void flush() {
 		sprintRepository.flush();
