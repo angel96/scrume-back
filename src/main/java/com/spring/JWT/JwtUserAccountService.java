@@ -83,4 +83,17 @@ public class JwtUserAccountService implements UserDetailsService {
 		return response;
 	}
 
+	public String generateToken(UserAccount account) {
+
+		User user = this.repository.findUserByUserName(account.getUsername())
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authorized"));
+		Payment payment = this.paymentService.findByUserAccount(user.getUserAccount());
+
+		Map<String, Object> objects = new HashMap<>();
+
+		objects.put("userLoginDto", new UserLoginDto(user.getId(), account.getUsername(), payment.getBox().getName(),
+				payment.getExpiredDate()));
+
+		return jwtToken.generateToken(objects, account);
+	}
 }
