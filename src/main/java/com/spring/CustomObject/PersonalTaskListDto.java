@@ -9,7 +9,5 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class PersonalTaskListDto {
 	
-	private int id;
-	private int user;
 	private String content;
 }

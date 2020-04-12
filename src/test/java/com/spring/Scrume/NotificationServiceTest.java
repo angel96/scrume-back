@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.NotificationSaveDto;
+import com.spring.CustomObject.NotificationUpdateDto;
 import com.spring.Service.NotificationService;
 
 public class NotificationServiceTest extends AbstractTest {
@@ -51,6 +52,34 @@ public class NotificationServiceTest extends AbstractTest {
 		try {
 			super.authenticateOrUnauthenticate(user);
 			this.notificationService.save(notificationSaveDto);
+			this.notificationService.flush();
+			super.authenticateOrUnauthenticate(null);
+
+		} catch (Exception oops) {
+			caught = oops.getClass();
+		}
+		super.checkExceptions(expected, caught);
+	}
+	
+	@Test
+	public void NotificationServiceUpdateTest() throws Exception {
+		LocalDateTime localDateTime1 =  LocalDateTime.of(2020, 9, 03, 10, 15);
+		Date date1 = Date.from(localDateTime1.atZone(ZoneId.systemDefault()).toInstant());
+		NotificationUpdateDto notificationUpdateDto1 = new NotificationUpdateDto("test1", date1);
+		
+		Object[][] objects = {
+
+				{"testuser4@gmail.com", super.entities().get("notification1"), notificationUpdateDto1, ResponseStatusException.class},
+				{"testuser1@gmail.com", super.entities().get("notification1"), notificationUpdateDto1, null}};
+
+		Stream.of(objects).forEach(x -> driverNotificationServiceUpdateTest((String) x[0], (Integer) x[1], (NotificationUpdateDto) x[2], (Class<?>) x[3]));
+	}
+
+	protected void driverNotificationServiceUpdateTest(String user, Integer idNotification, NotificationUpdateDto notificationUpdateDto, Class<?> expected) {
+		Class<?> caught = null;
+		try {
+			super.authenticateOrUnauthenticate(user);
+			this.notificationService.update(idNotification, notificationUpdateDto);
 			this.notificationService.flush();
 			super.authenticateOrUnauthenticate(null);
 
@@ -118,6 +147,54 @@ public class NotificationServiceTest extends AbstractTest {
 		try {
 			super.authenticateOrUnauthenticate(user);
 			this.notificationService.listByPrincipal();
+			this.notificationService.flush();
+			super.authenticateOrUnauthenticate(null);
+
+		} catch (Exception oops) {
+			caught = oops.getClass();
+		}
+		super.checkExceptions(expected, caught);
+	}
+	
+	@Test
+	public void NotificationServiceListAllNotificationsTest() throws Exception {
+		
+		Object[][] objects = {
+			{"testuser2@gmail.com", super.entities().get("sprint1"), ResponseStatusException.class},
+			{"testuser1@gmail.com", super.entities().get("sprint1"), null}};
+
+			Stream.of(objects).forEach(x -> driverNotificationServiceListAllNotificationsTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
+		}
+
+	protected void driverNotificationServiceListAllNotificationsTest(String user, Integer idSprint, Class<?> expected) {
+		Class<?> caught = null;
+		try {
+			super.authenticateOrUnauthenticate(user);
+			this.notificationService.listAllNotifications(idSprint);
+			this.notificationService.flush();
+			super.authenticateOrUnauthenticate(null);
+
+		} catch (Exception oops) {
+			caught = oops.getClass();
+		}
+		super.checkExceptions(expected, caught);
+	}
+	
+	@Test
+	public void NotificationServiceListGetTest() throws Exception {
+		
+		Object[][] objects = {
+			{"testuser2@gmail.com", super.entities().get("notification1"), ResponseStatusException.class},
+			{"testuser1@gmail.com", super.entities().get("notification1"), null}};
+
+			Stream.of(objects).forEach(x -> driverNotificationServiceGetTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
+		}
+
+	protected void driverNotificationServiceGetTest(String user, Integer idNotification, Class<?> expected) {
+		Class<?> caught = null;
+		try {
+			super.authenticateOrUnauthenticate(user);
+			this.notificationService.getNotification(idNotification);
 			this.notificationService.flush();
 			super.authenticateOrUnauthenticate(null);
 
