@@ -63,7 +63,7 @@ import com.spring.Utiles.Utiles;
  *
  */
 
-@Component
+//@Component
 public class PopulatorDatabase implements CommandLineRunner {
 
 	protected final Logger log = Logger.getLogger(PopulatorDatabase.class);
@@ -535,21 +535,16 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("task5", task5.getId());
 		entities.put("task6", task6.getId());
 
-		LocalDateTime localDateTime17 = LocalDateTime.of(2020, 4, 12, 0, 0);
 		
-		LocalDateTime localDateTime18 = LocalDateTime.of(2020, 4, 1, 0, 0);
-		
-		LocalDateTime localDateTime19 = LocalDateTime.of(2020, 4, 4, 0, 0);
-		
-		Document doc1 = this.documentRepository.save(new Document(DocumentType.DAILY, "Daily 26/03/2020",
+		Document doc1 = this.documentRepository.save(new Document(DocumentType.DAILY, "Daily 12/04/2020",
 				"[{name: 'testUser4', done: 'Terminar populate', doing: 'Empezar mi primer caso de uso', problems: 'No se usar spring boot'}]",
-				sprint1, localDateTime17));
+				sprint1, false));
 		Document doc2 = this.documentRepository.save(new Document(DocumentType.REVIEW, "Review",
 				"Se han revisado las tareas entregadas encontrando fallos en la definición del producto.",
-				sprint1, localDateTime18));
+				sprint1, false));
 		Document doc3 = this.documentRepository.save(new Document(DocumentType.RETROSPECTIVE, "Retrospective",
 				"Hemos trabajado de forma adecuada, aunque no de forma uniforme. Algunas tareas están a medio acabar por falta de planificación. Se propone utilizar slack como medio para aumentar la comunicación del equipo",
-				sprint1, localDateTime19));
+				sprint1, false));
 
 		entities.put("doc1", doc1.getId());
 		entities.put("doc2", doc2.getId());

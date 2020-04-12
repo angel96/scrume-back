@@ -163,7 +163,7 @@ public class NotificationService extends AbstractService {
 	}
 	
 	private boolean checkDocumentIsCreated(Notification notification) {
-		return this.documentService.checkDocumentIsCreated(notification.getTitle(), notification.getDate(), notification.getSprint());
+		return this.documentService.checkDocumentIsCreated(notification.getTitle(), notification.getSprint());
 	}
 	
 	private void validateUpdatePermission(User principal, Notification notificationEntity) {
