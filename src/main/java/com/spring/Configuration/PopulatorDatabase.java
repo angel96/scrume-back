@@ -540,10 +540,10 @@ public class PopulatorDatabase implements CommandLineRunner {
 				"[{\"name\": \"testUser4\", \"done\": \"Terminar populate\", \"doing\": \"Empezar mi primer caso de uso\", \"problems\": \"No se usar spring boot\"}]",
 				sprint1, false));
 		Document doc2 = this.documentRepository.save(new Document(DocumentType.REVIEW, "Review",
-				"Se han revisado las tareas entregadas encontrando fallos en la definición del producto.",
-				sprint1, false));
+				"{\"done\": \"PDF\", \"noDone\": \"Modificar populate\", \"rePlanning\": \"Graficas\"}", sprint1,
+				false));
 		Document doc3 = this.documentRepository.save(new Document(DocumentType.RETROSPECTIVE, "Retrospective",
-				"Hemos trabajado de forma adecuada, aunque no de forma uniforme. Algunas tareas están a medio acabar por falta de planificación. Se propone utilizar slack como medio para aumentar la comunicación del equipo",
+				"{\"good\": \"Sincronización entre entornos\", \"bad\": \"No ha habido comunicacion entre documentacion y presentacion\", \"improvement\": \"Mas reuniones para motivar y sincronizar cambios entre documentacion y presentacion\"}",
 				sprint1, false));
 
 		entities.put("doc1", doc1.getId());
