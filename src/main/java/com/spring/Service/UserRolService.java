@@ -1,20 +1,18 @@
 package com.spring.Service;
 
-import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 import javax.transaction.Transactional;
 
-import org.modelmapper.ModelMapper;
-import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.ChangeRolDto;
-import com.spring.CustomObject.TeamDto;
+import com.spring.CustomObject.MyTeamDto;
+import com.spring.CustomObject.UserWithUserRolDto;
 import com.spring.Model.Team;
 import com.spring.Model.User;
 import com.spring.Model.UserRol;
@@ -51,8 +49,8 @@ public class UserRolService extends AbstractService {
 
 	public void teamOut(Integer idTeam) {
 		User principal = this.userService.getUserByPrincipal();
+		this.validateTeam(idTeam);
 		Team team = this.teamService.findOne(idTeam);
-		this.validateTeam(team);
 		this.validatePrincipal(principal);
 		this.validatePrincipalTeam(principal, team);
 		if (this.isTheOnlyAdminOnTeam(principal, team)) {
@@ -67,48 +65,33 @@ public class UserRolService extends AbstractService {
 
 	public void removeFromTeam(Integer idUser, Integer idTeam) {
 		User principal = this.userService.getUserByPrincipal();
+		this.validateUser(idUser);
 		User user = this.userService.findOne(idUser);
 		if (principal.equals(user)) {
 			this.teamOut(idTeam);
 		} else {
+			this.validateTeam(idTeam);
 			Team team = this.teamService.findOne(idTeam);
-			this.validateTeam(team);
-			this.validateUser(user, team);
+			this.validateUserTeam(user, team);
 			this.validatePrincipal(principal);
 			this.validatePrincipalTeam(principal, team);
 			this.validateIsAdmin(principal, team);
-			this.userRolRepository.delete(this.findByUserAndTeam(principal, team));
+			this.userRolRepository.delete(this.findByUserAndTeam(user, team));
 		}
 	}
-
-	public UserRol findByUserAndTeam(User user, Team team) {
-		return this.userRolRepository.findByUserAndTeam(user, team).orElse(null);
-	}
-
-	private void validateUser(User user, Team team) {
-		if (user == null) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The user is not in the database");
-		}
-		if (!this.isUserOnTeam(user, team)) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"The user you're throwing out doesn't belong to the team");
-		}
-	}
-
-	private User getAnotherUserNoAdmin(User user, Team team) {
-		return this.userRolRepository.getAnotherUserNoAdmin(user, team).get(0);
-	}
-
-	public ChangeRolDto changeRol(Integer idUser, Integer idTeam, ChangeRolDto changeRolDto) {
-		ModelMapper modelMapper = new ModelMapper();
-		User user = this.userService.findOne(idUser);
-		Team team = this.teamService.findOne(idTeam);
-		this.validateTeam(team);
-		this.validateUser(user, team);
+	
+	public void changeRol(ChangeRolDto changeRolDto) {
+		User principal = this.userService.getUserByPrincipal();
+		this.validateTeam(changeRolDto.getIdTeam());
+		this.validateUser(changeRolDto.getIdUser());
+		User user = this.userService.findOne(changeRolDto.getIdUser());
+		Team team = this.teamService.findOne(changeRolDto.getIdTeam());
+		this.validateIsTheOnlyAdmin(principal, user , team);
+		this.validateUserTeam(user, team);
 		Boolean admin = changeRolDto.getAdmin();
-		UserRol userRolDB = this.changeRol(user, team, admin);
-		return modelMapper.map(userRolDB, ChangeRolDto.class);
+		this.changeRol(user, team, admin);
 	}
+	
 
 	private UserRol changeRol(User user, Team team, Boolean admin) {
 		User principal = this.userService.getUserByPrincipal();
@@ -120,7 +103,7 @@ public class UserRolService extends AbstractService {
 		userRol.setAdmin(admin);
 		return this.userRolRepository.saveAndFlush(userRol);
 	}
-
+	
 	public void delete(UserRol userRol) {
 		this.userRolRepository.delete(userRol);
 	}
@@ -128,16 +111,53 @@ public class UserRolService extends AbstractService {
 	public Collection<Integer> findIdUsersByTeam(Team team) {
 		return this.userRolRepository.findIdUsersByTeam(team);
 	}
-
-	public List<TeamDto> listAllTeamsOfAnUser() {
-		ModelMapper modelMapper = new ModelMapper();
+	
+	public Collection<MyTeamDto> listAllTeamsOfAnUser() {
 		User principal = this.userService.getUserByPrincipal();
 		this.validatePrincipal(principal);
-		List<Team> teams = this.userRolRepository.findByUser(principal);
-		Type listType = new TypeToken<List<TeamDto>>() {
-		}.getType();
-		return modelMapper.map(teams, listType);
+		Collection<MyTeamDto> res = new ArrayList<>();
+		Collection<UserRol> userRoles = this.userRolRepository.findAllUserRolesByUser(principal);
+		for (UserRol userRol : userRoles) {
+			Team team = userRol.getTeam();
+			res.add(new MyTeamDto(team.getId(), team.getName(), userRol.getAdmin()));
+		}
+		return res;
 	}
+
+	public UserRol findByUserAndTeam(User user, Team team) {
+		return this.userRolRepository.findByUserAndTeam(user, team).orElse(null);
+	}
+
+	private void validateUserTeam(User user, Team team) {
+		if (!this.isUserOnTeam(user, team)) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"The user on whom you perform the action does not belong to the team");
+		}
+	}
+	
+	private void validateIsTheOnlyAdmin(User principal, User user, Team team) {
+		if (principal.getId() == user.getId() && this.isTheOnlyAdminOnTeamValidation(principal, team)) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"You can't stop being the admin if you don't appoint someone else first");
+		}		
+	}
+
+	private boolean isTheOnlyAdminOnTeamValidation(User user, Team team) {
+		Integer adminsOfTeam = this.userRolRepository.getNumberOfAdminsOfTeam(team);
+		return this.isAdminOnTeam(user, team) && adminsOfTeam == 1;
+	}
+
+	private void validateUser(Integer idUser) {
+		if (idUser == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+					"The user id cannot be null");
+		}		
+	}
+	
+	private User getAnotherUserNoAdmin(User user, Team team) {
+		return this.userRolRepository.getAnotherUserNoAdmin(user, team).get(0);
+	}
+
 
 	private void validateUserRol(UserRol userRol) {
 		if (userRol == null) {
@@ -153,6 +173,27 @@ public class UserRolService extends AbstractService {
 		}
 	}
 
+	public void leaveAllTeams(User principal) {
+		Collection<UserRol> userRoles = this.userRolRepository.findAllUserRolesByUser(principal);
+
+		for (UserRol userRol : userRoles) {
+
+			if (this.isTheOnlyAdminOnTeam(userRol.getUser(), userRol.getTeam())) {
+				User newAdmin = this.getAnotherUserNoAdmin(userRol.getUser(), userRol.getTeam());
+				UserRol newAdminUserRol = this.findByUserAndTeam(newAdmin, userRol.getTeam());
+				newAdminUserRol.setAdmin(true);
+				this.userRolRepository.saveAndFlush(newAdminUserRol);
+			}
+			
+			this.userRolRepository.delete(userRol);
+			
+			if (this.getNumberOfUsersOfTeam(userRol.getTeam()) == 0) {
+				this.teamService.deleteVoid(userRol.getTeam().getId());
+			}
+		}
+		this.userRolRepository.flush();
+	}
+
 	public boolean isTheOnlyAdminOnTeam(User user, Team team) {
 		Integer usersOfTeam = this.getNumberOfUsersOfTeam(team);
 		Integer adminsOfTeam = this.userRolRepository.getNumberOfAdminsOfTeam(team);
@@ -162,10 +203,30 @@ public class UserRolService extends AbstractService {
 	public Integer getNumberOfUsersOfTeam(Team team) {
 		return this.userRolRepository.getNumberOfUsersOfTeam(team);
 	}
+	
+	public Collection<User> findUsersByTeam(Team team) {
+		return this.userRolRepository.findUsersByTeam(team);
+	}
+	
+	public Collection<Team> findAllByUser(User user) {
+		return this.userRolRepository.findByUser(user);
+	}
+	
+	public Collection<UserWithUserRolDto> listMembersOfATeam(Integer idTeam) {
+		this.validateTeam(idTeam);
+		Team teamDB = this.teamService.findOne(idTeam);
+		Collection<UserRol> userRoles = this.userRolRepository.findUserRolesByTeam(teamDB);
+		Collection<UserWithUserRolDto> res = new ArrayList<>();
+		for (UserRol userRol : userRoles) {
+			User user = userRol.getUser();
+			res.add(new UserWithUserRolDto(user.getId(), user.getNick(), user.getPhoto(), user.getUserAccount().getUsername(), userRol.getAdmin()));
+		}
+		return res;
+	}
 
-	private void validateTeam(Team team) {
-		if (team == null) {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "The team is not in the database");
+	private void validateTeam(Integer teamId) {
+		if (teamId == null) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The id of the equipment cannot be null");
 		}
 	}
 
@@ -186,8 +247,5 @@ public class UserRolService extends AbstractService {
 		userRolRepository.flush();
 	}
 
-	public Collection<User> findUsersByTeam(Team team) {
-		return this.userRolRepository.findUsersByTeam(team);
-	}
 
 }
