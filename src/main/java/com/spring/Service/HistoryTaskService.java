@@ -7,7 +7,6 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -131,7 +130,7 @@ public class HistoryTaskService extends AbstractService {
 		repository.flush();
 	}
 
-	public Long getPointsBurndown(Sprint sprint, int i, Long totalPoints) {
+	private Integer getPointsDoneTasks(Sprint sprint, int i) {
 		LocalDate start = sprint.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		start = start.plusDays(i);
 		LocalTime startTime = LocalTime.of(0, 0, 0);
@@ -143,21 +142,16 @@ public class HistoryTaskService extends AbstractService {
 		if (!pointsDone.isEmpty()) {
 			pointsDoneTasks = pointsDone.stream().mapToInt(x -> x).sum();
 		}
+		return pointsDoneTasks;
+	}
+	
+	public Long getPointsBurndown(Sprint sprint, int i, Long totalPoints) {
+		Integer pointsDoneTasks = this.getPointsDoneTasks(sprint, i);
 		return totalPoints - pointsDoneTasks;
 	}
 	
 	public Long getPointsBurnup(Sprint sprint, int i, Long totalPoints) {
-		LocalDate start = sprint.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		start = start.plusDays(i);
-		LocalTime startTime = LocalTime.of(0, 0, 0);
-		LocalTime endTime = LocalTime.of(23, 59, 59);
-		LocalDateTime startDateTime = LocalDateTime.of(start, startTime);
-		LocalDateTime endDateTime = LocalDateTime.of(start, endTime);
-		List<Integer> pointsDone = this.repository.findBySprintAndDay(sprint, startDateTime, endDateTime);
-		Integer pointsDoneTasks = 0;
-		if (!pointsDone.isEmpty()) {
-			pointsDoneTasks = pointsDone.stream().mapToInt(x -> x).sum();
-		}
+		Integer pointsDoneTasks = this.getPointsDoneTasks(sprint, i);
 		return totalPoints + pointsDoneTasks;
 	}
 

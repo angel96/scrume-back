@@ -1,7 +1,6 @@
 package com.spring.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
@@ -14,7 +13,6 @@ import com.spring.CustomObject.PersonalTaskListDto;
 import com.spring.Model.PersonalTaskList;
 import com.spring.Model.User;
 import com.spring.Repository.PersonalTaskListRepository;
-import com.spring.Security.UserAccountService;
 
 @Service
 @Transactional

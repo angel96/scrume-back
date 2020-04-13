@@ -43,12 +43,12 @@ public class UserAccountService implements UserDetailsService {
 
 	@Override
 	public UserDetails loadUserByUsername(String username) {
-		return repository.findByUserName(username)
+		return repository.findByEmail(username)
 				.orElseThrow(() -> new UsernameNotFoundException(username + " no encontrado"));
 	}
 
 	public UsernameDto findUserByUsername(String username) {
-		UserAccount user = repository.findByUserName(username)
+		UserAccount user = repository.findByEmail(username)
 				.orElseThrow(() -> new UsernameNotFoundException(username + " no encontrado"));
 		UsernameDto usernameDto = new UsernameDto();
 		usernameDto.setUsername(user.getUsername());

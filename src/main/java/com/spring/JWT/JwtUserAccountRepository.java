@@ -14,7 +14,8 @@ public interface JwtUserAccountRepository extends AbstractRepository<UserAccount
 	
 	Boolean existsByUsername(String username);
 
-	Optional<UserAccount> findByUsername(String username);
+	@Query("select u from UserAccount u where u.username = ?1")
+	Optional<UserAccount> findByEmail(String username);
 	
 	@Query("select u from User u join u.userAccount ua where ua.username = ?1")
 	Optional<User> findUserByUserName(String username);

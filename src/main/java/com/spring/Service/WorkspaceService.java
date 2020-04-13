@@ -130,7 +130,7 @@ public class WorkspaceService extends AbstractService {
 					if(!(this.getFirstWorkspacesOfASprint(workspace.getSprint(), 1).contains(workspace) && validDate.isAfter(LocalDateTime.now(ZoneId.systemDefault())))){
 						workspaces.remove(workspace);
 					}
-				}else if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("BASIC")) {
+				}else if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("STANDARD")) {
 					if(!(this.getFirstWorkspacesOfASprint(workspace.getSprint(), 2).contains(workspace))){
 						workspaces.remove(workspace);
 					}
