@@ -225,40 +225,52 @@ public class SprintService extends AbstractService {
 		Sprint sprint = this.getOne(idSprint);
 		LocalDate startDate = sprint.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		LocalDate endDate = sprint.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		
+
+		long daysToSend = ChronoUnit.DAYS.between(startDate, LocalDate.now());
+
 		long totalDates = ChronoUnit.DAYS.between(startDate, endDate);
-		
+
 		int i = 0;
 		List<BurndownDto> list = new ArrayList<>();
 		Long remainingPointsBySprint = this.taskService.findBySprint(sprint).stream().mapToLong(Task::getPoints).sum();
-		while(i < totalDates) {
-			long pointsBurnDown = this.historyTaskService.getPointsBurndown(sprint, i, remainingPointsBySprint);
-			list.add(new BurndownDto("Day "+String.valueOf(i+1), pointsBurnDown, totalDates));
-			remainingPointsBySprint = pointsBurnDown;
-			i++;
+		if (daysToSend < 0) {
+			int totalHistoryTask = this.taskService.findBySprint(sprint).stream().mapToInt(Task::getPoints).sum();
+			list.add(new BurndownDto("Day 1", totalHistoryTask, totalDates));
+		} else {
+			while (i < daysToSend && i < totalDates) {
+				long pointsBurnDown = this.historyTaskService.getPointsBurndown(sprint, i, remainingPointsBySprint);
+				list.add(new BurndownDto("Day " + String.valueOf(i + 1), pointsBurnDown, totalDates));
+				remainingPointsBySprint = pointsBurnDown;
+				i++;
+			}
 		}
-		return list;	
+		return list;
 	}
-	
+
 	public List<BurnUpDto> getBurnUp(int idSprint) {
 		Sprint sprint = this.getOne(idSprint);
 		LocalDate startDate = sprint.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		LocalDate endDate = sprint.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		
+
+		long daysToSend = ChronoUnit.DAYS.between(startDate, LocalDate.now());
+
 		long totalDates = ChronoUnit.DAYS.between(startDate, endDate);
-		
+		int totalHistoryTask = this.taskService.findBySprint(sprint).stream().mapToInt(Task::getPoints).sum();
 		int i = 0;
 		List<BurnUpDto> list = new ArrayList<>();
 		Long accumulatedPointsBySprint = 0L;
-		while(i < totalDates) {
-			long pointsBurnUp = this.historyTaskService.getPointsBurnup(sprint, i, accumulatedPointsBySprint);
-			list.add(new BurnUpDto("Day "+String.valueOf(i+1), pointsBurnUp, totalDates));
-			accumulatedPointsBySprint = pointsBurnUp;
-			i++;
+		if (daysToSend < 0) {
+			list.add(new BurnUpDto("Day 1", 0, totalHistoryTask));
+		} else {
+			while (i < daysToSend && i < totalDates) {
+				long pointsBurnUp = this.historyTaskService.getPointsBurnup(sprint, i, accumulatedPointsBySprint);
+				list.add(new BurnUpDto("Day " + String.valueOf(i + 1), pointsBurnUp, totalHistoryTask));
+				accumulatedPointsBySprint = pointsBurnUp;
+				i++;
+			}
 		}
-		return list;	
+		return list;
 	}
-
 
 	private List<Sprint> getFirstSprintsOfATeam(Team team, Integer number) {
 		List<Sprint> res = new ArrayList<>();
