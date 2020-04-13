@@ -14,7 +14,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 
 import javax.transaction.Transactional;
 
@@ -368,7 +367,7 @@ public class DocumentService extends AbstractService {
 			document.setNotified(true);
 			this.documentRepo.saveAndFlush(document);
 		}
-		return documents.size() > 0;
+		return !documents.isEmpty();
 	}
 
 	private PdfPCell getCell(String text, int aligment, Font font) {

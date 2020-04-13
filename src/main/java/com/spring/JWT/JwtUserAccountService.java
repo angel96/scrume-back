@@ -39,7 +39,7 @@ public class JwtUserAccountService implements UserDetailsService {
 	private JwtToken jwtToken;
 
 	public UserAccount loadUserByUsername(String username) {
-		return repository.findByUsername(username)
+		return repository.findByEmail(username)
 				.orElseThrow(() -> new UsernameNotFoundException(username + " no encontrado"));
 	}
 
