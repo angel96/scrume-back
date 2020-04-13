@@ -237,7 +237,7 @@ public class SprintService extends AbstractService {
 			int totalHistoryTask = this.taskService.findBySprint(sprint).stream().mapToInt(Task::getPoints).sum();
 			list.add(new BurndownDto("Day 1", totalHistoryTask, totalDates));
 		} else {
-			while (i < daysToSend && i < totalDates) {
+			while (i <= daysToSend && i < totalDates) {
 				long pointsBurnDown = this.historyTaskService.getPointsBurndown(sprint, i, remainingPointsBySprint);
 				list.add(new BurndownDto("Day " + String.valueOf(i + 1), pointsBurnDown, totalDates));
 				remainingPointsBySprint = pointsBurnDown;
@@ -262,7 +262,7 @@ public class SprintService extends AbstractService {
 		if (daysToSend < 0) {
 			list.add(new BurnUpDto("Day 1", 0, totalHistoryTask));
 		} else {
-			while (i < daysToSend && i < totalDates) {
+			while (i <= daysToSend && i < totalDates) {
 				long pointsBurnUp = this.historyTaskService.getPointsBurnup(sprint, i, accumulatedPointsBySprint);
 				list.add(new BurnUpDto("Day " + String.valueOf(i + 1), pointsBurnUp, totalHistoryTask));
 				accumulatedPointsBySprint = pointsBurnUp;

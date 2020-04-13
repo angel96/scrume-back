@@ -68,6 +68,10 @@ public class HistoryTaskService extends AbstractService {
 		this.validateBoxPrivileges(destiny.getWorkspace().getSprint(), destiny.getWorkspace());
 		Task task = serviceTask.findOne(dto.getTask());
 		Column origin = task.getColumn();
+		if(origin.getName() == "Done") {
+			HistoryTask historyTask = this.repository.findByTaskAndDestiny(task, origin);
+			this.repository.delete(historyTask);
+		}
 		Project projectColumnDestiny = destiny.getWorkspace().getSprint().getProject();
 		Project taskProject = task.getProject();
 		this.serviceWorkspace.checkMembers(taskProject.getTeam().getId());
