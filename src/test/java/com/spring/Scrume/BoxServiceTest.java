@@ -27,7 +27,7 @@ public class BoxServiceTest extends AbstractTest {
 		try {
 			super.authenticateOrUnauthenticate(user);
 
-			assert service.getMinimumBoxOfATeam(super.entities().get("team1")).getName() == "STANDARD";
+			assert service.getMinimumBoxOfATeam(super.entities().get("team1")).getName() == "PRO";
 			service.flush();
 			super.authenticateOrUnauthenticate(null);
 		} catch (Throwable oops) {

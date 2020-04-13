@@ -174,14 +174,14 @@ public class TaskService extends AbstractService {
 		Task task = this.findOne(taskId);
 		Project project = task.getProject();
 		checkUserOnTeam(UserAccountService.getPrincipal(), project.getTeam());
-//		boolean user = this.userRolService.isAdminOnTeam(this.userService.getUserByPrincipal(), project.getTeam());
-//
-//		if (user) {
+		boolean user = this.userRolService.isAdminOnTeam(this.userService.getUserByPrincipal(), project.getTeam());
+
+		if (user) {
 			taskRepository.deleteById(taskId);
-//		} else {
-//			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
-//					"You are not admin of this team. You are not allowed to remove this task");
-//		}
+		} else {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"You are not admin of this team. You are not allowed to remove this task");
+		}
 
 	}
 
@@ -218,6 +218,14 @@ public class TaskService extends AbstractService {
 			Set<User> users = task.getUsers();
 			users.remove(user);
 			task.setUsers(users);
+			this.taskRepository.saveAndFlush(task);
+		}
+	}
+
+	public void removeFromWorkspace(Workspace workspace) {
+		Collection<Task> tasks = this.taskRepository.findByWorkspace(workspace);
+		for (Task task : tasks) {
+			task.setColumn(null);
 			this.taskRepository.saveAndFlush(task);
 		}
 	}

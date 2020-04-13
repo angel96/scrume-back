@@ -39,5 +39,11 @@ public interface UserRolRepository extends AbstractRepository<UserRol> {
 	@Query("select ur from UserRol ur where ur.user = ?1")
 	Collection<UserRol> findAllUserRolesByUser(User user);
 	
+	@Query("select ur from UserRol ur where ur.team = ?1")
+	Collection<UserRol> findUserRolesByTeam(Team team);
+	
+	@Query("select ur from UserRol ur where ur.user = ?1")
+	Collection<UserRol> findUserRolesByUser(User user);
+	
 	
 }
