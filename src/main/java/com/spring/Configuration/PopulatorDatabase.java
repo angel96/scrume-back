@@ -554,8 +554,10 @@ public class PopulatorDatabase implements CommandLineRunner {
 				.save(new HistoryTask(localDateTime5, toDo1, inProgress1, task2));
 		HistoryTask historyTask2 = this.historyTaskRepository
 				.save(new HistoryTask(localDateTime5, toDo1, toDo5, task3));
+		HistoryTask historyTask3 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 03, 27, 12, 00), inProgress1, done1, task1));
 		entities.put("historyTask1", historyTask1.getId());
 		entities.put("historyTask2", historyTask2.getId());
+		entities.put("historyTask3", historyTask3.getId());
 
 		Estimation estimation1 = this.estimationRepository.save(new Estimation(5, user1, task1));
 		Estimation estimation2 = this.estimationRepository.save(new Estimation(15, user4, task1));
