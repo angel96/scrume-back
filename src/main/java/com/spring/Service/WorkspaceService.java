@@ -227,7 +227,8 @@ public class WorkspaceService extends AbstractService {
 
 		if (check) {
 			// 2. Es administrador y pertenece
-			this.findOne(workspace);
+			Workspace workspaceEntity = this.findOne(workspace);
+			this.taskService.removeFromWorkspace(workspaceEntity);
 			checkAuthorityAdmin(workspace);
 			this.repository.deleteById(workspace);
 		}
