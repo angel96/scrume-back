@@ -60,7 +60,7 @@ public class PersonalTaskListService extends AbstractService {
 	}
 	
 	private void checkUser(User principal, User user) {
-		if(principal.getId() != user.getId())
+		if(!principal.getId().equals(user.getId()))
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the owner can do this task");
 	}
 	

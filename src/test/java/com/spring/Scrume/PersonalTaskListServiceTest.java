@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.PersonalTaskListDto;
-import com.spring.CustomObject.SecurityBreachDto;
 import com.spring.Service.PersonalTaskListService;
 
 public class PersonalTaskListServiceTest extends AbstractTest {

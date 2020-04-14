@@ -1,18 +1,13 @@
 package com.spring.Service;
 
-import java.text.DateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
@@ -34,7 +29,6 @@ import com.spring.Model.Task;
 import com.spring.Model.Team;
 import com.spring.Model.User;
 import com.spring.Repository.SprintRepository;
-import com.spring.Security.UserAccountService;
 
 @Service
 @Transactional
@@ -66,6 +60,8 @@ public class SprintService extends AbstractService {
 
 	@Autowired
 	public ColumnService columnService;
+
+	public static final String BASIC_PLAN = "BASIC";
 
 	public Sprint getOne(int id) {
 		return this.sprintRepository.findById(id).orElseThrow(
@@ -143,11 +139,11 @@ public class SprintService extends AbstractService {
 		List<Integer> sprints = this.sprintRepository.findBySprintsOrdered(project);
 		if (this.boxService.getMinimumBoxOfATeam(project.getTeam().getId()).getName() == null) {
 			sprints = new ArrayList<>();
-		} else if (this.boxService.getMinimumBoxOfATeam(project.getTeam().getId()).getName().equals("BASIC")) {
-			sprints = this.getFirstSprintsOfATeam(project.getTeam(), 1).stream().map(x -> x.getId())
+		} else if (this.boxService.getMinimumBoxOfATeam(project.getTeam().getId()).getName().equals(BASIC_PLAN)) {
+			sprints = this.getFirstSprintsOfATeam(project.getTeam(), 1).stream().map(Sprint::getId)
 					.collect(Collectors.toList());
 		}
-		return sprints.stream().map(x -> this.getStatistics(x)).collect(Collectors.toList());
+		return sprints.stream().map(this::getStatistics).collect(Collectors.toList());
 	}
 
 	private void validateUserPrincipal(User principal, Project project) {
@@ -242,7 +238,7 @@ public class SprintService extends AbstractService {
 		} else {
 			while (i <= daysToSend && i < totalDates) {
 				long pointsBurnDown = this.historyTaskService.getPointsBurndown(sprint, i, remainingPointsBySprint);
-				list.add(new BurndownDto("Day " + String.valueOf(i + 1), pointsBurnDown, totalDates));
+				list.add(new BurndownDto("Day " + (i + 1), pointsBurnDown, totalDates));
 				remainingPointsBySprint = pointsBurnDown;
 				i++;
 			}
@@ -269,7 +265,7 @@ public class SprintService extends AbstractService {
 		} else {
 			while (i <= daysToSend && i < totalDates) {
 				long pointsBurnUp = this.historyTaskService.getPointsBurnup(sprint, i, accumulatedPointsBySprint);
-				list.add(new BurnUpDto("Day " + String.valueOf(i + 1), pointsBurnUp, totalHistoryTask));
+				list.add(new BurnUpDto("Day " + (i + 1), pointsBurnUp, totalHistoryTask));
 				accumulatedPointsBySprint = pointsBurnUp;
 				i++;
 			}
@@ -295,8 +291,8 @@ public class SprintService extends AbstractService {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"There is no payment record in the database, so you cannot manage sprints");
 		}
-		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("BASIC")
-				&& this.getFirstSprintsOfATeam(team, 1).size() > 0) {
+		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals(BASIC_PLAN)
+				&& !this.getFirstSprintsOfATeam(team, 1).isEmpty()) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The minimum team box is basic, so you can only manage a 30-day sprint");
 		}
@@ -308,18 +304,19 @@ public class SprintService extends AbstractService {
 					"There is no payment record in the database, so you cannot manage sprints");
 		}
 
-		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("BASIC")
+		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals(BASIC_PLAN)
 				&& (!this.getFirstSprintsOfATeam(team, 1).contains(sprint)
 						|| validDate.isBefore(LocalDateTime.now(ZoneId.systemDefault())))) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The minimum team box is basic, so you can only manage a 30-day sprint");
 		}
 	}
-	
+
 	private void validateUserInSprint(Sprint sprint) {
 		Team sprintTeam = sprint.getProject().getTeam();
-		if(!this.userRolService.isUserOnTeam(this.userService.getUserByPrincipal(), sprintTeam)) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You not belong to the team associated to this Sprint");
+		if (!this.userRolService.isUserOnTeam(this.userService.getUserByPrincipal(), sprintTeam)) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"You not belong to the team associated to this Sprint");
 		}
 	}
 
