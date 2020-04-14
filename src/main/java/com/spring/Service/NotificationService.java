@@ -95,7 +95,7 @@ public class NotificationService extends AbstractService {
 		cal.setTime(new Date());
 		cal.set(Calendar.HOUR, cal.get(Calendar.HOUR)+ 2);
 		Date actualDate = cal.getTime();
-		String title = "You must fill in the daily for the " + new SimpleDateFormat("dd/MM/yyyy").format(actualDate);
+		String title = "Debes rellenar la daily de hoy (" + new SimpleDateFormat("dd/MM/yyyy").format(actualDate) + ")";
 		Collection<Sprint> sprints = this.sprintService.getActivesSprints();
 		for (Sprint sprint : sprints) {
 			if(this.boxService.getMinimumBoxOfATeam(sprint.getProject().getTeam().getId()).getName().equals("PRO")) {
