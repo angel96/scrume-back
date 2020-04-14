@@ -41,7 +41,7 @@ import com.spring.Repository.WorkspaceRepository;
 @Service
 @Transactional
 public class WorkspaceService extends AbstractService {
-
+	
 	@Autowired
 	private WorkspaceRepository repository;
 
@@ -119,27 +119,30 @@ public class WorkspaceService extends AbstractService {
 	public Collection<Workspace> findWorkspacesByTeam(int idTeam) {
 		checkMembers(idTeam);
 		Team team = this.serviceTeam.findOne(idTeam);
+		String boxOfTeam = this.boxService.getMinimumBoxOfATeam(team.getId()).getName();
 		Collection<Workspace> workspaces = this.repository.findWorkspacesByTeam(idTeam);
-		if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName() != null) {
+		if(boxOfTeam == null) {
 			workspaces = new ArrayList<>();
 		}else {
 			for (Workspace workspace : workspaces) {
-				if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("BASIC")) {
-					LocalDateTime validDate = workspace.getSprint().getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-					validDate = validDate.plusDays(30);
-					if(!(this.getFirstWorkspacesOfASprint(workspace.getSprint(), 1).contains(workspace) && validDate.isAfter(LocalDateTime.now(ZoneId.systemDefault())))){
-						workspaces.remove(workspace);
-					}
-				}else if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("BASIC")) {
-					if(!(this.getFirstWorkspacesOfASprint(workspace.getSprint(), 2).contains(workspace))){
-						workspaces.remove(workspace);
-					}
-				}
+				this.removeNotValidWorkspace(boxOfTeam, workspaces, workspace);
 			}
 		}
 		return workspaces;
 	}
 
+	private void removeNotValidWorkspace(String boxOfTeam, Collection<Workspace> workspaces, Workspace workspace) {
+		if(boxOfTeam.equals("BASIC")) {
+			LocalDateTime validDate = workspace.getSprint().getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+			validDate = validDate.plusDays(30);
+			if(!(this.getFirstWorkspacesOfASprint(workspace.getSprint(), 1).contains(workspace) && validDate.isAfter(LocalDateTime.now(ZoneId.systemDefault())))){
+				workspaces.remove(workspace);
+			}
+		}else if(boxOfTeam.equals("STANDARD") && !(this.getFirstWorkspacesOfASprint(workspace.getSprint(), 2).contains(workspace))){
+				workspaces.remove(workspace);
+			}
+	}
+	
 	public Workspace findOne(int id) {
 
 		Workspace w = this.repository.findById(id).orElseThrow(
@@ -162,31 +165,10 @@ public class WorkspaceService extends AbstractService {
 		Collection<Column> columns = this.serviceColumns.findColumnTodoByProject(project);
 		Collection<SprintWithWorkspacesDto> res = new ArrayList<>();
 		Map<Integer, Collection<WorkspaceAndColumnTodoDto>> sprints = new HashMap<>();
-		
-		if(this.boxService.getMinimumBoxOfATeam(project.getTeam().getId()).getName() != null) {
+		String boxOfTeam = this.boxService.getMinimumBoxOfATeam(project.getTeam().getId()).getName();
+		if(boxOfTeam != null) {
 			for (Column column : columns) {
-				Boolean isValid = true;
-				Workspace workspace = column.getWorkspace();
-				if(this.boxService.getMinimumBoxOfATeam(project.getTeam().getId()).getName().equals("BASIC")) {
-					LocalDateTime validDate = workspace.getSprint().getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-					validDate = validDate.plusDays(30);
-					isValid = this.getFirstWorkspacesOfASprint(workspace.getSprint(), 1).contains(workspace) && validDate.isAfter(LocalDateTime.now(ZoneId.systemDefault()));
-				}else if(this.boxService.getMinimumBoxOfATeam(project.getTeam().getId()).getName().equals("BASIC")) {
-					isValid = this.getFirstWorkspacesOfASprint(workspace.getSprint(), 2).contains(workspace);
-				}
-				if(isValid) {
-					WorkspaceAndColumnTodoDto workspaceAndColumnTodoDto = new WorkspaceAndColumnTodoDto(workspace.getId(),
-							workspace.getName(), column.getId());
-					if (sprints.containsKey(workspace.getSprint().getId())) {
-						Collection<WorkspaceAndColumnTodoDto> aux = sprints.get(workspace.getSprint().getId());
-						aux.add(workspaceAndColumnTodoDto);
-						sprints.put(workspace.getSprint().getId(), aux);
-					} else {
-						Collection<WorkspaceAndColumnTodoDto> aux = new ArrayList<>();
-						aux.add(workspaceAndColumnTodoDto);
-						sprints.put(workspace.getSprint().getId(), aux);
-					}
-				}
+				this.addWorkspaceAndColumnTodoDtoToSprintsMap(column, boxOfTeam, sprints);
 			}
 		}
 		for (Entry<Integer, Collection<WorkspaceAndColumnTodoDto>> entry : sprints.entrySet()) {
@@ -195,6 +177,31 @@ public class WorkspaceService extends AbstractService {
 		return res;
 	}
 
+	private void addWorkspaceAndColumnTodoDtoToSprintsMap(Column column, String boxOfTeam, Map<Integer, Collection<WorkspaceAndColumnTodoDto>> sprints) {
+		boolean isValid = true;
+		Workspace workspace = column.getWorkspace();
+		if(boxOfTeam.equals("BASIC")) {
+			LocalDateTime validDate = workspace.getSprint().getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+			validDate = validDate.plusDays(30);
+			isValid = this.getFirstWorkspacesOfASprint(workspace.getSprint(), 1).contains(workspace) && validDate.isAfter(LocalDateTime.now(ZoneId.systemDefault()));
+		}else if(boxOfTeam.equals("STANDARD")) {
+			isValid = this.getFirstWorkspacesOfASprint(workspace.getSprint(), 2).contains(workspace);
+		}
+		if(isValid) {
+			WorkspaceAndColumnTodoDto workspaceAndColumnTodoDto = new WorkspaceAndColumnTodoDto(workspace.getId(),
+					workspace.getName(), column.getId());
+			if (sprints.containsKey(workspace.getSprint().getId())) {
+				Collection<WorkspaceAndColumnTodoDto> aux = sprints.get(workspace.getSprint().getId());
+				aux.add(workspaceAndColumnTodoDto);
+				sprints.put(workspace.getSprint().getId(), aux);
+			} else {
+				Collection<WorkspaceAndColumnTodoDto> aux = new ArrayList<>();
+				aux.add(workspaceAndColumnTodoDto);
+				sprints.put(workspace.getSprint().getId(), aux);
+			}
+		}
+	}
+	
 	public Workspace save(int idWorkspace, WorkspaceEditDto workspaceDto) {
 
 		Workspace saveTo = null;
@@ -227,7 +234,8 @@ public class WorkspaceService extends AbstractService {
 
 		if (check) {
 			// 2. Es administrador y pertenece
-			this.findOne(workspace);
+			Workspace workspaceEntity = this.findOne(workspace);
+			this.taskService.removeFromWorkspace(workspaceEntity);
 			checkAuthorityAdmin(workspace);
 			this.repository.deleteById(workspace);
 		}
@@ -287,7 +295,7 @@ public class WorkspaceService extends AbstractService {
 
 		WorkspaceSprintListDto result = null;
 
-		if (historyTasksByProject.isEmpty() || historyTasksByProject == null) {
+		if (historyTasksByProject.isEmpty()) {
 			result = new WorkspaceSprintListDto(0, "");
 		} else {
 			List<HistoryTask> historyTasks = new ArrayList<>(historyTasksByProject);
@@ -339,7 +347,7 @@ public class WorkspaceService extends AbstractService {
 		LocalDateTime validDate = sprint.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 		validDate = validDate.plusDays(30);
 		if (this.boxService.getMinimumBoxOfATeam(sprint.getProject().getTeam().getId()).getName().equals("BASIC") 
-				&& (this.getFirstWorkspacesOfASprint(sprint, 1).size() > 0 || validDate.isBefore(LocalDateTime.now(ZoneId.systemDefault())))) {
+				&& (!this.getFirstWorkspacesOfASprint(sprint, 1).isEmpty() || validDate.isBefore(LocalDateTime.now(ZoneId.systemDefault())))) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The minimum team box is basic, so you can only manage one workspace during the 30 days of the sprint");
 		}

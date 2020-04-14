@@ -554,8 +554,10 @@ public class PopulatorDatabase implements CommandLineRunner {
 				.save(new HistoryTask(localDateTime5, toDo1, inProgress1, task2));
 		HistoryTask historyTask2 = this.historyTaskRepository
 				.save(new HistoryTask(localDateTime5, toDo1, toDo5, task3));
+		HistoryTask historyTask3 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 03, 27, 12, 00), inProgress1, done1, task1));
 		entities.put("historyTask1", historyTask1.getId());
 		entities.put("historyTask2", historyTask2.getId());
+		entities.put("historyTask3", historyTask3.getId());
 
 		Estimation estimation1 = this.estimationRepository.save(new Estimation(5, user1, task1));
 		Estimation estimation2 = this.estimationRepository.save(new Estimation(15, user4, task1));
@@ -644,11 +646,11 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("personalList4", personalList4.getId());
 		
 		Notification notification1 = this.notificationRepository.save(new Notification("Realizar sprint planning meeting", localDate15, sprint5, null));
-		Notification notification2 = this.notificationRepository.save(new Notification("You must fill in the daily for the 26/03/2020", localDate16, sprint1, user1));
+		Notification notification2 = this.notificationRepository.save(new Notification("Debes rellenar la daily de hoy (26/03/2020)", localDate16, sprint1, user1));
 		entities.put("notification1", notification1.getId());
 		entities.put("notification2", notification2.getId());
 
-		SecurityBreach securityBreach = this.securityBreachRepository.save(new SecurityBreach("We found a security breach in the system.", false));
+		SecurityBreach securityBreach = this.securityBreachRepository.save(new SecurityBreach("Hemos encontrado una brecha de seguridad en el sistema, disculpe las molestias.", false));
 		entities.put("securityBreach", securityBreach.getId());
 
 		
