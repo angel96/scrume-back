@@ -230,7 +230,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("standardBox", standardBox.getId());
 		entities.put("proBox", proBox.getId());
 
-		User user0 = new User("ADMIN", "ADMIN", "ADMIN", "ADMIN", null);
+		User user0 = new User("ADMINISTRATOR", "administrator", "ADMIN1", "ADMIN2", null);
 		user0.setUserAccount(account0);
 		user0 = userRepository.save(user0);
 		User user1 = new User("Juan María", "Lorenzo Pérez", "jualorper", "jualorper", null);
@@ -579,19 +579,19 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("estimation8", estimation8.getId());
 		entities.put("estimation9", estimation9.getId());
 		Payment payment0 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
-				user0.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
+				user0.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234516", "ABC123456781A"));
 		Payment payment1 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
-				user1.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
+				user1.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234526", "ABC123456782A"));
 		Payment payment2 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
-				user1.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
+				user1.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234536", "ABC123456783A"));
 		Payment payment3 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
-				user4.getUserAccount(), LocalDate.from(localDateTime1), "ABC123456", "ABC12345678"));
+				user4.getUserAccount(), LocalDate.from(localDateTime1), "ABC1234546", "ABC123456784A"));
 		Payment payment4 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime1), proBox,
-				user4.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
+				user4.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234556", "ABC123456785A"));
 		Payment payment5 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
-				user2.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
+				user2.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234566", "ABC123456786A"));
 		Payment payment6 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
-				user3.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
+				user3.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234577", "ABC123456787A"));
 
 		entities.put("payment0", payment0.getId());
 		entities.put("payment1", payment1.getId());
@@ -603,27 +603,27 @@ public class PopulatorDatabase implements CommandLineRunner {
 		
 		//PAYMENTS CADUCADOS
 		Payment payment7 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
-				user5.getUserAccount(), LocalDate.from(localDateTime0), "ABC123456", "ABC12345678"));
+				user5.getUserAccount(), LocalDate.from(localDateTime0), "ABC1234561B", "ABC123456781C"));
 		Payment payment8 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
-				user6.getUserAccount(), LocalDate.from(localDateTime0), "ABC123456", "ABC12345678"));
+				user6.getUserAccount(), LocalDate.from(localDateTime0), "ABC1234562B", "ABC123456782C"));
 		Payment payment9 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
-				user7.getUserAccount(), LocalDate.from(localDateTime0), "ABC123456", "ABC12345678"));
+				user7.getUserAccount(), LocalDate.from(localDateTime0), "ABC1234563B", "ABC123456783C"));
 		Payment payment10 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
-				user8.getUserAccount(), LocalDate.from(localDateTime0), "ABC123456", "ABC12345678"));
+				user8.getUserAccount(), LocalDate.from(localDateTime0), "ABC1234564B", "ABC123456784C"));
 		Payment payment11 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
-				user9.getUserAccount(), LocalDate.from(localDateTime0), "ABC123456", "ABC12345678"));
+				user9.getUserAccount(), LocalDate.from(localDateTime0), "ABC1234565B", "ABC123456785C"));
 		
 		//PAYMENTS BASIC
 		Payment payment12 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), basicBox,
-				user10.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
+				user10.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234561Z", "ABC123456781Y"));
 		Payment payment13 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), basicBox,
-				user11.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
+				user11.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234562Z", "ABC123456782Y"));
 		
 		//PAYMENTS STANDARD
 		Payment payment14 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), standardBox,
-				user12.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
+				user12.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234561D", "ABC123456781X"));
 		Payment payment15 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), standardBox,
-				user13.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));	
+				user13.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234562D", "ABC123456782X"));	
 		
 		entities.put("payment7", payment7.getId());
 		entities.put("payment8", payment8.getId());

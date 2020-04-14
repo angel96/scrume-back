@@ -6,7 +6,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.assertj.core.util.Arrays;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;

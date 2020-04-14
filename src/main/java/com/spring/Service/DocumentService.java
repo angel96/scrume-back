@@ -17,6 +17,7 @@ import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import org.jboss.logging.Logger;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -34,6 +35,7 @@ import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.BaseFont;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
@@ -60,6 +62,10 @@ public class DocumentService extends AbstractService {
 	private UserRolService userRolService;
 	@Autowired
 	private UserService userService;
+
+	public static final String DATE_FORMAT = "dd/MM/yyyy";
+
+	protected final Logger log = Logger.getLogger(DocumentService.class);
 
 	public Document findOne(int id) {
 		return this.documentRepo.findById(id).orElseThrow(
@@ -115,7 +121,7 @@ public class DocumentService extends AbstractService {
 		cal.setTime(new Date());
 		cal.set(Calendar.HOUR, cal.get(Calendar.HOUR) + 2);
 		Date actualDate = cal.getTime();
-		String date = new SimpleDateFormat("dd/MM/yyyy").format(actualDate);
+		String date = new SimpleDateFormat(DATE_FORMAT).format(actualDate);
 		String name = "Daily " + date;
 		List<Integer> dailys = this.documentRepo.getDaily(sprint, name);
 		if (!dailys.isEmpty()) {
@@ -149,7 +155,7 @@ public class DocumentService extends AbstractService {
 			} catch (IllegalArgumentException e) {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						"Type does not match any: " + Arrays.asList(DocumentType.values()).stream()
-								.map(x -> String.valueOf(x)).collect(Collectors.joining(",")));
+								.map(DocumentType::toString).collect(Collectors.joining(",")));
 			}
 		}
 	}
@@ -204,15 +210,15 @@ public class DocumentService extends AbstractService {
 
 			table.setWidthPercentage(100);
 
-			SimpleDateFormat format = new SimpleDateFormat("dd/MM/yyyy");
+			SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
 
-			PdfPCell left = getCell(type, PdfPCell.ALIGN_LEFT, fontNormal);
+			PdfPCell left = getCell(type, Element.ALIGN_LEFT, fontNormal);
 			PdfPCell center = getCell(
 					"Sprint " + format.format(start) + " - " + format.format(end) + "\n" + "Proyecto "
 							+ project.getName() + "\n Equipo " + team.getName() + "\n Fecha de descarga "
-							+ LocalDate.now().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")),
-					PdfPCell.ALIGN_CENTER, fontNormal);
-			PdfPCell right = getCell("Text on the right", PdfPCell.ALIGN_RIGHT, fontNormal);
+							+ LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT)),
+					Element.ALIGN_CENTER, fontNormal);
+			PdfPCell right = getCell("Text on the right", Element.ALIGN_RIGHT, fontNormal);
 
 			right.addElement(img);
 
@@ -236,11 +242,11 @@ public class DocumentService extends AbstractService {
 			generateFieldsByType(document, DocumentType.valueOf(type), content, fontTitle, fontNormal);
 
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			log.error("DocumentException", e);
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
+			log.error("MalformedURLException", e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("IOException", e);
 		}
 
 		document.close();
@@ -255,76 +261,64 @@ public class DocumentService extends AbstractService {
 		JSONObject object = null;
 		JSONArray array = null;
 
+		Map<String, String> values = new HashMap<>();
+
 		try {
 			if (type.equals(DocumentType.DAILY)) {
 				array = (JSONArray) parser.parse(content);
-			} else {
+				for (int i = 0; i < array.size(); i++) {
+					JSONObject o = (JSONObject) array.get(i);
+					String name = (String) o.get("name");
+					String done = (String) o.get("done");
+					String problems = (String) o.get("problems");
+					values.put("Nombre", name);
+					values.put("Realizado", done);
+					values.put("Problemas", problems);
+					crearBody(document, values, fontTitle, fontNormal);
+				}
+			} else if (type.equals(DocumentType.PLANNING_MEETING)) {
 				object = (JSONObject) parser.parse(content);
+				String entrega = (String) object.get("entrega");
+				String conseguir = (String) object.get("conseguir");
+				values.put("Entregado", entrega);
+				values.put("Conseguir", conseguir);
+				crearBody(document, values, fontTitle, fontNormal);
+			} else if (type.equals(DocumentType.MIDDLE_REVIEW) || type.equals(DocumentType.REVIEW)) {
+				object = (JSONObject) parser.parse(content);
+				String done = (String) object.get("done");
+				String noDone = (String) object.get("noDone");
+				String rePlanning = (String) object.get("rePlanning");
+				values.put("Realizado", done);
+				values.put("No realizado", noDone);
+				values.put("Re-Planificación", rePlanning);
+				crearBody(document, values, fontTitle, fontNormal);
+			} else if (type.equals(DocumentType.MIDDLE_RETROSPECTIVE) || type.equals(DocumentType.RETROSPECTIVE)) {
+				object = (JSONObject) parser.parse(content);
+				String good = (String) object.get("good");
+				String bad = (String) object.get("bad");
+				String improvement = (String) object.get("improvement");
+				values.put("Bien", good);
+				values.put("Mal", bad);
+				values.put("Mejora", improvement);
+				crearBody(document, values, fontTitle, fontNormal);
 			}
+
 		} catch (ParseException e) {
 			throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Parsing content action has not been possible");
+		} catch (NullPointerException e) {
+			log.error("NullPointerException", e);
 		}
-
-		Map<String, String> values = new HashMap<>();
-
-		switch (type) {
-
-		case DAILY:
-			array.stream().forEach(x -> {
-				JSONObject o = (JSONObject) x;
-				String name = (String) o.get("name");
-				String done = (String) o.get("done");
-				String problems = (String) o.get("problems");
-				values.put("Nombre", name);
-				values.put("Realizado", done);
-				values.put("Problemas", problems);
-				crearBody(document, values, fontTitle, fontNormal);
-			});
-			break;
-		case PLANNING_MEETING:
-			String entrega = (String) object.get("entrega");
-			String conseguir = (String) object.get("conseguir");
-			values.put("Entregado", entrega);
-			values.put("Conseguir", conseguir);
-			crearBody(document, values, fontTitle, fontNormal);
-			break;
-		case MIDDLE_REVIEW:
-		case REVIEW:
-			String done = (String) object.get("done");
-			String noDone = (String) object.get("noDone");
-			String rePlanning = (String) object.get("rePlanning");
-			values.put("Realizado", done);
-			values.put("No realizado", noDone);
-			values.put("Re-Planificación", rePlanning);
-			crearBody(document, values, fontTitle, fontNormal);
-			break;
-		case MIDDLE_RETROSPECTIVE:
-		case RETROSPECTIVE:
-			String good = (String) object.get("good");
-			String bad = (String) object.get("bad");
-			String improvement = (String) object.get("improvement");
-			values.put("Bien", good);
-			values.put("Mal", bad);
-			values.put("Mejora", improvement);
-			crearBody(document, values, fontTitle, fontNormal);
-			break;
-		default:
-			break;
-		}
-
 	}
 
 	public void crearBody(com.itextpdf.text.Document document, Map<String, String> values, Font fontTitle,
 			Font fontNormal) {
 
-		values.keySet().forEach(x -> {
+		values.keySet().forEach(titulo -> {
 			try {
-				String titulo = x;
-				String contenido = values.get(x);
-
+				String contenido = values.get(titulo);
 				PdfPTable contentTable1 = new PdfPTable(1);
 				contentTable1.setWidthPercentage(100);
-				PdfPCell fieldTable = getCell(titulo, PdfPCell.ALIGN_LEFT, fontTitle);
+				PdfPCell fieldTable = getCell(titulo, Element.ALIGN_LEFT, fontTitle);
 				contentTable1.addCell(fieldTable);
 				document.add(contentTable1);
 
@@ -332,13 +326,13 @@ public class DocumentService extends AbstractService {
 
 				PdfPTable contentTable2 = new PdfPTable(1);
 				contentTable2.setWidthPercentage(100);
-				PdfPCell fieldTable2 = getCell(contenido, PdfPCell.ALIGN_LEFT, fontNormal);
+				PdfPCell fieldTable2 = getCell(contenido, Element.ALIGN_LEFT, fontNormal);
 				contentTable2.addCell(fieldTable2);
 
 				document.add(contentTable2);
 				document.add(Chunk.NEWLINE);
 			} catch (DocumentException e) {
-				e.printStackTrace();
+				log.error("DocumentException", e);
 			}
 		});
 
@@ -374,7 +368,7 @@ public class DocumentService extends AbstractService {
 		PdfPCell cell = new PdfPCell(new Phrase(text, font));
 		cell.setPadding(0);
 		cell.setHorizontalAlignment(aligment);
-		cell.setBorder(PdfPCell.NO_BORDER);
+		cell.setBorder(Rectangle.NO_BORDER);
 		return cell;
 	}
 

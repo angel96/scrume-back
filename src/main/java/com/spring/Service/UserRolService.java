@@ -136,7 +136,7 @@ public class UserRolService extends AbstractService {
 	}
 	
 	private void validateIsTheOnlyAdmin(User principal, User user, Team team) {
-		if (principal.getId() == user.getId() && this.isTheOnlyAdminOnTeamValidation(principal, team)) {
+		if (principal.getId().equals(user.getId()) && this.isTheOnlyAdminOnTeamValidation(principal, team)) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 					"You can't stop being the admin if you don't appoint someone else first");
 		}		

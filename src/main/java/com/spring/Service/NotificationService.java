@@ -182,17 +182,19 @@ public class NotificationService extends AbstractService {
 	}
 	
 	private void validateDeletePermission(User principal, Notification notificationEntity) {
+		String messageError = "The user does not have permission to delete the requested notification";
+		
 		if (!this.userRolService.isUserOnTeam(principal, notificationEntity.getSprint().getProject().getTeam())) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, 
-					"The user does not have permission to delete the requested notification");
+					messageError);
 		}
 		if(notificationEntity.getUser() == null && notificationEntity.getDate().after(new Date()) && !this.userRolService.isAdminOnTeam(principal, notificationEntity.getSprint().getProject().getTeam())) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, 
-				"The user does not have permission to delete the requested notification");
+					messageError);
 		}
 		if (!(notificationEntity.getUser() == null || notificationEntity.getUser() == principal)) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
-					"The user does not have permission to delete the requested notification");
+					messageError);
 		}
 	}
 	
