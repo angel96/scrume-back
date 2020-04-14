@@ -34,6 +34,7 @@ import com.spring.Model.Task;
 import com.spring.Model.Team;
 import com.spring.Model.User;
 import com.spring.Repository.SprintRepository;
+import com.spring.Security.UserAccountService;
 
 @Service
 @Transactional
@@ -223,6 +224,8 @@ public class SprintService extends AbstractService {
 
 	public List<BurndownDto> getBurnDown(int idSprint) {
 		Sprint sprint = this.getOne(idSprint);
+		this.validateSprint(sprint);
+		this.validateUserInSprint(sprint);
 		LocalDate startDate = sprint.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		LocalDate endDate = sprint.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
@@ -249,6 +252,8 @@ public class SprintService extends AbstractService {
 
 	public List<BurnUpDto> getBurnUp(int idSprint) {
 		Sprint sprint = this.getOne(idSprint);
+		this.validateSprint(sprint);
+		this.validateUserInSprint(sprint);
 		LocalDate startDate = sprint.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 		LocalDate endDate = sprint.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
 
@@ -308,6 +313,13 @@ public class SprintService extends AbstractService {
 						|| validDate.isBefore(LocalDateTime.now(ZoneId.systemDefault())))) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The minimum team box is basic, so you can only manage a 30-day sprint");
+		}
+	}
+	
+	private void validateUserInSprint(Sprint sprint) {
+		Team sprintTeam = sprint.getProject().getTeam();
+		if(!this.userRolService.isUserOnTeam(this.userService.getUserByPrincipal(), sprintTeam)) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "You not belong to the team associated to this Sprint");
 		}
 	}
 
