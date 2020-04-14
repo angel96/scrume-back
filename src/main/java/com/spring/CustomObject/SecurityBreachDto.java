@@ -7,7 +7,11 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PersonalTaskListDto {
+public class SecurityBreachDto {
+		
+	private String message;
+
+    private Boolean activated;
 	
-	private String content;
+	
 }

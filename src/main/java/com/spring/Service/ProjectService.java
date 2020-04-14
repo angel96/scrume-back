@@ -1,6 +1,7 @@
 package com.spring.Service;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -33,6 +34,9 @@ public class ProjectService extends AbstractService {
 	private UserService userService;
 
 	@Autowired
+	private BoxService boxService;
+	
+	@Autowired
 	private UserRolService userRolService;
 
 
@@ -41,8 +45,17 @@ public class ProjectService extends AbstractService {
 		Team team = teamService.findOne(id);
 		validateTeam(team);
 		validateSeeProject(team, principal);
+		
 		List<Project> lista = projectRepository.findByTeam(team);
-
+		
+		if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == null) {
+			this.validateBoxPrivileges(team, null);
+		}
+		else if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("BASIC")) {
+			lista = this.getFirstProjectsOfATeam(team, 1);
+		}else if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("STANDARD")) {
+			lista = this.getFirstProjectsOfATeam(team, 3);
+		}
 		ModelMapper mapper = new ModelMapper();
 
 		Type listType = new TypeToken<List<ProjectDto>>() {
@@ -60,6 +73,7 @@ public class ProjectService extends AbstractService {
 		Project projectEntity = this.projectRepository.getOne(idProject);
 		validateProject(projectEntity);
 		validateSeeProject(projectEntity.getTeam(), principal);
+		this.validateBoxPrivileges(projectEntity.getTeam(), projectEntity);
 		return mapper.map(projectEntity, ProjectDto.class);
 	}
 
@@ -74,6 +88,7 @@ public class ProjectService extends AbstractService {
 		Team team = teamService.findOne(idTeam);
 		validateTeam(team);
 		validateEditPermission(team, principal);
+		this.validateBoxPrivileges(projectDB.getTeam(), projectDB);
 		projectDB.setTeam(team);
 		projectDB.setName(projectEntity.getName());
 		projectDB.setDescription(projectEntity.getDescription());
@@ -88,6 +103,7 @@ public class ProjectService extends AbstractService {
 		Integer idTeam = projectEntity.getTeam().getId();
 		Team team = teamService.findOne(idTeam);
 		validateEditPermission(team, principal);
+		this.validateBoxPrivilegesToSave(team);
 		Project projectDB = new Project();
 		projectDB.setTeam(team);
 		projectDB.setName(projectEntity.getName());
@@ -102,6 +118,7 @@ public class ProjectService extends AbstractService {
 		Project projectDB = this.projectRepository.getOne(id);
 		validateProject(projectDB);
 		validateEditPermission(projectDB.getTeam(), principal);
+		this.validateBoxPrivileges(projectDB.getTeam(), projectDB);
 		if (checkIfExists) {
 			projectRepository.deleteById(id);
 		}
@@ -146,5 +163,51 @@ public class ProjectService extends AbstractService {
 					"The user must be an admin of the team to edit the project");
 		}
 	}
-
+	
+	private List<Project> getFirstProjectsOfATeam(Team team, Integer number) {
+		List<Project> res = new ArrayList<>();
+		List<Project> projects = this.projectRepository.getFirstProjectOfATeam(team);
+		if(projects.size() >= number) {
+			Integer i = 0;
+			while (i < number) {
+				res.add(projects.get(i));
+				i++;
+			}
+		}
+		return res;
+	}
+	
+	private void validateBoxPrivilegesToSave(Team team) {
+		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == null) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"There is no payment record in the database, so you cannot manage the project");
+		}
+		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("BASIC") 
+				&& this.getFirstProjectsOfATeam(team, 1).size() > 0) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"The minimum team box is basic, so you can only manage one project");
+		}
+		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("STANDARD") 
+				&& this.getFirstProjectsOfATeam(team, 3).size() > 2) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"The minimum team box is standard, so you can only manage three project");
+		}
+	}
+	
+	private void validateBoxPrivileges(Team team, Project project) {
+		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName() == null) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"There is no payment record in the database, so you cannot manage projects");
+		}
+		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("BASIC") 
+				&& !this.getFirstProjectsOfATeam(team, 1).contains(project)) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"The minimum team box is basic, so you can only manage the first of your projects");
+		}
+		if (this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("STANDARD") 
+				&& !this.getFirstProjectsOfATeam(team, 3).contains(project)) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
+					"The minimum team box is standard, so you are only allowed to manage your first three projects");
+		}
+	}
 }

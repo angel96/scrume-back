@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import com.spring.Model.Project;
 import com.spring.Model.Sprint;
+import com.spring.Model.Team;
 
 @Repository
 public interface SprintRepository extends AbstractRepository<Sprint> {
@@ -21,4 +22,7 @@ public interface SprintRepository extends AbstractRepository<Sprint> {
 
 	@Query("select s from Sprint s where CURRENT_DATE between s.startDate and s.endDate")
 	Collection<Sprint> getActivesSprints();
+
+	@Query("select s from Sprint s where s.project.team = ?1 order by s.id asc")
+	List<Sprint> getFirstSprintsOfATeam(Team team);
 }

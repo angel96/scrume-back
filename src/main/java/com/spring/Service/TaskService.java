@@ -222,6 +222,14 @@ public class TaskService extends AbstractService {
 		}
 	}
 
+	public void removeFromWorkspace(Workspace workspace) {
+		Collection<Task> tasks = this.taskRepository.findByWorkspace(workspace);
+		for (Task task : tasks) {
+			task.setColumn(null);
+			this.taskRepository.saveAndFlush(task);
+		}
+	}
+
 	
 	
 	

@@ -48,6 +48,9 @@ public class NotificationService extends AbstractService {
 	private DocumentService documentService;
 	
 	@Autowired
+	private BoxService boxService;
+	
+	@Autowired
 	private UserRolService userRolService;
 	
 	public Notification getOne(int id) {
@@ -59,6 +62,7 @@ public class NotificationService extends AbstractService {
 		User principal = this.userService.getUserByPrincipal();
 		this.validateSprint(notificationSaveDto.getSprint());
 		Sprint sprint = this.sprintService.getOne(notificationSaveDto.getSprint());
+		this.validateBoxPrivileges(sprint.getProject().getTeam().getId());
 		this.validatePrincipalIsLogged(principal);
 		this.validatePrincipalPermission(principal, sprint);
 		this.validateDate(notificationSaveDto.getDate(), sprint);
@@ -74,6 +78,8 @@ public class NotificationService extends AbstractService {
 		this.validatePrincipalIsLogged(principal);
 		this.validatePrincipalPermission(principal, sprint);
 		this.validateUpdatePermission(principal, notificationEntity);
+		this.validateBoxPrivileges(sprint.getProject().getTeam().getId());
+
 		notificationEntity.setTitle(notificationUpdateDto.getTitle());
 		notificationEntity.setDate(notificationUpdateDto.getDate());
 		this.validateDate(notificationUpdateDto.getDate(), sprint);
@@ -92,10 +98,12 @@ public class NotificationService extends AbstractService {
 		String title = "You must fill in the daily for the " + new SimpleDateFormat("dd/MM/yyyy").format(actualDate);
 		Collection<Sprint> sprints = this.sprintService.getActivesSprints();
 		for (Sprint sprint : sprints) {
-			this.documentService.saveDaily("Daily " + new SimpleDateFormat("dd/MM/yyyy").format(actualDate), sprint);
-			Collection<User> users = this.userRolService.findUsersByTeam(sprint.getProject().getTeam());
-			for (User user : users) {
-				this.notificationRepository.saveAndFlush( new Notification(title, actualDate, sprint, user));
+			if(this.boxService.getMinimumBoxOfATeam(sprint.getProject().getTeam().getId()).getName().equals("PRO")) {
+				this.documentService.saveDaily("Daily " + new SimpleDateFormat("dd/MM/yyyy").format(actualDate), sprint);
+				Collection<User> users = this.userRolService.findUsersByTeam(sprint.getProject().getTeam());
+				for (User user : users) {
+					this.notificationRepository.saveAndFlush( new Notification(title, actualDate, sprint, user));
+				}
 			}
 		}
 	}
@@ -106,21 +114,28 @@ public class NotificationService extends AbstractService {
 		Collection<Team> teams = this.userRolService.findAllByUser(principal);
 		Collection<NotificationListDto> res = new ArrayList<>();
 		for (Team team : teams) {
-			Collection<Notification> notifications = this.notificationRepository.listByUser(principal, team);
-			for (Notification notification : notifications) {
-				res.add(new NotificationListDto(notification.getId(), notification.getTitle(), new TeamDto(team.getId(), team.getName()), new ProjectIdNameDto
-						(notification.getSprint().getProject().getId(), notification.getSprint().getProject().getName()),
-						notification.getDate()));
+			if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("PRO")) {
+				Collection<Notification> notifications = this.notificationRepository.listByUser(principal, team);
+				for (Notification notification : notifications) {
+					if(this.checkDocumentIsCreated(notification)) {
+						this.notificationRepository.delete(notification);
+					}else {
+						res.add(new NotificationListDto(notification.getId(), notification.getTitle(), new TeamDto(team.getId(), team.getName()), new ProjectIdNameDto
+								(notification.getSprint().getProject().getId(), notification.getSprint().getProject().getName()),
+								notification.getDate()));
+					}
+				}
 			}
 		}
 		return res;
 	}
-	
+
 	public Collection<NotificationDto> listAllNotifications(Integer idSprint) {
 		User principal = this.userService.getUserByPrincipal();
 		this.validatePrincipalIsLogged(principal);
 		Sprint sprint = this.sprintService.getOne(idSprint);
 		this.validatePrincipalPermission(principal, sprint);
+		this.validateBoxPrivileges(sprint.getProject().getTeam().getId());
 		Collection<Notification> notifications = this.notificationRepository.listAllInactiveNotifications(sprint);
 		ModelMapper mapper = new ModelMapper();
 		Type listType = new TypeToken<Collection<NotificationDto>>() {
@@ -133,6 +148,8 @@ public class NotificationService extends AbstractService {
 		this.validatePrincipalIsLogged(principal);
 		Notification notificationEntity = this.getOne(idNotification);
 		this.validateDeletePermission(principal, notificationEntity);
+		this.validateBoxPrivileges(notificationEntity.getSprint().getProject().getTeam().getId());
+
 		this.notificationRepository.delete(notificationEntity);
 	}
 	
@@ -140,15 +157,21 @@ public class NotificationService extends AbstractService {
 		User principal = this.userService.getUserByPrincipal();
 		this.validatePrincipalIsLogged(principal);
 		Notification notificationDB = this.getOne(idNotification);
+		this.validateBoxPrivileges(notificationDB.getSprint().getProject().getTeam().getId());
 		this.validatePrincipalPermission(principal, notificationDB.getSprint());
 		return new NotificationDto(notificationDB.getId(), notificationDB.getTitle(), notificationDB.getDate());
+	}
+	
+	private boolean checkDocumentIsCreated(Notification notification) {
+		return this.documentService.checkDocumentIsCreated(notification.getTitle(), notification.getSprint());
 	}
 	
 	private void validateUpdatePermission(User principal, Notification notificationEntity) {
 		if (!this.userRolService.isAdminOnTeam(principal, notificationEntity.getSprint().getProject().getTeam())) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The user must be a team administrator to perform this action");
-		}if (notificationEntity.getUser() != null) {
+		}
+		if (notificationEntity.getUser() != null) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The user does not have permission to perform this action");
 		}
@@ -208,6 +231,12 @@ public class NotificationService extends AbstractService {
 	private void validateSprint(Integer idSprint) {
 		if (idSprint == null) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "the sprint id cannot be null");
+		}
+	}
+	
+	private void validateBoxPrivileges(Integer idTeam) {
+		if (!this.boxService.getMinimumBoxOfATeam(idTeam).getName().equals("PRO")) {
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "To use the notifications it is necessary to have the pro box");
 		}
 	}
 	public void flush() {

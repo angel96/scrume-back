@@ -27,32 +27,38 @@ public class NotificationApiController extends AbstractApiController {
 
 	@PostMapping
 	public NotificationSaveDto save(@RequestBody NotificationSaveDto notificationSaveDto) {
+		super.logger.info("POST /api/notification");
 		return notificationService.save(notificationSaveDto);
 	}
 	
 	@PutMapping("/{idNotification}")
 	public NotificationDto update(@PathVariable Integer idNotification, @RequestBody NotificationUpdateDto notificationUpdateDto) {
+		super.logger.info("PUT /api/notification/" + idNotification);
 		return notificationService.update(idNotification, notificationUpdateDto);
 	}
 	
 	@GetMapping("/{idNotification}")
 	public NotificationDto getNotification(@PathVariable Integer idNotification) {
+		super.logger.info("GET /api/notification/" + idNotification);
 		return notificationService.getNotification(idNotification);
 	}
 	
 	@GetMapping("/list-all-notifications/{idSprint}")
 	public Collection<NotificationDto> listAllNotifications(@PathVariable Integer idSprint) {
+		super.logger.info("GET /api/notification/list-all-notifications/" + idSprint);
 		return notificationService.listAllNotifications(idSprint);
 	}
 	
 	@GetMapping("/list-my-notifications")
 	public Collection<NotificationListDto> listByPrincipal() {
+		super.logger.info("GET /api/notification/list-my-notifications");
 		return notificationService.listByPrincipal();
 	}
 	
 	
 	@DeleteMapping("/{idNotification}")
 	public void delete(@PathVariable Integer idNotification) {
+		super.logger.info("DELETE /api/notification/" + idNotification);
 		notificationService.delete(idNotification);
 	}
 	
