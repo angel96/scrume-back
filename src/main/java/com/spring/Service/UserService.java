@@ -48,6 +48,10 @@ public class UserService extends AbstractService {
 
 	@Autowired
 	private UserRolService userRolService;
+	
+	@Autowired
+	private InvitationService invitationService;
+
 
 	@Autowired
 	private TeamService teamService;
@@ -151,12 +155,13 @@ public class UserService extends AbstractService {
 		if (findByNickDto.getTeam() != null) {
 			Team team = this.teamService.findOne(findByNickDto.getTeam());
 			if (team != null) {
+				users = users.stream().filter(u -> !this.invitationService.existsActiveInvitation(u, team)).collect(Collectors.toList());
 				idUsers.addAll(this.userRolService.findIdUsersByTeam(team));
 			}
 		}
-		users = users.stream().filter(u -> !idUsers.contains(u.getId())).collect(Collectors.toList());
+		users = users.stream().filter(u -> (!idUsers.contains(u.getId())) && (!u.getUserAccount().getRoles().contains(Role.ROLE_ADMIN))).collect(Collectors.toList());
 		if (users.size() > 5) {
-			users = users.subList(0, 4);
+			users = users.subList(0, 5);
 		}
 		ModelMapper mapper = new ModelMapper();
 		Type listType = new TypeToken<List<UserWithNickDto>>() {
