@@ -95,7 +95,7 @@ public class NotificationService extends AbstractService {
 		cal.setTime(new Date());
 		cal.set(Calendar.HOUR, cal.get(Calendar.HOUR)+ 2);
 		Date actualDate = cal.getTime();
-		String title = "You must fill in the daily for the " + new SimpleDateFormat("dd/MM/yyyy").format(actualDate);
+		String title = "Debes rellenar la daily de hoy (" + new SimpleDateFormat("dd/MM/yyyy").format(actualDate) + ")";
 		Collection<Sprint> sprints = this.sprintService.getActivesSprints();
 		for (Sprint sprint : sprints) {
 			if(this.boxService.getMinimumBoxOfATeam(sprint.getProject().getTeam().getId()).getName().equals("PRO")) {
@@ -117,15 +117,19 @@ public class NotificationService extends AbstractService {
 			if(this.boxService.getMinimumBoxOfATeam(team.getId()).getName().equals("PRO")) {
 				Collection<Notification> notifications = this.notificationRepository.listByUser(principal, team);
 				for (Notification notification : notifications) {
-					res.add(new NotificationListDto(notification.getId(), notification.getTitle(), new TeamDto(team.getId(), team.getName()), new ProjectIdNameDto
-							(notification.getSprint().getProject().getId(), notification.getSprint().getProject().getName()),
-							notification.getDate()));
+					if(this.checkDocumentIsCreated(notification)) {
+						this.notificationRepository.delete(notification);
+					}else {
+						res.add(new NotificationListDto(notification.getId(), notification.getTitle(), new TeamDto(team.getId(), team.getName()), new ProjectIdNameDto
+								(notification.getSprint().getProject().getId(), notification.getSprint().getProject().getName()),
+								notification.getDate()));
+					}
 				}
 			}
 		}
 		return res;
 	}
-	
+
 	public Collection<NotificationDto> listAllNotifications(Integer idSprint) {
 		User principal = this.userService.getUserByPrincipal();
 		this.validatePrincipalIsLogged(principal);
@@ -158,6 +162,10 @@ public class NotificationService extends AbstractService {
 		return new NotificationDto(notificationDB.getId(), notificationDB.getTitle(), notificationDB.getDate());
 	}
 	
+	private boolean checkDocumentIsCreated(Notification notification) {
+		return this.documentService.checkDocumentIsCreated(notification.getTitle(), notification.getSprint());
+	}
+	
 	private void validateUpdatePermission(User principal, Notification notificationEntity) {
 		if (!this.userRolService.isAdminOnTeam(principal, notificationEntity.getSprint().getProject().getTeam())) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
@@ -174,17 +182,19 @@ public class NotificationService extends AbstractService {
 	}
 	
 	private void validateDeletePermission(User principal, Notification notificationEntity) {
+		String messageError = "The user does not have permission to delete the requested notification";
+		
 		if (!this.userRolService.isUserOnTeam(principal, notificationEntity.getSprint().getProject().getTeam())) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, 
-					"The user does not have permission to delete the requested notification");
+					messageError);
 		}
 		if(notificationEntity.getUser() == null && notificationEntity.getDate().after(new Date()) && !this.userRolService.isAdminOnTeam(principal, notificationEntity.getSprint().getProject().getTeam())) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, 
-				"The user does not have permission to delete the requested notification");
+					messageError);
 		}
 		if (!(notificationEntity.getUser() == null || notificationEntity.getUser() == principal)) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
-					"The user does not have permission to delete the requested notification");
+					messageError);
 		}
 	}
 	

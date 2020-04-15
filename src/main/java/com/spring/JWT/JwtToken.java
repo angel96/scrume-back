@@ -24,7 +24,7 @@ import io.jsonwebtoken.SignatureAlgorithm;
 @Component
 public class JwtToken {
 
-	public static final long JWT_TOKEN_VALIDITY = 5 * 60 * 60;
+	public static final long JWT_TOKEN_VALIDITY = 5 * 60 * (long)60;
 
 	@Autowired
 	private PaymentService paymentService;
@@ -36,7 +36,7 @@ public class JwtToken {
 	private String secret;
 
 	public UserLoginDto getUserLoginDtoFromToken(String token) {
-		LinkedHashMap linked = getClaimFromToken(token, x -> (LinkedHashMap) x.get("userLoginDto"));
+		LinkedHashMap<?, ?> linked = getClaimFromToken(token, x -> (LinkedHashMap<?, ?>) x.get("userLoginDto"));
 		return new UserLoginDto((Integer) linked.get("idUser"), (String) linked.get("username"),
 				(String) linked.get("nameBox"),
 				LocalDate.parse((String) linked.get("endingBoxDate"), DateTimeFormatter.ofPattern("yyyy-MM-dd")));

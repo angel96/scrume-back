@@ -24,8 +24,6 @@ public class SecurityBreachService extends AbstractService {
 	private UserService userService;
 	
 	public SecurityBreach getSecurityBreach() {
-		User principal = this.userService.getUserByPrincipal();
-		this.validateIsLogged(principal);
 		return this.securityBreachRepository.findAll().get(0);
 	}
 
@@ -52,4 +50,7 @@ public class SecurityBreachService extends AbstractService {
 		}
 	}
 
+	public void flush() {
+		securityBreachRepository.flush();
+	}
 }

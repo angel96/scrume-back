@@ -4,17 +4,24 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.transaction.Transactional;
 
+import org.jboss.logging.Logger;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -28,7 +35,10 @@ import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
+import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.BaseFont;
+import com.itextpdf.text.pdf.PdfPCell;
+import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 import com.spring.CustomObject.DocumentDto;
 import com.spring.Model.Document;
@@ -53,6 +63,10 @@ public class DocumentService extends AbstractService {
 	@Autowired
 	private UserService userService;
 
+	public static final String DATE_FORMAT = "dd/MM/yyyy";
+
+	protected final Logger log = Logger.getLogger(DocumentService.class);
+
 	public Document findOne(int id) {
 		return this.documentRepo.findById(id).orElseThrow(
 				() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "The requested document not exists"));
@@ -60,8 +74,7 @@ public class DocumentService extends AbstractService {
 
 	public DocumentDto findOneDto(int id) {
 		Document doc = this.findOne(id);
-		// checkUserOnTeam(UserAccountService.getPrincipal(),
-		// doc.getSprint().getProject().getTeam());
+		checkUserOnTeam(UserAccountService.getPrincipal(), doc.getSprint().getProject().getTeam());
 		return new DocumentDto(doc.getId(), doc.getName(), String.valueOf(doc.getType()), doc.getContent(),
 				doc.getSprint().getId());
 	}
@@ -75,15 +88,15 @@ public class DocumentService extends AbstractService {
 	}
 
 	public void saveDaily(String name, Sprint sprint) {
-		this.documentRepo.saveAndFlush(new Document(DocumentType.DAILY, name, "[]", sprint));
+		this.documentRepo.saveAndFlush(new Document(DocumentType.DAILY, name, "[]", sprint, false));
 	}
-	
+
 	public DocumentDto save(DocumentDto document, int sprintId) {
 		checkType(document.getType());
 		Sprint sprint = this.sprintService.getOne(sprintId);
 		checkUserOnTeam(UserAccountService.getPrincipal(), sprint.getProject().getTeam());
 		Document entity = new Document(DocumentType.valueOf(document.getType()), document.getName(),
-				document.getContent(), sprint);
+				document.getContent(), sprint, false);
 		Document saved = this.documentRepo.saveAndFlush(entity);
 		return new DocumentDto(saved.getId(), saved.getName(), saved.getType().toString(), saved.getContent(),
 				saved.getSprint().getId());
@@ -100,28 +113,24 @@ public class DocumentService extends AbstractService {
 		return new DocumentDto(db.getId(), db.getName(), db.getType().toString(), db.getContent(),
 				db.getSprint().getId());
 	}
-	
+
 	public Integer getDaily(int idSprint) {
 		Integer res;
-		Sprint  sprint = this.sprintService.getOne(idSprint);
-		LocalDate endDate = sprint.getEndDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		LocalTime endTime = LocalTime.of(23, 59, 59);
-		LocalDateTime endDateOfSprint = LocalDateTime.of(endDate, endTime);
-		LocalDate startDate = sprint.getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-		LocalTime startTime = LocalTime.of(0, 0, 0);
-		LocalDateTime startDateOfSprint = LocalDateTime.of(startDate, startTime);
-		this.validateDatesOfSprint(startDateOfSprint, endDateOfSprint);
-		List<Integer> dailys = this.documentRepo.getDaily(sprint);
-		if(!dailys.isEmpty()) {
+		Sprint sprint = this.sprintService.getOne(idSprint);
+		Calendar cal = Calendar.getInstance();
+		cal.setTime(new Date());
+		cal.set(Calendar.HOUR, cal.get(Calendar.HOUR) + 2);
+		Date actualDate = cal.getTime();
+		String date = new SimpleDateFormat(DATE_FORMAT).format(actualDate);
+		String name = "Daily " + date;
+		List<Integer> dailys = this.documentRepo.getDaily(sprint, name);
+		if (!dailys.isEmpty()) {
 			res = dailys.get(0);
-		}
-		else {
-			res = null;
+		} else {
+			res = -1;
 		}
 		return res;
 	}
-
-	
 
 	public void delete(int idDoc) {
 		checkEntityExists(idDoc);
@@ -130,15 +139,6 @@ public class DocumentService extends AbstractService {
 		this.documentRepo.delete(doc);
 	}
 
-	private void validateDatesOfSprint(LocalDateTime startDateOfSprint, LocalDateTime endDateOfSprint) {
-		if (endDateOfSprint.isBefore(LocalDateTime.now()))
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"The sprint is over so there is no daily for today");
-		if (startDateOfSprint.isAfter(LocalDateTime.now()))
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"The sprint has not yet started so there is no daily");
-	}
-	
 	private void checkUserOnTeam(UserAccount user, Team team) {
 		User usuario = this.userService.getUserByPrincipal();
 		if (!this.userRolService.isUserOnTeam(usuario, team))
@@ -155,7 +155,7 @@ public class DocumentService extends AbstractService {
 			} catch (IllegalArgumentException e) {
 				throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
 						"Type does not match any: " + Arrays.asList(DocumentType.values()).stream()
-								.map(x -> String.valueOf(x)).collect(Collectors.joining(",")));
+								.map(DocumentType::toString).collect(Collectors.joining(",")));
 			}
 		}
 	}
@@ -205,23 +205,48 @@ public class DocumentService extends AbstractService {
 			img.setAlignment(Element.ALIGN_RIGHT);
 
 			// Cabecera
-			document.add(Chunk.NEWLINE);
-			Paragraph first = new Paragraph();
-			Phrase tipo = new Phrase(type, fontNormal);
-			first.add(tipo);
-			tipo.add(Chunk.NEWLINE);
-			first.add(img);
-			
-			document.add(first);
+
+			PdfPTable table = new PdfPTable(3);
+
+			table.setWidthPercentage(100);
+
+			SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
+
+			PdfPCell left = getCell(type, Element.ALIGN_LEFT, fontNormal);
+			PdfPCell center = getCell(
+					"Sprint " + format.format(start) + " - " + format.format(end) + "\n" + "Proyecto "
+							+ project.getName() + "\n Equipo " + team.getName() + "\n Fecha de descarga "
+							+ LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT)),
+					Element.ALIGN_CENTER, fontNormal);
+			PdfPCell right = getCell("Text on the right", Element.ALIGN_RIGHT, fontNormal);
+
+			right.addElement(img);
+
+			table.addCell(left);
+			table.addCell(center);
+			table.addCell(right);
+
+			document.add(table);
 
 			// Contenido
 
+			document.add(Chunk.NEWLINE);
+
+			Paragraph p = new Paragraph(title, fontTitle);
+			document.add(p);
+
+			document.add(Chunk.NEWLINE);
+
+			// Contenido para cada campo
+
+			generateFieldsByType(document, DocumentType.valueOf(type), content, fontTitle, fontNormal);
+
 		} catch (DocumentException e) {
-			e.printStackTrace();
+			log.error("DocumentException", e);
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
+			log.error("MalformedURLException", e);
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("IOException", e);
 		}
 
 		document.close();
@@ -229,9 +254,122 @@ public class DocumentService extends AbstractService {
 
 	}
 
+	private void generateFieldsByType(com.itextpdf.text.Document document, DocumentType type, String content,
+			Font fontTitle, Font fontNormal) {
+
+		JSONParser parser = new JSONParser();
+		JSONObject object = null;
+		JSONArray array = null;
+
+		Map<String, String> values = new HashMap<>();
+
+		try {
+			if (type.equals(DocumentType.DAILY)) {
+				array = (JSONArray) parser.parse(content);
+				for (int i = 0; i < array.size(); i++) {
+					JSONObject o = (JSONObject) array.get(i);
+					String name = (String) o.get("name");
+					String done = (String) o.get("done");
+					String problems = (String) o.get("problems");
+					values.put("Nombre", name);
+					values.put("Realizado", done);
+					values.put("Problemas", problems);
+					crearBody(document, values, fontTitle, fontNormal);
+				}
+			} else if (type.equals(DocumentType.PLANNING_MEETING)) {
+				object = (JSONObject) parser.parse(content);
+				String entrega = (String) object.get("entrega");
+				String conseguir = (String) object.get("conseguir");
+				values.put("Entregado", entrega);
+				values.put("Conseguir", conseguir);
+				crearBody(document, values, fontTitle, fontNormal);
+			} else if (type.equals(DocumentType.MIDDLE_REVIEW) || type.equals(DocumentType.REVIEW)) {
+				object = (JSONObject) parser.parse(content);
+				String done = (String) object.get("done");
+				String noDone = (String) object.get("noDone");
+				String rePlanning = (String) object.get("rePlanning");
+				values.put("Realizado", done);
+				values.put("No realizado", noDone);
+				values.put("Re-Planificación", rePlanning);
+				crearBody(document, values, fontTitle, fontNormal);
+			} else if (type.equals(DocumentType.MIDDLE_RETROSPECTIVE) || type.equals(DocumentType.RETROSPECTIVE)) {
+				object = (JSONObject) parser.parse(content);
+				String good = (String) object.get("good");
+				String bad = (String) object.get("bad");
+				String improvement = (String) object.get("improvement");
+				values.put("Bien", good);
+				values.put("Mal", bad);
+				values.put("Mejora", improvement);
+				crearBody(document, values, fontTitle, fontNormal);
+			}
+
+		} catch (ParseException e) {
+			throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Parsing content action has not been possible");
+		} catch (NullPointerException e) {
+			log.error("NullPointerException", e);
+		}
+	}
+
+	public void crearBody(com.itextpdf.text.Document document, Map<String, String> values, Font fontTitle,
+			Font fontNormal) {
+
+		values.keySet().forEach(titulo -> {
+			try {
+				String contenido = values.get(titulo);
+				PdfPTable contentTable1 = new PdfPTable(1);
+				contentTable1.setWidthPercentage(100);
+				PdfPCell fieldTable = getCell(titulo, Element.ALIGN_LEFT, fontTitle);
+				contentTable1.addCell(fieldTable);
+				document.add(contentTable1);
+
+				document.add(Chunk.NEWLINE);
+
+				PdfPTable contentTable2 = new PdfPTable(1);
+				contentTable2.setWidthPercentage(100);
+				PdfPCell fieldTable2 = getCell(contenido, Element.ALIGN_LEFT, fontNormal);
+				contentTable2.addCell(fieldTable2);
+
+				document.add(contentTable2);
+				document.add(Chunk.NEWLINE);
+			} catch (DocumentException e) {
+				log.error("DocumentException", e);
+			}
+		});
+
+	}
+
 	public void flush() {
 		this.documentRepo.flush();
 	}
 
+	public Boolean checkDocumentIsCreated(String title, Sprint sprint) {
+
+		title = title.toLowerCase();
+		DocumentType type = null;
+		if (title.contains("middle") && title.contains("review")) {
+			type = DocumentType.MIDDLE_REVIEW;
+		} else if (title.contains("middle") && title.contains("retrospective")) {
+			type = DocumentType.MIDDLE_RETROSPECTIVE;
+		} else if (title.contains("review")) {
+			type = DocumentType.REVIEW;
+		} else if (title.contains("retrospective")) {
+			type = DocumentType.RETROSPECTIVE;
+		}
+		List<Document> documents = this.documentRepo.findBySprintAndTypeAndNotified(sprint, type, false);
+		if (!documents.isEmpty()) {
+			Document document = documents.get(0);
+			document.setNotified(true);
+			this.documentRepo.saveAndFlush(document);
+		}
+		return !documents.isEmpty();
+	}
+
+	private PdfPCell getCell(String text, int aligment, Font font) {
+		PdfPCell cell = new PdfPCell(new Phrase(text, font));
+		cell.setPadding(0);
+		cell.setHorizontalAlignment(aligment);
+		cell.setBorder(Rectangle.NO_BORDER);
+		return cell;
+	}
 
 }

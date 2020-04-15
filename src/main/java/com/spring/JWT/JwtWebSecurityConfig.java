@@ -30,7 +30,7 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private JwtRequestFilter filter;
 
 	@Bean
-	public JwtAuthenticationEntryPoint jwtAuthenticationEntryPointBean() throws Exception {
+	public JwtAuthenticationEntryPoint jwtAuthenticationEntryPointBean() {
 		return new JwtAuthenticationEntryPoint();
 	}
 
@@ -39,6 +39,7 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 		return new BCryptPasswordEncoder();
 	}
 
+	@Override
 	@Bean
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();
@@ -56,8 +57,8 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 		web.ignoring().antMatchers("/api/login/**");
 		web.ignoring().antMatchers("/api/box/**");
 		web.ignoring().antMatchers("/api/user/find-by-authorization");
+		web.ignoring().antMatchers("/api/user/security-breach");
 		web.ignoring().antMatchers("/api/login/authenticate");
-		web.ignoring().antMatchers("/api/document/doc-pdf/**");
 		
 	}
 
