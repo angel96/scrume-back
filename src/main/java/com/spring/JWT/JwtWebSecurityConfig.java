@@ -30,7 +30,7 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 	private JwtRequestFilter filter;
 
 	@Bean
-	public JwtAuthenticationEntryPoint jwtAuthenticationEntryPointBean() throws Exception {
+	public JwtAuthenticationEntryPoint jwtAuthenticationEntryPointBean() {
 		return new JwtAuthenticationEntryPoint();
 	}
 
@@ -39,6 +39,7 @@ public class JwtWebSecurityConfig extends WebSecurityConfigurerAdapter {
 		return new BCryptPasswordEncoder();
 	}
 
+	@Override
 	@Bean
 	public AuthenticationManager authenticationManagerBean() throws Exception {
 		return super.authenticationManagerBean();

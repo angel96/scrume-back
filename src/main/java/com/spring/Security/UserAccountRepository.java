@@ -13,5 +13,5 @@ public interface UserAccountRepository extends JpaRepository<UserAccount, Intege
 	@Query("select ua from UserAccount ua where ua.username = ?1")
 	Optional<UserAccount> findByEmail(String username);
 
-	Boolean existsByUsername(String email);
+	Boolean existsByUsername(String username);
 }
