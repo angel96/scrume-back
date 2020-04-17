@@ -23,6 +23,7 @@ public class SprintServiceTest extends AbstractTest {
 	@Autowired
 	private ProjectService projectService;
 	
+	
 	@Test
 	public void SprintServiceGetStatisticsTest() throws Exception {
 		Object[][] objects = {
@@ -234,5 +235,59 @@ public class SprintServiceTest extends AbstractTest {
 		}
 		super.checkExceptions(expected, caught);
 	}
+	
+	@Test
+	public void SprintServiceBurndownTest() throws Exception {
+		Object[][] objects = {
+				{"testuser1@gmail.com", super.entities().get("sprint1"), null},
+				{"testuser4@gmail.com", super.entities().get("sprint4"),null},
+				{"testuser1@gmail.com", super.entities().get("sprint4"), ResponseStatusException.class},
+				{"testuser3@gmail.com", super.entities().get("sprint1"), ResponseStatusException.class}};
+		//poner un id que no existe, deberia estar cubierto pero por si acaso
+
+		Stream.of(objects).forEach(x -> driverSprintServiceBurndownTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
+	}
+
+	protected void driverSprintServiceBurndownTest(String user, Integer idSprint, Class<?> expected) {
+		Class<?> caught = null;
+		try {
+			super.authenticateOrUnauthenticate(user);
+			this.sprintService.getBurnDown(idSprint);
+			this.sprintService.flush();
+			super.authenticateOrUnauthenticate(null);
+
+		} catch (Exception oops) {
+			caught = oops.getClass();
+		}
+		super.checkExceptions(expected, caught);
+	}
+
+	
+	@Test
+	public void SprintServiceBurnupTest() throws Exception {
+		Object[][] objects = {
+				{"testuser1@gmail.com", super.entities().get("sprint1"), null},
+				{"testuser4@gmail.com", super.entities().get("sprint4"),null},
+				{"testuser1@gmail.com", super.entities().get("sprint4"), ResponseStatusException.class},
+				{"testuser3@gmail.com", super.entities().get("sprint1"), ResponseStatusException.class}};
+		//poner un id que no existe, deberia estar cubierto pero por si acaso
+
+		Stream.of(objects).forEach(x -> driverSprintServiceBurnupTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
+	}
+
+	protected void driverSprintServiceBurnupTest(String user, Integer idSprint, Class<?> expected) {
+		Class<?> caught = null;
+		try {
+			super.authenticateOrUnauthenticate(user);
+			this.sprintService.getBurnUp(idSprint);
+			this.sprintService.flush();
+			super.authenticateOrUnauthenticate(null);
+
+		} catch (Exception oops) {
+			caught = oops.getClass();
+		}
+		super.checkExceptions(expected, caught);
+	}
+
 
 }

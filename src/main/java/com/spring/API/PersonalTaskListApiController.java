@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.spring.CustomObject.DocumentDto;
 import com.spring.CustomObject.PersonalTaskListDto;
+import com.spring.Model.PersonalTaskList;
 import com.spring.Service.PersonalTaskListService;
 
 @Controller
@@ -23,29 +23,29 @@ public class PersonalTaskListApiController extends AbstractApiController {
 	@Autowired
 	private PersonalTaskListService service;
 	
-	@GetMapping("{idUser}")
-	public List<PersonalTaskListDto> showAll(@PathVariable int idUser){
-		super.logger.info("GET /api/personalList/" + idUser);
-		return this.service.findAllByUser(idUser);
+	@GetMapping
+	public List<PersonalTaskList> showAll(){
+		super.logger.info("GET /api/personalList");
+		return this.service.findAllByUser();
 	}
 	
-	@PostMapping("{idUser}")
-	public PersonalTaskListDto save(@PathVariable int idUser, @RequestBody PersonalTaskListDto dto) {
-		super.logger.info("POST /api/personalList/" + idUser);
-		return this.service.save(idUser, dto);
+	@PostMapping
+	public PersonalTaskList save(@RequestBody PersonalTaskListDto dto) {
+		super.logger.info("POST /api/personalList");
+		return this.service.save(dto);
 	}
 	
-	@PutMapping("{idList}")
-	public PersonalTaskListDto update(@PathVariable int idList, @RequestBody PersonalTaskListDto dto) {
-		super.logger.info("PUT /api/personalList/" + idList);
-		return this.service.update(idList, dto);
+	@PutMapping("{idPersonalTask}")
+	public PersonalTaskList update(@PathVariable int idPersonalTask, @RequestBody PersonalTaskListDto dto) {
+		super.logger.info("PUT /api/personalList/" + idPersonalTask);
+		return this.service.update(idPersonalTask, dto);
 		
 	}
 	
-	@DeleteMapping("{idList}")
-	public void delete(@PathVariable int idList) {
-		super.logger.info("DELETE /api/personalList/" + idList);
-		this.service.delete(idList);
+	@DeleteMapping("{idPersonalTask}")
+	public void delete(@PathVariable int idPersonalTask) {
+		super.logger.info("DELETE /api/personalList/" + idPersonalTask);
+		this.service.delete(idPersonalTask);
 	}
 
 }

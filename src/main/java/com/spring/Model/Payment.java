@@ -15,6 +15,7 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -26,6 +27,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+@EqualsAndHashCode(callSuper=true)
 public class Payment extends BaseEntity {
 
 	@Builder.Default

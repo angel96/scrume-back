@@ -1,6 +1,5 @@
 package com.spring.Model;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;

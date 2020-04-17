@@ -3,10 +3,8 @@ package com.spring.Service;
 import java.lang.reflect.Type;
 import java.math.BigInteger;
 import java.security.SecureRandom;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -25,7 +23,6 @@ import com.spring.CustomObject.AllDataDto;
 import com.spring.CustomObject.FindByNickDto;
 import com.spring.CustomObject.TaskToAllDataDto;
 import com.spring.CustomObject.UserDto;
-import com.spring.CustomObject.UserLoginDto;
 import com.spring.CustomObject.UserOfATeamByWorspaceDto;
 import com.spring.CustomObject.UserUpdateDto;
 import com.spring.CustomObject.UserWithNickDto;
@@ -35,6 +32,7 @@ import com.spring.Model.User;
 import com.spring.Model.UserAccount;
 import com.spring.Model.Workspace;
 import com.spring.Repository.UserRepository;
+import com.spring.Security.Role;
 import com.spring.Security.UserAccountService;
 import com.spring.Utiles.Utiles;
 
@@ -50,6 +48,10 @@ public class UserService extends AbstractService {
 
 	@Autowired
 	private UserRolService userRolService;
+	
+	@Autowired
+	private InvitationService invitationService;
+
 
 	@Autowired
 	private TeamService teamService;
@@ -59,9 +61,6 @@ public class UserService extends AbstractService {
 
 	@Autowired
 	private WorkspaceService workspaceService;
-
-	@Autowired
-	private PaymentService paymentService;
 
 	public Collection<UserOfATeamByWorspaceDto> listUsersOfATeamByWorkspace(Integer idWorkspace) {
 		ModelMapper mapper = new ModelMapper();
@@ -156,12 +155,13 @@ public class UserService extends AbstractService {
 		if (findByNickDto.getTeam() != null) {
 			Team team = this.teamService.findOne(findByNickDto.getTeam());
 			if (team != null) {
+				users = users.stream().filter(u -> !this.invitationService.existsActiveInvitation(u, team)).collect(Collectors.toList());
 				idUsers.addAll(this.userRolService.findIdUsersByTeam(team));
 			}
 		}
-		users = users.stream().filter(u -> !idUsers.contains(u.getId())).collect(Collectors.toList());
+		users = users.stream().filter(u -> (!idUsers.contains(u.getId())) && (!u.getUserAccount().getRoles().contains(Role.ROLE_ADMIN))).collect(Collectors.toList());
 		if (users.size() > 5) {
-			users = users.subList(0, 4);
+			users = users.subList(0, 5);
 		}
 		ModelMapper mapper = new ModelMapper();
 		Type listType = new TypeToken<List<UserWithNickDto>>() {
@@ -190,6 +190,27 @@ public class UserService extends AbstractService {
 		this.userAccountService.save(userAccountAnonymous);
 		principal.setUserAccount(userAccountAnonymous);
 		this.userRepository.saveAndFlush(principal);
+	}
+	
+	public Boolean getIsAdminOfSystem() {
+		return this.getUserByPrincipal().getUserAccount().getRoles().contains(Role.ROLE_ADMIN);
+	}
+	
+	public AllDataDto getAllMyData() {
+		User principal = this.getUserByPrincipal();
+		this.validateUser(principal);
+		Collection<Task> tasks = this.taskService.findAllTaskByUser(principal);
+		Collection<TaskToAllDataDto> tasksToAllDataDto = new ArrayList<>();
+		for (Task task : tasks) {
+			TaskToAllDataDto taskAllDataDto = new TaskToAllDataDto(task.getTitle(), task.getDescription(),
+					task.getPoints());
+			tasksToAllDataDto.add(taskAllDataDto);
+		}
+		
+		Collection<Team> teams = this.userRolService.findAllByUser(principal);
+		Collection<String> teamsName = teams.stream().map(Team::getName).collect(Collectors.toList());
+		return new AllDataDto(principal.getUserAccount().getUsername(), principal.getName(), principal.getSurnames(),
+				principal.getNick(), principal.getGitUser(), principal.getPhoto(), tasksToAllDataDto, teamsName);
 	}
 
 	private void validateUser(User user) {
@@ -220,27 +241,6 @@ public class UserService extends AbstractService {
 		}
 	}
 
-	public UserLoginDto getByAuthorization(String string) {
-		UserLoginDto res;
-		Base64.Decoder dec = Base64.getDecoder();
-		String auth;
-		String decodedAuth;
-		String username;
-		try {
-			auth = string.split(" ")[1];
-			decodedAuth = new String(dec.decode(auth));
-			username = decodedAuth.split(":")[0];
-			User user = this.userRepository.findUserByUserName(username)
-					.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authorized"));
-			LocalDate endingBoxDate = this.paymentService.findByUserAccount(user.getUserAccount()).getExpiredDate();
-			res = new UserLoginDto(user.getId(), user.getUserAccount().getUsername(), endingBoxDate);
-		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
-					"The user has not been found or does not have any box payment record");
-		}
-		return res;
-	}
-
 	private void validatePassword(UserAccount userAccountDB, String previousPassword, String newPassword) {
 		BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 		String pattern = "^.*(?=.{8,})(?=..*[0-9])(?=.*[a-z])(?=.*[A-Z]).*$";
@@ -255,21 +255,6 @@ public class UserService extends AbstractService {
 
 	}
 
-	public AllDataDto getAllMyData() {
-		User principal = this.getUserByPrincipal();
-		this.validateUser(principal);
-		Collection<Task> tasks = this.taskService.findAllTaskByUser(principal);
-		Collection<TaskToAllDataDto> tasksToAllDataDto = new ArrayList<>();
-		for (Task task : tasks) {
-			TaskToAllDataDto taskAllDataDto = new TaskToAllDataDto(task.getTitle(), task.getDescription(),
-					task.getPoints());
-			tasksToAllDataDto.add(taskAllDataDto);
-		}
 
-		Collection<Team> teams = this.userRolService.findAllByUser(principal);
-		Collection<String> teamsName = teams.stream().map(Team::getName).collect(Collectors.toList());
-		return new AllDataDto(principal.getUserAccount().getUsername(), principal.getName(), principal.getSurnames(),
-				principal.getNick(), principal.getGitUser(), principal.getPhoto(), tasksToAllDataDto, teamsName);
-	}
 
 }
