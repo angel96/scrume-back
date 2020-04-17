@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @EqualsAndHashCode(callSuper = true)
 
-public class PersonalTaskList extends BaseEntity {
+public class Note extends BaseEntity {
 	@JsonProperty
 	@NotNull
 	@OnDelete(action = OnDeleteAction.CASCADE)

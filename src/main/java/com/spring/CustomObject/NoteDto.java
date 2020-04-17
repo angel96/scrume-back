@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PersonalTaskListDto {
+public class NoteDto {
 	
 	private String content;
 }
