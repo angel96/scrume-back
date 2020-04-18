@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.spring.CustomObject.LastWorkspaceDto;
 import com.spring.CustomObject.SprintWithWorkspacesDto;
 import com.spring.CustomObject.WorkspaceEditDto;
 import com.spring.CustomObject.WorkspaceSprintListDto;
@@ -70,7 +71,7 @@ public class WorkspaceApiController extends AbstractApiController {
 	}
 
 	@GetMapping("/last-by-project/{project}")
-	public WorkspaceSprintListDto lastWorkspaceModified(@PathVariable Integer project) {
+	public LastWorkspaceDto lastWorkspaceModified(@PathVariable Integer project) {
 		super.logger.info("GET /api/last-by-project/" + project);
 		return this.serviceWorkspace.findWorkspaceLastModifiedByProject(project);
 	}

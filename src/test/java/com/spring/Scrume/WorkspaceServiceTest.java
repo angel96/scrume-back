@@ -27,7 +27,10 @@ public class WorkspaceServiceTest extends AbstractTest {
 
 	@Test
 	public void testListTodoColumnsOfAProject() {
-		Object[][] objects = { { "testuser1@gmail.com", super.entities().get("project1"), null },
+		Object[][] objects = { 
+				{ "testuser1@gmail.com", super.entities().get("project1"), null },
+				{ "testuser10@gmail.com", super.entities().get("project6"), null },
+				{ "testuser12@gmail.com", super.entities().get("project7"), null },
 				{ "testuser3@gmail.com", super.entities().get("project1"), ResponseStatusException.class } };
 		Stream.of(objects)
 				.forEach(x -> driverListTodoColumnsOfAProject((String) x[0], (Integer) x[1], (Class<?>) x[2]));
