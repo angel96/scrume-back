@@ -95,7 +95,7 @@ public class NotificationService extends AbstractService {
 		cal.setTime(new Date());
 		cal.set(Calendar.HOUR, cal.get(Calendar.HOUR)+ 2);
 		Date actualDate = cal.getTime();
-		String title = "You must fill in the daily for the " + new SimpleDateFormat("dd/MM/yyyy").format(actualDate);
+		String title = "Debes rellenar la daily de hoy (" + new SimpleDateFormat("dd/MM/yyyy").format(actualDate) + ")";
 		Collection<Sprint> sprints = this.sprintService.getActivesSprints();
 		for (Sprint sprint : sprints) {
 			if(this.boxService.getMinimumBoxOfATeam(sprint.getProject().getTeam().getId()).getName().equals("PRO")) {
@@ -120,7 +120,7 @@ public class NotificationService extends AbstractService {
 					if(this.checkDocumentIsCreated(notification)) {
 						this.notificationRepository.delete(notification);
 					}else {
-						res.add(new NotificationListDto(notification.getId(), notification.getTitle(), new TeamDto(team.getId(), team.getName()), new ProjectIdNameDto
+						res.add(new NotificationListDto(notification.getSprint().getId(), notification.getId(), notification.getTitle(), new TeamDto(team.getId(), team.getName()), new ProjectIdNameDto
 								(notification.getSprint().getProject().getId(), notification.getSprint().getProject().getName()),
 								notification.getDate()));
 					}
@@ -182,17 +182,19 @@ public class NotificationService extends AbstractService {
 	}
 	
 	private void validateDeletePermission(User principal, Notification notificationEntity) {
+		String messageError = "The user does not have permission to delete the requested notification";
+		
 		if (!this.userRolService.isUserOnTeam(principal, notificationEntity.getSprint().getProject().getTeam())) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, 
-					"The user does not have permission to delete the requested notification");
+					messageError);
 		}
 		if(notificationEntity.getUser() == null && notificationEntity.getDate().after(new Date()) && !this.userRolService.isAdminOnTeam(principal, notificationEntity.getSprint().getProject().getTeam())) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, 
-				"The user does not have permission to delete the requested notification");
+					messageError);
 		}
 		if (!(notificationEntity.getUser() == null || notificationEntity.getUser() == principal)) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
-					"The user does not have permission to delete the requested notification");
+					messageError);
 		}
 	}
 	

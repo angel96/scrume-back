@@ -61,7 +61,7 @@ public class InvitationService extends AbstractService {
 	}
 
 
-	private boolean existsActiveInvitation(User recipient, Team team) {
+	public boolean existsActiveInvitation(User recipient, Team team) {
 		return this.invitationRepository.existsActiveInvitation(recipient, team) != 0;
 	}
 

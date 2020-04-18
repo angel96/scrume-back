@@ -1,3 +1,4 @@
+
 package com.spring.Configuration;
 
 import java.time.LocalDate;
@@ -25,7 +26,7 @@ import com.spring.Model.HistoryTask;
 import com.spring.Model.Invitation;
 import com.spring.Model.Notification;
 import com.spring.Model.Payment;
-import com.spring.Model.PersonalTaskList;
+import com.spring.Model.Note;
 import com.spring.Model.Project;
 import com.spring.Model.SecurityBreach;
 import com.spring.Model.Sprint;
@@ -43,7 +44,7 @@ import com.spring.Repository.HistoryTaskRepository;
 import com.spring.Repository.InvitationRepository;
 import com.spring.Repository.NotificationRepository;
 import com.spring.Repository.PaymentRepository;
-import com.spring.Repository.PersonalTaskListRepository;
+import com.spring.Repository.NoteRepository;
 import com.spring.Repository.ProjectRepository;
 import com.spring.Repository.SecurityBreachRepository;
 import com.spring.Repository.SprintRepository;
@@ -117,7 +118,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 	private NotificationRepository notificationRepository;
 
 	@Autowired
-	private PersonalTaskListRepository taskListRepository;
+	private NoteRepository noteRepository;
 	
 	@Autowired
 	private SecurityBreachRepository securityBreachRepository;
@@ -147,7 +148,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		boxRepository.deleteAll();
 		accountRepository.deleteAll();
 		documentRepository.deleteAll();
-		taskListRepository.deleteAll();
+		noteRepository.deleteAll();
 
 		UserAccount account0 = accountRepository
 				.save(new UserAccount("administrator@gmail.com", Utiles.encryptedPassword("1234560"), LocalDateTime.now(),
@@ -230,7 +231,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("standardBox", standardBox.getId());
 		entities.put("proBox", proBox.getId());
 
-		User user0 = new User("ADMIN", "ADMIN", "ADMIN", "ADMIN", null);
+		User user0 = new User("ADMINISTRATOR", "administrator", "ADMIN1", "ADMIN2", null);
 		user0.setUserAccount(account0);
 		user0 = userRepository.save(user0);
 		User user1 = new User("Juan María", "Lorenzo Pérez", "jualorper", "jualorper", null);
@@ -408,7 +409,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 
 		LocalDateTime localDateTime5 = LocalDateTime.of(2020, 3, 25, 10, 15);
 		Date localDate5 = Date.from(localDateTime5.atZone(ZoneId.systemDefault()).toInstant());
-		LocalDateTime localDateTime6 = LocalDateTime.of(2020, 4, 15, 10, 15);
+		LocalDateTime localDateTime6 = LocalDateTime.of(2020, 8, 24, 23, 59);
 		Date localDate6 = Date.from(localDateTime6.atZone(ZoneId.systemDefault()).toInstant());
 		LocalDateTime localDateTime7 = LocalDateTime.of(2020, 10, 25, 10, 15);
 		Date localDate7 = Date.from(localDateTime7.atZone(ZoneId.systemDefault()).toInstant());
@@ -428,8 +429,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		Date localDate14 = Date.from(localDateTime14.atZone(ZoneId.systemDefault()).toInstant());
 		LocalDateTime localDateTime15 = LocalDateTime.of(2020, 8, 26, 10, 15);
 		Date localDate15 = Date.from(localDateTime15.atZone(ZoneId.systemDefault()).toInstant());
-		LocalDateTime localDateTime16 = LocalDateTime.of(2020, 3, 26, 10, 15);
-		Date localDate16 = Date.from(localDateTime16.atZone(ZoneId.systemDefault()).toInstant());
+		
 		
 		Sprint sprint1 = this.sprintRepository.save(new Sprint(localDate5, localDate6, project1));
 		Sprint sprint2 = this.sprintRepository.save(new Sprint(localDate7, localDate8, project2));
@@ -536,19 +536,23 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("task6", task6.getId());
 
 		
-		Document doc1 = this.documentRepository.save(new Document(DocumentType.DAILY, "Daily 12/04/2020",
+		Document doc1 = this.documentRepository.save(new Document(DocumentType.DAILY, "Daily 17/04/2020",
 				"[{\"name\": \"testUser4\", \"done\": \"Terminar populate\", \"doing\": \"Empezar mi primer caso de uso\", \"problems\": \"No se usar spring boot\"}]",
 				sprint1, false));
-		Document doc2 = this.documentRepository.save(new Document(DocumentType.REVIEW, "Review",
-				"{\"done\": \"PDF\", \"noDone\": \"Modificar populate\", \"rePlanning\": \"Graficas\"}", sprint1,
-				false));
-		Document doc3 = this.documentRepository.save(new Document(DocumentType.RETROSPECTIVE, "Retrospective",
-				"{\"good\": \"Sincronización entre entornos\", \"bad\": \"No ha habido comunicacion entre documentacion y presentacion\", \"improvement\": \"Mas reuniones para motivar y sincronizar cambios entre documentacion y presentacion\"}",
+		Document doc2 = this.documentRepository.save(new Document(DocumentType.DAILY, "Daily 18/04/2020",
+				"[]",
 				sprint1, false));
+		Document doc3 = this.documentRepository.save(new Document(DocumentType.REVIEW, "Review",
+				"{\"done\": \"PDF\", \"noDone\": \"Modificar populate\", \"rePlanning\": \"Graficas\"}", sprint1,
+				true));
+		Document doc4 = this.documentRepository.save(new Document(DocumentType.RETROSPECTIVE, "Retrospective",
+				"{\"good\": \"Sincronización entre entornos\", \"bad\": \"No ha habido comunicacion entre documentacion y presentacion\", \"improvement\": \"Mas reuniones para motivar y sincronizar cambios entre documentacion y presentacion\"}",
+				sprint1, true));
 
 		entities.put("doc1", doc1.getId());
 		entities.put("doc2", doc2.getId());
 		entities.put("doc3", doc3.getId());
+		entities.put("doc4", doc4.getId());
 
 		HistoryTask historyTask1 = this.historyTaskRepository
 				.save(new HistoryTask(localDateTime5, toDo1, inProgress1, task2));
@@ -579,19 +583,19 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("estimation8", estimation8.getId());
 		entities.put("estimation9", estimation9.getId());
 		Payment payment0 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
-				user0.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
+				user0.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234516", "ABC123456781A"));
 		Payment payment1 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
-				user1.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
+				user1.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234526", "ABC123456782A"));
 		Payment payment2 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
-				user1.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
+				user1.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234536", "ABC123456783A"));
 		Payment payment3 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
-				user4.getUserAccount(), LocalDate.from(localDateTime1), "ABC123456", "ABC12345678"));
+				user4.getUserAccount(), LocalDate.from(localDateTime1), "ABC1234546", "ABC123456784A"));
 		Payment payment4 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime1), proBox,
-				user4.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
+				user4.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234556", "ABC123456785A"));
 		Payment payment5 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
-				user2.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
+				user2.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234566", "ABC123456786A"));
 		Payment payment6 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
-				user3.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
+				user3.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234577", "ABC123456787A"));
 
 		entities.put("payment0", payment0.getId());
 		entities.put("payment1", payment1.getId());
@@ -603,27 +607,27 @@ public class PopulatorDatabase implements CommandLineRunner {
 		
 		//PAYMENTS CADUCADOS
 		Payment payment7 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
-				user5.getUserAccount(), LocalDate.from(localDateTime0), "ABC123456", "ABC12345678"));
+				user5.getUserAccount(), LocalDate.from(localDateTime0), "ABC1234561B", "ABC123456781C"));
 		Payment payment8 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
-				user6.getUserAccount(), LocalDate.from(localDateTime0), "ABC123456", "ABC12345678"));
+				user6.getUserAccount(), LocalDate.from(localDateTime0), "ABC1234562B", "ABC123456782C"));
 		Payment payment9 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
-				user7.getUserAccount(), LocalDate.from(localDateTime0), "ABC123456", "ABC12345678"));
+				user7.getUserAccount(), LocalDate.from(localDateTime0), "ABC1234563B", "ABC123456783C"));
 		Payment payment10 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
-				user8.getUserAccount(), LocalDate.from(localDateTime0), "ABC123456", "ABC12345678"));
+				user8.getUserAccount(), LocalDate.from(localDateTime0), "ABC1234564B", "ABC123456784C"));
 		Payment payment11 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
-				user9.getUserAccount(), LocalDate.from(localDateTime0), "ABC123456", "ABC12345678"));
+				user9.getUserAccount(), LocalDate.from(localDateTime0), "ABC1234565B", "ABC123456785C"));
 		
 		//PAYMENTS BASIC
 		Payment payment12 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), basicBox,
-				user10.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
+				user10.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234561Z", "ABC123456781Y"));
 		Payment payment13 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), basicBox,
-				user11.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
+				user11.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234562Z", "ABC123456782Y"));
 		
 		//PAYMENTS STANDARD
 		Payment payment14 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), standardBox,
-				user12.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));
+				user12.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234561D", "ABC123456781X"));
 		Payment payment15 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), standardBox,
-				user13.getUserAccount(), LocalDate.from(localDateTime00), "ABC123456", "ABC12345678"));	
+				user13.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234562D", "ABC123456782X"));	
 		
 		entities.put("payment7", payment7.getId());
 		entities.put("payment8", payment8.getId());
@@ -635,22 +639,30 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("payment14", payment14.getId());
 		entities.put("payment15", payment15.getId());
 
-		PersonalTaskList personalList1 = this.taskListRepository.save(new PersonalTaskList(user1, "Test List 1"));
-		PersonalTaskList personalList2 = this.taskListRepository.save(new PersonalTaskList(user1, "Test List 2"));
-		PersonalTaskList personalList3 = this.taskListRepository.save(new PersonalTaskList(user1, "Test List 3"));
-		PersonalTaskList personalList4 = this.taskListRepository.save(new PersonalTaskList(user1, "Test List 4"));
+		Note note1 = this.noteRepository.save(new Note(user1, "Test List 1"));
+		Note note2 = this.noteRepository.save(new Note(user1, "Test List 2"));
+		Note note3 = this.noteRepository.save(new Note(user1, "Test List 3"));
+		Note note4 = this.noteRepository.save(new Note(user1, "Test List 4"));
 
-		entities.put("personalList1", personalList1.getId());
-		entities.put("personalList2", personalList2.getId());
-		entities.put("personalList3", personalList3.getId());
-		entities.put("personalList4", personalList4.getId());
+		entities.put("note1", note1.getId());
+		entities.put("note2", note2.getId());
+		entities.put("note3", note3.getId());
+		entities.put("note4", note4.getId());
+		
+		LocalDateTime localDateTime17 = LocalDateTime.of(2020, 4, 18, 00, 00);
+		Date localDate17 = Date.from(localDateTime17.atZone(ZoneId.systemDefault()).toInstant());
+		
 		
 		Notification notification1 = this.notificationRepository.save(new Notification("Realizar sprint planning meeting", localDate15, sprint5, null));
-		Notification notification2 = this.notificationRepository.save(new Notification("You must fill in the daily for the 26/03/2020", localDate16, sprint1, user1));
+		Notification notification2 = this.notificationRepository.save(new Notification("Debes rellenar la daily de hoy (18/04/2020)", localDate17, sprint1, user1));
+		Notification notification3 = this.notificationRepository.save(new Notification("Debes rellenar la daily de hoy (18/04/2020)", localDate17, sprint1, user4));
+
+		
 		entities.put("notification1", notification1.getId());
 		entities.put("notification2", notification2.getId());
+		entities.put("notification3", notification3.getId());
 
-		SecurityBreach securityBreach = this.securityBreachRepository.save(new SecurityBreach("We found a security breach in the system.", false));
+		SecurityBreach securityBreach = this.securityBreachRepository.save(new SecurityBreach("Hemos encontrado una brecha de seguridad en el sistema, disculpe las molestias.", false));
 		entities.put("securityBreach", securityBreach.getId());
 
 		
@@ -677,7 +689,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		historyTaskRepository.flush();
 		estimationRepository.flush();
 		documentRepository.flush();
-		taskListRepository.flush();
+		noteRepository.flush();
 		notificationRepository.flush();
 	}
 
