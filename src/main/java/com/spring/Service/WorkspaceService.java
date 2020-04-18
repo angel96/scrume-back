@@ -126,23 +126,25 @@ public class WorkspaceService extends AbstractService {
 		if(boxOfTeam == null) {
 			workspaces = new ArrayList<>();
 		}else {
-			for (Workspace workspace : workspaces) {
-				this.removeNotValidWorkspace(boxOfTeam, workspaces, workspace);
-			}
+			this.removeNotValidWorkspace(boxOfTeam, workspaces);
 		}
 		return workspaces;
 	}
 
-	private void removeNotValidWorkspace(String boxOfTeam, Collection<Workspace> workspaces, Workspace workspace) {
-		if(boxOfTeam.equals("BASIC")) {
-			LocalDateTime validDate = workspace.getSprint().getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-			validDate = validDate.plusDays(30);
-			if(!(this.getFirstWorkspacesOfASprint(workspace.getSprint(), 1).contains(workspace) && validDate.isAfter(LocalDateTime.now(ZoneId.systemDefault())))){
-				workspaces.remove(workspace);
-			}
-		}else if(boxOfTeam.equals("STANDARD") && !(this.getFirstWorkspacesOfASprint(workspace.getSprint(), 2).contains(workspace))){
-				workspaces.remove(workspace);
-			}
+	private void removeNotValidWorkspace(String boxOfTeam, Collection<Workspace> workspaces) {
+		Collection<Workspace> workspacesToRemove = new ArrayList<>();
+		for (Workspace workspace : workspaces) {
+			if(boxOfTeam.equals("BASIC")) {
+				LocalDateTime validDate = workspace.getSprint().getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+				validDate = validDate.plusDays(30);
+				if(!(this.getFirstWorkspacesOfASprint(workspace.getSprint(), 1).contains(workspace) && validDate.isAfter(LocalDateTime.now(ZoneId.systemDefault())))){
+					workspacesToRemove.add(workspace);
+				}
+			}else if(boxOfTeam.equals("STANDARD") && !(this.getFirstWorkspacesOfASprint(workspace.getSprint(), 2).contains(workspace))){
+				workspacesToRemove.add(workspace);
+				}
+		}
+		workspaces.removeAll(workspacesToRemove);
 	}
 	
 	public Workspace findOne(int id) {
@@ -318,6 +320,8 @@ public class WorkspaceService extends AbstractService {
 				res.add(workspaces.get(i));
 				i++;
 			}
+		}else {
+			res = workspaces;
 		}
 		return res;
 	}

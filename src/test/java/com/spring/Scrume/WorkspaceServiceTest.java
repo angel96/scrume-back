@@ -11,6 +11,8 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.SprintDto;
 import com.spring.CustomObject.WorkspaceEditDto;
+import com.spring.Model.Workspace;
+import com.spring.Repository.WorkspaceRepository;
 import com.spring.Service.ProjectService;
 import com.spring.Service.SprintService;
 import com.spring.Service.WorkspaceService;
@@ -24,6 +26,9 @@ public class WorkspaceServiceTest extends AbstractTest {
 
 	@Autowired
 	private ProjectService serviceProject;
+	
+	@Autowired
+	private WorkspaceRepository workspaceRepository;
 
 	@Test
 	public void testListTodoColumnsOfAProject() {
@@ -52,8 +57,12 @@ public class WorkspaceServiceTest extends AbstractTest {
 
 	@Test
 	public void testFindWorkspacesByTeam() {
-
-		Object[][] objects = { { "testuser1@gmail.com", super.entities().get("team1"), null },
+		this.workspaceRepository.save(new Workspace("Test", this.serviceSprint.getOne(super.entities().get("sprint7"))));
+		this.workspaceRepository.save(new Workspace("Test", this.serviceSprint.getOne(super.entities().get("sprint7"))));
+		Object[][] objects = { 
+				{ "testuser1@gmail.com", super.entities().get("team1"), null },
+				{ "testuser10@gmail.com", super.entities().get("team5"), null },
+				{ "testuser12@gmail.com", super.entities().get("team6"), null },
 				{ "testuser3@gmail.com", super.entities().get("team1"), ResponseStatusException.class } };
 
 		Stream.of(objects).forEach(x -> driverFindWorkspacesByTeam((String) x[0], (Integer) x[1], (Class<?>) x[2]));
@@ -125,43 +134,34 @@ public class WorkspaceServiceTest extends AbstractTest {
 
 	@Test
 	public void testSave() {
-		ZoneId defaultZoneId = ZoneId.systemDefault();
-		Date startDate1 = Date.from(LocalDate.of(2040, 04, 15).atStartOfDay(defaultZoneId).toInstant());
-		Date startDate2 = Date.from(LocalDate.of(2050, 04, 15).atStartOfDay(defaultZoneId).toInstant());
-		Date startDate3 = Date.from(LocalDate.of(2060, 04, 15).atStartOfDay(defaultZoneId).toInstant());
+		WorkspaceEditDto dto1 = new WorkspaceEditDto(0, "test1", super.entities().get("sprint1"));
+		WorkspaceEditDto dto2 = new WorkspaceEditDto(0, "test1", super.entities().get("sprint6"));
+		WorkspaceEditDto dto3 = new WorkspaceEditDto(0, "test1", super.entities().get("sprint7"));
+		WorkspaceEditDto dto4 = new WorkspaceEditDto(super.entities().get("workspace6"), "test1", super.entities().get("sprint6"));
+		WorkspaceEditDto dto5 = new WorkspaceEditDto(super.entities().get("workspace7"), "test1", super.entities().get("sprint7"));
+		WorkspaceEditDto dto6 = new WorkspaceEditDto(super.entities().get("workspace1"), "test1", super.entities().get("sprint1"));
+		this.workspaceRepository.save(new Workspace("Test", this.serviceSprint.getOne(super.entities().get("sprint7"))));
+		this.workspaceRepository.save(new Workspace("Test", this.serviceSprint.getOne(super.entities().get("sprint7"))));
+		Object[][] objects = { 
+				{ "testuser1@gmail.com", dto1, null },
+				{ "testuser10@gmail.com", dto2, ResponseStatusException.class },
+				{ "testuser12@gmail.com", dto3, ResponseStatusException.class },
+//				{ "testuser10@gmail.com", dto4, ResponseStatusException.class },
+//				{ "testuser12@gmail.com", dto5, ResponseStatusException.class },
+				{ "testuser2@gmail.com", dto6, ResponseStatusException.class },
+				{ "testuser1@gmail.com", dto6, null } };
 
-		Date endDate1 = Date.from(LocalDate.of(2040, 04, 15).atStartOfDay(defaultZoneId).toInstant());
-		Date endDate2 = Date.from(LocalDate.of(2050, 04, 15).atStartOfDay(defaultZoneId).toInstant());
-		Date endDate3 = Date.from(LocalDate.of(2060, 04, 15).atStartOfDay(defaultZoneId).toInstant());
-
-		
-		Object[][] objects = { { "testuser1@gmail.com", 0, startDate1, endDate1, null },
-				{ "testuser2@gmail.com", super.entities().get("workspace1"), startDate2, endDate2, ResponseStatusException.class },
-				{ "testuser1@gmail.com", super.entities().get("workspace1"), startDate3, endDate3, null } };
-
-		Stream.of(objects).forEach(x -> driverSave((String) x[0], (Integer) x[1], (Date) x[2], (Date) x[3],(Class<?>) x[4]));
+		Stream.of(objects).forEach(x -> driverSave((String) x[0], (WorkspaceEditDto) x[1],(Class<?>) x[2]));
 	}
 
-	protected void driverSave(String user, Integer entity, Date startDate,  Date endDate, Class<?> expected) {
+	protected void driverSave(String user, WorkspaceEditDto dto, Class<?> expected) {
 		Class<?> caught = null;
 
 		try {
 
 			super.authenticateOrUnauthenticate(user);
-
-			WorkspaceEditDto dto = entity == 0 ? new WorkspaceEditDto()
-					: new WorkspaceEditDto(service.findOne(entity).getId(), service.findOne(entity).getName(),
-							service.findOne(entity).getSprint().getId());
-
-			dto.setName("Changing name");
-			dto.setSprint(serviceSprint.save(
-					new SprintDto(0, startDate,
-							endDate,
-							serviceProject.findOne(super.entities().get("project1"))))
-					.getId());
-
-			this.service.save(entity, dto);
-
+			this.service.save(dto.getId(), dto);
+			service.flush();
 			super.authenticateOrUnauthenticate(null);
 		} catch (Throwable oops) {
 			caught = oops.getClass();

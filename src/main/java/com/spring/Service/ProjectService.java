@@ -175,6 +175,8 @@ public class ProjectService extends AbstractService {
 				res.add(projects.get(i));
 				i++;
 			}
+		}else {
+			res = projects;
 		}
 		return res;
 	}
