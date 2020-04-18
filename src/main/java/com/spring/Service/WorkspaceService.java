@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.ColumnDto;
+import com.spring.CustomObject.LastWorkspaceDto;
+import com.spring.CustomObject.SprintIdDto;
 import com.spring.CustomObject.SprintWithWorkspacesDto;
 import com.spring.CustomObject.TaskForWorkspaceDto;
 import com.spring.CustomObject.UserForWorkspaceDto;
@@ -285,7 +287,7 @@ public class WorkspaceService extends AbstractService {
 				.map(x -> new WorkspaceSprintListDto(x.getId(), x.getName())).collect(Collectors.toList());
 	}
 
-	public WorkspaceSprintListDto findWorkspaceLastModifiedByProject(int project) {
+	public LastWorkspaceDto findWorkspaceLastModifiedByProject(int project) {
 
 		Project proj = this.projectService.findOne(project);
 
@@ -293,14 +295,14 @@ public class WorkspaceService extends AbstractService {
 
 		Collection<HistoryTask> historyTasksByProject = this.repository.findAllHistoryTasksByProject(project);
 
-		WorkspaceSprintListDto result = null;
+		LastWorkspaceDto result = null;
 
 		if (historyTasksByProject.isEmpty()) {
-			result = new WorkspaceSprintListDto(0, "");
+			result = new LastWorkspaceDto(0, "", new SprintIdDto(0));
 		} else {
 			List<HistoryTask> historyTasks = new ArrayList<>(historyTasksByProject);
 			Workspace ht = historyTasks.get(0).getDestiny().getWorkspace();
-			result = new WorkspaceSprintListDto(ht.getId(), ht.getName());
+			result = new LastWorkspaceDto(ht.getId(), ht.getName(), new SprintIdDto(ht.getSprint().getId()));
 		}
 
 		return result;
