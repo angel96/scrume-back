@@ -687,10 +687,10 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("payment14", payment14.getId());
 		entities.put("payment15", payment15.getId());
 
-		Note note1 = this.noteRepository.save(new Note(user1, "Test List 1"));
-		Note note2 = this.noteRepository.save(new Note(user1, "Test List 2"));
-		Note note3 = this.noteRepository.save(new Note(user1, "Test List 3"));
-		Note note4 = this.noteRepository.save(new Note(user1, "Test List 4"));
+		Note note1 = this.noteRepository.save(new Note(user1, "Revisar mis tareas"));
+		Note note2 = this.noteRepository.save(new Note(user1, "Hablar con el coordinador"));
+		Note note3 = this.noteRepository.save(new Note(user1, "Mirar documentación del error en mi tarea"));
+		Note note4 = this.noteRepository.save(new Note(user1, "Avisar al equipo de mi problema"));
 
 		entities.put("note1", note1.getId());
 		entities.put("note2", note2.getId());

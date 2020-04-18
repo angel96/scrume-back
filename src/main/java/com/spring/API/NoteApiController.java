@@ -23,7 +23,14 @@ public class NoteApiController extends AbstractApiController {
 	@Autowired
 	private NoteService noteService;
 	
-	@GetMapping
+
+	@GetMapping("{idNote}")
+	public NoteIdDto get(@PathVariable int idNote){
+		super.logger.info("GET /api/note/" + idNote);
+		return this.noteService.getOne(idNote);
+	}
+	
+	@GetMapping("showAll")
 	public List<NoteIdDto> showAll(){
 		super.logger.info("GET /api/note/showAll");
 		return this.noteService.findAllByUser();
