@@ -34,7 +34,7 @@ spring.datasource.password=zkd0gqvp0ztgzhev
 spring.datasource.url=jdbc:mysql://i2cpbxbi4neiupid.cbetxkdyhwsb.us-east-1.rds.amazonaws.com/dj32wivnubg0h8k2
 
 spring.jpa.properties.hibernate.dialect = org.hibernate.dialect.MySQL5InnoDBDialect
-spring.jpa.hibernate.ddl-auto=create
+spring.jpa.hibernate.ddl-auto=none
 spring.jackson.serialization.fail-on-empty-beans=false
 debug = false
 
