@@ -409,7 +409,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 
 		LocalDateTime localDateTime5 = LocalDateTime.of(2020, 3, 25, 10, 15);
 		Date localDate5 = Date.from(localDateTime5.atZone(ZoneId.systemDefault()).toInstant());
-		LocalDateTime localDateTime6 = LocalDateTime.of(2020, 4, 15, 10, 15);
+		LocalDateTime localDateTime6 = LocalDateTime.of(2020, 8, 24, 23, 59);
 		Date localDate6 = Date.from(localDateTime6.atZone(ZoneId.systemDefault()).toInstant());
 		LocalDateTime localDateTime7 = LocalDateTime.of(2020, 10, 25, 10, 15);
 		Date localDate7 = Date.from(localDateTime7.atZone(ZoneId.systemDefault()).toInstant());
@@ -536,22 +536,16 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("task6", task6.getId());
 
 		
-		Document doc1 = this.documentRepository.save(new Document(DocumentType.DAILY, "Daily 14/04/2020",
+		Document doc1 = this.documentRepository.save(new Document(DocumentType.DAILY, "Daily 17/04/2020",
 				"[{\"name\": \"testUser4\", \"done\": \"Terminar populate\", \"doing\": \"Empezar mi primer caso de uso\", \"problems\": \"No se usar spring boot\"}]",
 				sprint1, false));
-		Document doc2 = this.documentRepository.save(new Document(DocumentType.DAILY, "Daily 15/04/2020",
+		Document doc2 = this.documentRepository.save(new Document(DocumentType.DAILY, "Daily 18/04/2020",
 				"[]",
 				sprint1, false));
-		Document doc3 = this.documentRepository.save(new Document(DocumentType.DAILY, "Daily 16/04/2020",
-				"[]",
-				sprint1, false));
-		Document doc4 = this.documentRepository.save(new Document(DocumentType.DAILY, "Daily 17/04/2020",
-				"[]",
-				sprint1, false));
-		Document doc5 = this.documentRepository.save(new Document(DocumentType.REVIEW, "Review",
+		Document doc3 = this.documentRepository.save(new Document(DocumentType.REVIEW, "Review",
 				"{\"done\": \"PDF\", \"noDone\": \"Modificar populate\", \"rePlanning\": \"Graficas\"}", sprint1,
 				true));
-		Document doc6 = this.documentRepository.save(new Document(DocumentType.RETROSPECTIVE, "Retrospective",
+		Document doc4 = this.documentRepository.save(new Document(DocumentType.RETROSPECTIVE, "Retrospective",
 				"{\"good\": \"Sincronización entre entornos\", \"bad\": \"No ha habido comunicacion entre documentacion y presentacion\", \"improvement\": \"Mas reuniones para motivar y sincronizar cambios entre documentacion y presentacion\"}",
 				sprint1, true));
 
@@ -559,8 +553,6 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("doc2", doc2.getId());
 		entities.put("doc3", doc3.getId());
 		entities.put("doc4", doc4.getId());
-		entities.put("doc5", doc5.getId());
-		entities.put("doc6", doc6.getId());
 
 		HistoryTask historyTask1 = this.historyTaskRepository
 				.save(new HistoryTask(localDateTime5, toDo1, inProgress1, task2));
@@ -657,36 +649,18 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("note3", note3.getId());
 		entities.put("note4", note4.getId());
 		
-		LocalDateTime localDateTime17 = LocalDateTime.of(2020, 4, 14, 00, 00);
+		LocalDateTime localDateTime17 = LocalDateTime.of(2020, 4, 18, 00, 00);
 		Date localDate17 = Date.from(localDateTime17.atZone(ZoneId.systemDefault()).toInstant());
-		LocalDateTime localDateTime18 = LocalDateTime.of(2020, 4, 15, 00, 00);
-		Date localDate18 = Date.from(localDateTime18.atZone(ZoneId.systemDefault()).toInstant());
-		LocalDateTime localDateTime19 = LocalDateTime.of(2020, 4, 16, 00, 00);
-		Date localDate19 = Date.from(localDateTime19.atZone(ZoneId.systemDefault()).toInstant());
-		LocalDateTime localDateTime20 = LocalDateTime.of(2020, 4, 17, 00, 00);
-		Date localDate20 = Date.from(localDateTime20.atZone(ZoneId.systemDefault()).toInstant());
 		
 		
 		Notification notification1 = this.notificationRepository.save(new Notification("Realizar sprint planning meeting", localDate15, sprint5, null));
-		Notification notification2 = this.notificationRepository.save(new Notification("Debes rellenar la daily de hoy (14/04/2020)", localDate17, sprint1, user1));
-		Notification notification3 = this.notificationRepository.save(new Notification("Debes rellenar la daily de hoy (15/04/2020)", localDate18, sprint1, user1));
-		Notification notification4 = this.notificationRepository.save(new Notification("Debes rellenar la daily de hoy (16/04/2020)", localDate19, sprint1, user1));
-		Notification notification5 = this.notificationRepository.save(new Notification("Debes rellenar la daily de hoy (17/04/2020)", localDate20, sprint1, user1));
-		Notification notification6 = this.notificationRepository.save(new Notification("Debes rellenar la daily de hoy (14/04/2020)", localDate17, sprint1, user4));
-		Notification notification7 = this.notificationRepository.save(new Notification("Debes rellenar la daily de hoy (15/04/2020)", localDate18, sprint1, user4));
-		Notification notification8 = this.notificationRepository.save(new Notification("Debes rellenar la daily de hoy (16/04/2020)", localDate19, sprint1, user4));
-		Notification notification9 = this.notificationRepository.save(new Notification("Debes rellenar la daily de hoy (17/04/2020)", localDate20, sprint1, user4));
-		
+		Notification notification2 = this.notificationRepository.save(new Notification("Debes rellenar la daily de hoy (18/04/2020)", localDate17, sprint1, user1));
+		Notification notification3 = this.notificationRepository.save(new Notification("Debes rellenar la daily de hoy (18/04/2020)", localDate17, sprint1, user4));
+
 		
 		entities.put("notification1", notification1.getId());
 		entities.put("notification2", notification2.getId());
 		entities.put("notification3", notification3.getId());
-		entities.put("notification4", notification4.getId());
-		entities.put("notification5", notification5.getId());
-		entities.put("notification6", notification6.getId());
-		entities.put("notification7", notification7.getId());
-		entities.put("notification8", notification8.getId());
-		entities.put("notification9", notification9.getId());
 
 		SecurityBreach securityBreach = this.securityBreachRepository.save(new SecurityBreach("Hemos encontrado una brecha de seguridad en el sistema, disculpe las molestias.", false));
 		entities.put("securityBreach", securityBreach.getId());
