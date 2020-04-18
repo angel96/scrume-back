@@ -14,7 +14,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.NoteDto;
 import com.spring.CustomObject.NoteIdDto;
-import com.spring.CustomObject.ProjectDto;
 import com.spring.Model.Note;
 import com.spring.Model.User;
 import com.spring.Repository.NoteRepository;
@@ -29,7 +28,14 @@ public class NoteService extends AbstractService {
 	
 	private Note findOne(int id) {
 		return this.noteRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,  "The requested note not exists"));
-		
+	}
+	
+	public NoteIdDto getOne(int idNote) {
+		User user = this.userService.getUserByPrincipal();
+		this.validateUserIsLogged(user);
+		Note entityDB = this.findOne(idNote);
+		this.validateUserPermission(user, entityDB);
+		return new NoteIdDto(entityDB.getId(), entityDB.getContent());
 	}
 	
 	public List<NoteIdDto> findAllByUser(){
@@ -74,6 +80,10 @@ public class NoteService extends AbstractService {
 			throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Only the owner can do this note");
 	}
 	
+	private void validateUserPermission(User user, Note note) {
+		if(!(note.getUser().equals(user)))
+			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The requested note does not belong to the user");	
+	}
 	private void validateUserIsLogged(User user) {
 		if (user == null) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "The user must be logged in");
@@ -84,5 +94,6 @@ public class NoteService extends AbstractService {
 	public void flush() {
 		noteRepository.flush();
 	}
+
 
 }
