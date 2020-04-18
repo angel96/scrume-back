@@ -1,15 +1,20 @@
 package com.spring.Service;
 
+import java.lang.reflect.Type;
 import java.util.List;
 
 import javax.transaction.Transactional;
 
+import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.NoteDto;
+import com.spring.CustomObject.NoteIdDto;
+import com.spring.CustomObject.ProjectDto;
 import com.spring.Model.Note;
 import com.spring.Model.User;
 import com.spring.Repository.NoteRepository;
@@ -23,33 +28,38 @@ public class NoteService extends AbstractService {
 	private UserService userService;
 	
 	private Note findOne(int id) {
-		return this.noteRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND));
+		return this.noteRepository.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,  "The requested note not exists"));
 		
 	}
 	
-	public List<Note> findAllByUser(){
+	public List<NoteIdDto> findAllByUser(){
 		User user = this.userService.getUserByPrincipal();
 		this.validateUserIsLogged(user);
-		return this.noteRepository.findByUser(user);
+		List<Note> notes = this.noteRepository.findByUser(user);
+		ModelMapper mapper = new ModelMapper();
+
+		Type listType = new TypeToken<List<NoteIdDto>>() {
+		}.getType();
+		return mapper.map(notes, listType);
 	}
 	
 
-	public Note save(NoteDto dto) {
+	public NoteIdDto save(NoteDto dto) {
 		User user = this.userService.getUserByPrincipal();
 		this.validateUserIsLogged(user);
 		Note entity = new Note(user, dto.getContent());
 		entity = this.noteRepository.saveAndFlush(entity);
-		return entity;
+		return new NoteIdDto(entity.getId(), entity.getContent());
 	}
 	
-	public Note update(int idNote, NoteDto dto) {
+	public NoteIdDto update(int idNote, NoteDto dto) {
 		User user = this.userService.getUserByPrincipal();
 		Note db = this.findOne(idNote);
 		this.validateUserIsLogged(user);
 		this.checkUser(user, db.getUser());
 		db.setContent(dto.getContent());
 		db = this.noteRepository.saveAndFlush(db);
-		return db;
+		return new NoteIdDto(db.getId(), db.getContent());
 	}
 	
 	public void delete(int listId) {
