@@ -1,10 +1,12 @@
 package com.spring.Model;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -13,6 +15,7 @@ import org.hibernate.annotations.OnDelete;
 import org.hibernate.annotations.OnDeleteAction;
 import org.hibernate.validator.constraints.SafeHtml;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import lombok.AllArgsConstructor;
@@ -40,12 +43,19 @@ public class Document extends BaseEntity {
 	@JsonProperty
 	@SafeHtml
 	@NotBlank
+	@Column(length=10000)
 	private String content;
 	
 	@ManyToOne
 	@OnDelete(action = OnDeleteAction.CASCADE)
 	@JsonProperty
 	@NotNull
+	@JoinColumn(name = "sprint", nullable = false)
 	private Sprint sprint;
+	
+	@NotNull
+	@JsonIgnore
+	@Column(name = "notified", nullable = false)
+	private Boolean notified;
 
 }

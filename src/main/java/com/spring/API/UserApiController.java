@@ -3,20 +3,20 @@ package com.spring.API;
 import java.util.Collection;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.spring.CustomObject.RegisterDto;
-import com.spring.CustomObject.UserLoginDto;
+import com.spring.CustomObject.AllDataDto;
+import com.spring.CustomObject.UserDto;
 import com.spring.CustomObject.UserOfATeamByWorspaceDto;
+import com.spring.CustomObject.UserUpdateDto;
+import com.spring.Model.SecurityBreach;
+import com.spring.Service.SecurityBreachService;
 import com.spring.Service.UserService;
 
 @RestController
@@ -26,6 +26,9 @@ public class UserApiController extends AbstractApiController {
 	@Autowired
 	private UserService userService;
 
+	@Autowired
+	private SecurityBreachService securityBreachService;
+	
 	@GetMapping("/list-by-workspace/{idWorkspace}")
 	public Collection<UserOfATeamByWorspaceDto> listUsersOfATeamByWorkspace(@PathVariable int idWorkspace) {
 		super.logger.info("GET /api/user/list-by-workspace/" + idWorkspace);
@@ -33,28 +36,42 @@ public class UserApiController extends AbstractApiController {
 	}
 	
 	@GetMapping("/{idUser}")
-	public RegisterDto get(@PathVariable Integer idUser) {
+	public UserDto get(@PathVariable Integer idUser) {
 		super.logger.info("GET /api/user");
 		return this.userService.get(idUser);
 	}
 	
-	@GetMapping("/find-by-authorization")
-	@CrossOrigin(origins = "*", methods = { RequestMethod.GET })
-	public UserLoginDto getUserByAuthorization(@RequestHeader("authorization") String auth) {
-		super.logger.info("GET /api/login/isAValidUser");
-		return userService.getByAuthorization(auth);
-	}
-	
 	@PostMapping
-	public RegisterDto save(@RequestBody RegisterDto registerDto) {
+	public UserDto save(@RequestBody UserDto userDto) {
 		super.logger.info("POST /api/user");
-		return this.userService.save(registerDto);
+		return this.userService.save(userDto);
 	}
 	
 	@PutMapping("/{idUser}")
-	public RegisterDto update(@PathVariable Integer idUser, @RequestBody RegisterDto registerDto) {
+	public UserDto update(@PathVariable Integer idUser, @RequestBody UserUpdateDto userDto) {
 		super.logger.info("UPDATE /api/user");
-		return this.userService.update(registerDto, idUser);
+		return this.userService.update(userDto, idUser);
 	}
-
+	
+	@GetMapping("/isAdmin")
+	public Boolean isAdmin(){
+		return this.userService.getIsAdminOfSystem();
+	}
+	
+	@GetMapping("/anonymize")
+	public void anonymize() {
+		super.logger.info("GET /api/user/anonymize");
+		this.userService.anonymize();
+	}
+	
+	@GetMapping("/all-my-data")
+	public AllDataDto getAllMyData() {
+		super.logger.info("GET /api/user/all-my-data");
+		return this.userService.getAllMyData();
+	}
+	
+	@GetMapping("security-breach")
+	public SecurityBreach getSecurityBreach(){
+		return this.securityBreachService.getSecurityBreach();
+	}
 }

@@ -8,14 +8,19 @@ import java.util.stream.Collectors;
 import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.PaymentEditDto;
 import com.spring.CustomObject.PaymentListDto;
+import com.spring.JWT.JwtResponse;
+import com.spring.JWT.JwtUserAccountService;
 import com.spring.Model.Payment;
 import com.spring.Model.User;
 import com.spring.Model.UserAccount;
 import com.spring.Repository.PaymentRepository;
+import com.spring.Security.UserAccountService;
 
 @Service
 @Transactional
@@ -28,6 +33,9 @@ public class PaymentService extends AbstractService {
 	private BoxService serviceBox;
 
 	@Autowired
+	private JwtUserAccountService serviceJwt;
+
+	@Autowired
 	private PaymentRepository repository;
 
 	public Collection<PaymentListDto> findPaymentsByUserLogged() {
@@ -38,15 +46,51 @@ public class PaymentService extends AbstractService {
 				.collect(Collectors.toList());
 	}
 
-	public PaymentEditDto save(PaymentEditDto payment) {
+	public JwtResponse save(PaymentEditDto payment) {
+
+		Payment saveTo = null;
+
+		UserAccount account = UserAccountService.getPrincipal();
+
+		if (payment.getId() == 0) {
+
+			Payment pagoAnterior = findByUserAccount(account);
+
+			if (LocalDate.now().isAfter(pagoAnterior.getExpiredDate())) {
+				if (payment.getExpiredDate().isAfter(LocalDate.now())) {
+					saveTo = new Payment(LocalDate.now(), this.serviceBox.getOne(payment.getBox()), account,
+							payment.getExpiredDate(), payment.getOrderId(), payment.getPayerId());
+					saveTo = repository.saveAndFlush(saveTo);
+					payment.setId(saveTo.getId());
+				} else {
+					throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED,
+							"Expired date is not later than currently");
+				}
+			} else {
+				throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED,
+						"The registered payment until now is accepted. New payments are not still allowed.");
+			}
+
+		}
+
+		return serviceJwt.generateToken(account);
+	}
+
+	public PaymentEditDto save(UserAccount user, PaymentEditDto payment) {
 
 		Payment saveTo = null;
 
 		if (payment.getId() == 0) {
-			saveTo = new Payment(LocalDate.now(), this.serviceBox.getOne(payment.getBox()),
-					this.serviceUser.getUserByPrincipal().getUserAccount(), payment.getExpiredDate());
-			saveTo = repository.saveAndFlush(saveTo);
-			payment.setId(saveTo.getId());
+			if (payment.getExpiredDate().isAfter(LocalDate.now())) {
+				saveTo = new Payment(LocalDate.now(), this.serviceBox.getOne(payment.getBox()), user,
+						payment.getExpiredDate(), payment.getOrderId(), payment.getPayerId());
+				saveTo = repository.saveAndFlush(saveTo);
+				payment.setId(saveTo.getId());
+			} else {
+				throw new ResponseStatusException(HttpStatus.PRECONDITION_FAILED,
+						"Expired date is not later than currently");
+			}
+
 		}
 
 		return payment;
@@ -58,14 +102,13 @@ public class PaymentService extends AbstractService {
 
 	public Payment findByUserAccount(UserAccount userAccount) {
 		Payment res;
-		List<Payment> payments =this.repository.findByUserAccount(userAccount);
-		if(payments.isEmpty()) {
+		List<Payment> payments = this.repository.findByUserAccount(userAccount);
+		if (payments.isEmpty()) {
 			res = null;
-		}else {
+		} else {
 			res = payments.get(0);
 		}
 		return res;
 	}
-	
 
 }

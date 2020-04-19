@@ -12,10 +12,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.jboss.logging.Logger;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.server.ResponseStatusException;
 
 public class Utiles {
 
@@ -31,10 +29,10 @@ public class Utiles {
 		PasswordEncoder encoder = new BCryptPasswordEncoder();
 		return encoder.encode(s);
 	}
-	
+
 	public static Boolean matchesPassword(String password, String encrypted) {
 		PasswordEncoder encoder = new BCryptPasswordEncoder();
-		return encoder.matches(password, encrypted); 
+		return encoder.matches(password, encrypted);
 	}
 
 	/**
@@ -53,9 +51,8 @@ public class Utiles {
 	public static SortedMap<String, Integer> leeFichero(String nombreFichero) {
 		SortedMap<String, Integer> result = new TreeMap<>();
 
-		try {
-
-			Files.lines(Paths.get(nombreFichero)).forEach(x -> {
+		try (Stream<String> input = Files.lines(Paths.get(nombreFichero))) {
+			input.forEach(x -> {
 				String entityName = "";
 				Integer id = 0;
 
@@ -63,17 +60,14 @@ public class Utiles {
 					entityName = x.split("=")[0].equals("null") || x.split("=")[0] == null ? "" : x.split("=")[0];
 					id = x.split("=")[1].equals("null") || x.split("=")[1] == null ? 0
 							: Integer.valueOf(x.split("=")[1]);
-
 				} catch (NumberFormatException e) {
-					entityName = x.split("=")[0].equals("null") || x.split("=")[0]==null? "" : x.split("=")[0];
-				}
+					entityName = x.split("=")[0].equals("null") || x.split("=")[0] == null ? "" : x.split("=")[0];
+				} 
 				result.put(entityName, id);
 			});
 
 		} catch (IOException e) {
 			log.error("Error en la lectura del fichero:" + e);
-		} finally {
-			log.info("Ejecución terminada");
 		}
 
 		return result;
@@ -101,15 +95,15 @@ public class Utiles {
 		 * Metodo main para encriptar contraseñas por consola
 		 */
 
-		System.out.println("Introduzca la contraseña a encriptar: \n");
+		System.console().writer().println("Introduzca la contraseña a encriptar: \n");
 		BufferedReader obj = new BufferedReader(new InputStreamReader(System.in));
 
 		String str = "";
 
 		do {
 			str = obj.readLine();
-			System.out.println("La contraseña a encriptar es: " + str + "\n");
-			System.out.println("La contraseña codificada es: " + Utiles.encryptedPassword(str) + "\n");
+			System.console().writer().println("La contraseña a encriptar es: " + str + "\n");
+			System.console().writer().println("La contraseña codificada es: " + Utiles.encryptedPassword(str) + "\n");
 		} while (!str.equals("stop"));
 
 	}

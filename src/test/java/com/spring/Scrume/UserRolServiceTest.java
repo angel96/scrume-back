@@ -71,21 +71,24 @@ public class UserRolServiceTest extends AbstractTest {
 	
 	@Test
 	public void userRolServiceChangeRolTest() throws Exception {
-		ChangeRolDto changeRol1 = new ChangeRolDto();
-		changeRol1.setAdmin(false);
-		Object[][] objects = {
-				{"testuser2@gmail.com",super.entities().get("user1"), super.entities().get("team1"), changeRol1, ResponseStatusException.class},
-				{"testuser4@gmail.com",super.entities().get("user4"), super.entities().get("team1"), changeRol1, ResponseStatusException.class},
-				{"testuser1@gmail.com",super.entities().get("user4"), super.entities().get("team1"), changeRol1, null}};
+		ChangeRolDto changeRol1 = new ChangeRolDto(super.entities().get("user1"),super.entities().get("team1"), false);
+		ChangeRolDto changeRol2 = new ChangeRolDto(super.entities().get("user4"),super.entities().get("team1"), false);
+		ChangeRolDto changeRol3 = new ChangeRolDto(super.entities().get("user2"),super.entities().get("team2"), false);
 
-		Stream.of(objects).forEach(x -> driverUserRolServiceChangeRolTest((String) x[0], (Integer) x[1], (Integer) x[2], (ChangeRolDto) x[3], (Class<?>) x[4]));
+		Object[][] objects = {
+				{"testuser2@gmail.com", changeRol3, ResponseStatusException.class},
+				{"testuser2@gmail.com", changeRol1, ResponseStatusException.class},
+				{"testuser4@gmail.com",changeRol1, ResponseStatusException.class},
+				{"testuser1@gmail.com", changeRol2, null}};
+
+		Stream.of(objects).forEach(x -> driverUserRolServiceChangeRolTest((String) x[0], (ChangeRolDto) x[1], (Class<?>) x[2]));
 	}
 
-	protected void driverUserRolServiceChangeRolTest(String user, Integer idUser, Integer idTeam, ChangeRolDto changeRolDto, Class<?> expected) {
+	protected void driverUserRolServiceChangeRolTest(String user, ChangeRolDto changeRolDto, Class<?> expected) {
 		Class<?> caught = null;
 		try {
 			super.authenticateOrUnauthenticate(user);
-			this.userRolService.changeRol(idUser, idTeam, changeRolDto);
+			this.userRolService.changeRol(changeRolDto);
 			this.userRolService.flush();
 			super.authenticateOrUnauthenticate(null);
 
@@ -119,4 +122,27 @@ public class UserRolServiceTest extends AbstractTest {
 		super.checkExceptions(expected, caught);
 	}
 
+	@Test
+	public void userRolServiceListMembersOfATeamTest() throws Exception {
+		ChangeRolDto changeRol1 = new ChangeRolDto();
+		changeRol1.setAdmin(false);
+		Object[][] objects = {
+				{"testuser1@gmail.com", super.entities().get("team1"), null}};
+
+		Stream.of(objects).forEach(x -> driverUserRolServiceListMembersOfATeamTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
+	}
+
+	protected void driverUserRolServiceListMembersOfATeamTest(String user, Integer idTeam, Class<?> expected) {
+		Class<?> caught = null;
+		try {
+			super.authenticateOrUnauthenticate(user);
+			this.userRolService.listMembersOfATeam(idTeam);
+			this.userRolService.flush();
+			super.authenticateOrUnauthenticate(null);
+
+		} catch (Exception oops) {
+			caught = oops.getClass();
+		}
+		super.checkExceptions(expected, caught);
+	}
 }

@@ -8,13 +8,19 @@ import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.DocumentDto;
 import com.spring.Model.Document;
+import com.spring.Model.DocumentType;
 import com.spring.Model.Sprint;
+import com.spring.Repository.DocumentRepository;
 import com.spring.Service.DocumentService;
 import com.spring.Service.SprintService;
 
 public class DocumentServiceTest extends AbstractTest {
 	@Autowired
 	private DocumentService documentService;
+	
+	@Autowired
+	private DocumentRepository documentRepository;
+	
 	@Autowired
 	private SprintService sprintService;
 
@@ -29,6 +35,14 @@ public class DocumentServiceTest extends AbstractTest {
 
 	}
 
+	@Test 
+	public void getDaily() { 
+		Object[][] objectsShow = { 
+		{ "testuser1@gmail.com", super.entities().get("sprint1"), null }}; 
+		Stream.of(objectsShow).forEach(x -> driverGetDaily((String) x[0], (Integer) x[1], (Class<?>) x[2])); 
+ 
+	}
+	 
 	@Test
 	public void saveTest() {
 		Object[][] objectsSave = {
@@ -96,7 +110,20 @@ public class DocumentServiceTest extends AbstractTest {
 		}
 		super.checkExceptions(expected, caught);
 	}
-
+	
+	protected void driverGetDaily(String user, Integer idSprint, Class<?> expected) { 
+		Class<?> caught = null; 
+ 
+		try { 
+			super.authenticateOrUnauthenticate(user); 
+			this.documentService.getDaily(idSprint); 
+			super.authenticateOrUnauthenticate(null); 
+		} catch (Exception oops) { 
+			caught = oops.getClass(); 
+		} 
+		super.checkExceptions(expected, caught); 
+	}
+	 
 	protected void driverSave(String user, Integer entity, Class<?> expected, String type) {
 		Class<?> caught = null;
 
@@ -156,6 +183,33 @@ public class DocumentServiceTest extends AbstractTest {
 		}
 		super.checkExceptions(expected, caught);
 	}
+	
+	@Test
+	public void generatePDFTest() {
+		Document doc1 = this.documentRepository.save(new Document(DocumentType.PLANNING_MEETING, "Daily 17/04/2020",
+				"{\"entrega\": \"test1\", \"conseguir\": \"test1\"}",
+				sprintService.getOne(super.entities().get("sprint1")), false));
+		
+		Object[][] objectsShowDto = {
+				{ "testuser1@gmail.com", super.entities().get("doc3"), null },
+				{ "testuser1@gmail.com", super.entities().get("doc4"), null },
+				{ "testuser1@gmail.com", doc1.getId(), null },
+				{ "testuser1@gmail.com", super.entities().get("doc1"), null }};
+		Stream.of(objectsShowDto).forEach(x -> driverGeneratePDF((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 
+	}
+
+	protected void driverGeneratePDF(String user, Integer entity, Class<?> expected) {
+		Class<?> caught = null;
+
+		try {
+			super.authenticateOrUnauthenticate(user);
+			this.documentService.generatePdf(entity);
+			super.authenticateOrUnauthenticate(null);
+		} catch (Exception oops) {
+			caught = oops.getClass();
+		}
+		super.checkExceptions(expected, caught);
+	}
 
 }
