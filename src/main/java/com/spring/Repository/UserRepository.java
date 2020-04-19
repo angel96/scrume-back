@@ -20,5 +20,5 @@ public interface UserRepository extends AbstractRepository<User> {
 	@Query("select u from User u join u.userAccount ua where ua.username = ?1")
 	Optional<User> findUserByUserName(String username);
 	
-	boolean existByNick(String nick);
+	boolean existsByNick(String nick);
 }

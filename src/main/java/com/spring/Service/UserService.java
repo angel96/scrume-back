@@ -259,7 +259,7 @@ public class UserService extends AbstractService {
 	}
 
 	private void validateNick(String nick) {
-		if (this.userRepository.existByNick(nick)) {
+		if (this.userRepository.existsByNick(nick)) {
 			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The nick is not unique");
 		}
 	}
