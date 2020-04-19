@@ -1,19 +1,14 @@
 package com.spring.Scrume;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.spring.CustomObject.SprintDto;
 import com.spring.CustomObject.WorkspaceEditDto;
 import com.spring.Model.Workspace;
 import com.spring.Repository.WorkspaceRepository;
-import com.spring.Service.ProjectService;
 import com.spring.Service.SprintService;
 import com.spring.Service.WorkspaceService;
 
@@ -23,9 +18,6 @@ public class WorkspaceServiceTest extends AbstractTest {
 
 	@Autowired
 	private SprintService serviceSprint;
-
-	@Autowired
-	private ProjectService serviceProject;
 	
 	@Autowired
 	private WorkspaceRepository workspaceRepository;
@@ -110,7 +102,10 @@ public class WorkspaceServiceTest extends AbstractTest {
 
 	@Test
 	public void testFindWorkspacesBySprint() {
-		Object[][] objects = { { "testuser1@gmail.com", super.entities().get("sprint1"), null },
+		Object[][] objects = { 
+				{ "testuser1@gmail.com", super.entities().get("sprint1"), null },
+				{ "testuser10@gmail.com", super.entities().get("sprint6"), null },
+				{ "testuser12@gmail.com", super.entities().get("sprint7"), null },
 				{ "testuser3@gmail.com", super.entities().get("sprint1"), ResponseStatusException.class } };
 
 		Stream.of(objects).forEach(x -> driverFindWorkspacesBySprint((String) x[0], (Integer) x[1], (Class<?>) x[2]));
@@ -131,23 +126,51 @@ public class WorkspaceServiceTest extends AbstractTest {
 
 		super.checkExceptions(expected, caught);
 	}
+	
+	@Test
+	public void testFindWorkspaceLastModifiedByProject() {
+		Object[][] objects = { 
+				{ "testuser1@gmail.com", super.entities().get("project1"), null },
+				{ "testuser10@gmail.com", super.entities().get("project6"), null },
+				{ "testuser12@gmail.com", super.entities().get("project7"), null },
+				{ "testuser3@gmail.com", super.entities().get("project1"), ResponseStatusException.class } };
+
+		Stream.of(objects).forEach(x -> driverFindWorkspaceLastModifiedByProject((String) x[0], (Integer) x[1], (Class<?>) x[2]));
+	}
+
+	protected void driverFindWorkspaceLastModifiedByProject(String user, Integer idProject, Class<?> expected) {
+
+		Class<?> caught = null;
+
+		try {
+			super.authenticateOrUnauthenticate(user);
+			this.service.findWorkspaceLastModifiedByProject(idProject);
+			service.flush();
+			super.authenticateOrUnauthenticate(null);
+		} catch (Throwable oops) {
+			caught = oops.getClass();
+		}
+
+		super.checkExceptions(expected, caught);
+	}
 
 	@Test
 	public void testSave() {
+		this.workspaceRepository.save(new Workspace("Test", this.serviceSprint.getOne(super.entities().get("sprint7"))));
+		Workspace workspace = this.workspaceRepository.save(new Workspace("Test", this.serviceSprint.getOne(super.entities().get("sprint7"))));
 		WorkspaceEditDto dto1 = new WorkspaceEditDto(0, "test1", super.entities().get("sprint1"));
 		WorkspaceEditDto dto2 = new WorkspaceEditDto(0, "test1", super.entities().get("sprint6"));
 		WorkspaceEditDto dto3 = new WorkspaceEditDto(0, "test1", super.entities().get("sprint7"));
 		WorkspaceEditDto dto4 = new WorkspaceEditDto(super.entities().get("workspace6"), "test1", super.entities().get("sprint6"));
-		WorkspaceEditDto dto5 = new WorkspaceEditDto(super.entities().get("workspace7"), "test1", super.entities().get("sprint7"));
+		WorkspaceEditDto dto5 = new WorkspaceEditDto(workspace.getId(), "test1", super.entities().get("sprint7"));
 		WorkspaceEditDto dto6 = new WorkspaceEditDto(super.entities().get("workspace1"), "test1", super.entities().get("sprint1"));
-		this.workspaceRepository.save(new Workspace("Test", this.serviceSprint.getOne(super.entities().get("sprint7"))));
-		this.workspaceRepository.save(new Workspace("Test", this.serviceSprint.getOne(super.entities().get("sprint7"))));
 		Object[][] objects = { 
 				{ "testuser1@gmail.com", dto1, null },
+				{ "testuser4@gmail.com", dto6, ResponseStatusException.class },
 				{ "testuser10@gmail.com", dto2, ResponseStatusException.class },
 				{ "testuser12@gmail.com", dto3, ResponseStatusException.class },
-//				{ "testuser10@gmail.com", dto4, ResponseStatusException.class },
-//				{ "testuser12@gmail.com", dto5, ResponseStatusException.class },
+				{ "testuser10@gmail.com", dto4, ResponseStatusException.class },
+				{ "testuser12@gmail.com", dto5, ResponseStatusException.class },
 				{ "testuser2@gmail.com", dto6, ResponseStatusException.class },
 				{ "testuser1@gmail.com", dto6, null } };
 
