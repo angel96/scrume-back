@@ -87,7 +87,7 @@ public class UserServiceTest extends AbstractTest {
 
 	@Test
 	public void userTestUpdate() throws Exception {
-		Object[][] objects = { { super.entities().get("user2"), null, null, ResponseStatusException.class },
+		Object[][] objects = { { super.entities().get("user2"), null, null, null},
 				{ super.entities().get("user2"), "1234561", "aCaCa123", ResponseStatusException.class },
 				{ super.entities().get("user2"), "1234562", " 52", ResponseStatusException.class } };
 

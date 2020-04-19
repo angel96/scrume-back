@@ -123,7 +123,7 @@ public class UserService extends AbstractService {
 		UserAccount userAccountDB = this.userAccountService.findOne(userDB.getUserAccount().getId());
 		userDB.setGitUser(userDto.getGitUser());
 		userDB.setName(userDto.getName());
-		if(userDto.getNick() != null) {
+		if(userDto.getNick() != null && !userDB.getNick().equals(userDto.getNick())) {
 			this.validateNick(userDto.getNick());
 		}
 		userDB.setNick(userDto.getNick());
