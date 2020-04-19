@@ -39,7 +39,7 @@ public class JwtUserAccountService implements UserDetailsService {
 	private JwtToken jwtToken;
 
 	public UserAccount loadUserByUsername(String username) {
-		return repository.findByUsername(username)
+		return repository.findByEmail(username)
 				.orElseThrow(() -> new UsernameNotFoundException(username + " no encontrado"));
 	}
 
@@ -83,4 +83,17 @@ public class JwtUserAccountService implements UserDetailsService {
 		return response;
 	}
 
+	public JwtResponse generateToken(UserAccount account) {
+
+		User user = this.repository.findUserByUserName(account.getUsername())
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not authorized"));
+		Payment payment = this.paymentService.findByUserAccount(user.getUserAccount());
+
+		Map<String, Object> objects = new HashMap<>();
+
+		objects.put("userLoginDto", new UserLoginDto(user.getId(), account.getUsername(), payment.getBox().getName(),
+				payment.getExpiredDate()));
+
+		return new JwtResponse(jwtToken.generateToken(objects, account));
+	}
 }

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.spring.CustomObject.DocumentDto;
@@ -64,7 +63,7 @@ public class DocumentApiController extends AbstractApiController {
 		this.documentService.delete(idDocument);
 	}
 
-	@RequestMapping(value = "doc-pdf/{idDocument}", method = RequestMethod.GET, produces = MediaType.APPLICATION_PDF_VALUE)
+	@GetMapping(value = "doc-pdf/{idDocument}", produces = MediaType.APPLICATION_PDF_VALUE)
 	public ResponseEntity<InputStreamResource> getPdfDocument(@PathVariable int idDocument) {
 		super.logger.info("GET /api/document/doc-pdf/" + idDocument);
 		HttpHeaders headers = new HttpHeaders();

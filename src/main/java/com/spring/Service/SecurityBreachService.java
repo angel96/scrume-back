@@ -50,4 +50,7 @@ public class SecurityBreachService extends AbstractService {
 		}
 	}
 
+	public void flush() {
+		securityBreachRepository.flush();
+	}
 }
