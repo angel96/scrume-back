@@ -123,6 +123,9 @@ public class UserService extends AbstractService {
 		UserAccount userAccountDB = this.userAccountService.findOne(userDB.getUserAccount().getId());
 		userDB.setGitUser(userDto.getGitUser());
 		userDB.setName(userDto.getName());
+		if(userDto.getNick() != null) {
+			this.validateNick(userDto.getNick());
+		}
 		userDB.setNick(userDto.getNick());
 		userDB.setPhoto(userDto.getPhoto());
 		userDB.setSurnames(userDto.getSurnames());
@@ -255,6 +258,10 @@ public class UserService extends AbstractService {
 
 	}
 
-
+	private void validateNick(String nick) {
+		if (this.userRepository.existByNick(nick)) {
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "The nick is not unique");
+		}
+	}
 
 }
