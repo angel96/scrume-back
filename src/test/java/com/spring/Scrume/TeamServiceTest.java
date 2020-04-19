@@ -21,7 +21,7 @@ public class TeamServiceTest extends AbstractTest {
 		TeamDto teamDto1 = new TeamDto();
 		teamDto1.setName("Save 1");
 		Object[][] objects = {
-				{"testuser@gmail.com", teamDto1, null}};
+				{"testuser1@gmail.com", teamDto1, null}};
 
 		Stream.of(objects).forEach(x -> driverTeamServiceSaveTest((String) x[0], (TeamDto) x[1], (Class<?>) x[2]));
 	}
@@ -50,7 +50,10 @@ public class TeamServiceTest extends AbstractTest {
 		teamDto1.setName("Update 2");
 		
 		Object[][] objects = {
-				{"testuser@gmail.com", teamDto1, null}, {"angdellun2@gmail.com", teamDto1, ResponseStatusException.class}, {"testuser2@gmail.com", teamDto1, ResponseStatusException.class},{"testuser@gmail.com", teamDto2, ResponseStatusException.class}};
+				{"testuser1@gmail.com", teamDto1, null},
+				{"testuser2@gmail.com", teamDto1, ResponseStatusException.class},
+				//{"testuser4@gmail.com", teamDto1, ResponseStatusException.class},
+				{"testuser1@gmail.com", teamDto2, ResponseStatusException.class}};
 
 		Stream.of(objects).forEach(x -> driverTeamServiceUpdateTest((String) x[0], (TeamDto) x[1], (Class<?>) x[2]));
 	}
@@ -75,7 +78,7 @@ public class TeamServiceTest extends AbstractTest {
 	public void teamServiceDeleteTest() throws Exception {
 		
 		Object[][] objects = {
-				{"testuser2@gmail.com", super.entities().get("team3"), null}, {"testuser2@gmail.com", 123456, ResponseStatusException.class}, {"testuser2@gmail.com",  super.entities().get("team1"), ResponseStatusException.class},{"testuser@gmail.com",  super.entities().get("team1"), ResponseStatusException.class}};
+				{"testuser2@gmail.com", super.entities().get("team2"), null}, {"testuser2@gmail.com", 123456, ResponseStatusException.class}, {"testuser4@gmail.com",  super.entities().get("team1"), ResponseStatusException.class},{"testuser1@gmail.com",  super.entities().get("team1"), ResponseStatusException.class}};
 
 		Stream.of(objects).forEach(x -> driverTeamServiceDeleteTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 	}

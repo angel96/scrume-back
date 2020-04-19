@@ -1,5 +1,7 @@
 package com.spring.API;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -10,9 +12,12 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.spring.CustomObject.EstimationDto;
 import com.spring.CustomObject.ListAllTaskByProjectDto;
 import com.spring.CustomObject.TaskDto;
 import com.spring.CustomObject.TaskEditDto;
+import com.spring.CustomObject.UserProjectWorkspaceFromTaskDto;
+import com.spring.Service.EstimationService;
 import com.spring.Service.TaskService;
 
 @RestController
@@ -20,6 +25,15 @@ import com.spring.Service.TaskService;
 public class TaskApiController extends AbstractApiController {
 	@Autowired
 	private TaskService taskService;
+	
+	@Autowired
+	private EstimationService estimationService;
+	
+	@GetMapping("user")
+	public List<UserProjectWorkspaceFromTaskDto> findTaskByUser(){
+		super.logger.info("GET /api/task/user");
+		return this.taskService.findTaskByUser();
+	}
 	
 	@GetMapping("/{idTask}")
 	public TaskDto show(@PathVariable int idTask) {
@@ -50,4 +64,11 @@ public class TaskApiController extends AbstractApiController {
 		return this.taskService.getAllTasksByProject(idProject);
 	}
 
+	@PostMapping("/estimate/{idTask}")
+	public EstimationDto estimateTask(@PathVariable int idTask, @RequestBody EstimationDto estimationDto) {
+		estimationDto.setTask(idTask);
+		super.logger.info("POST /api/task/estimate/" + idTask);
+		return this.estimationService.save(estimationDto);
+	}
+	
 }

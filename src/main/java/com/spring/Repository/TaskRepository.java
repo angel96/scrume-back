@@ -15,6 +15,7 @@ import com.spring.Model.Workspace;
 
 @Repository
 public interface TaskRepository extends AbstractRepository<Task> {
+	
 
 	@Query("select u from User u where u.userAccount.id = ?1")
 	User findUserByUserAccount(int id);
@@ -38,8 +39,12 @@ public interface TaskRepository extends AbstractRepository<Task> {
 	@Query("select t from Task t join t.column c join c.workspace w join w.sprint s where s = ?1 and c.name = 'Done'")
 	List<Task> findCompleteTaskBySprint(Sprint sprint);
 	
+	@Query("select t from Task t where t.project = ?1")
 	List<Task> findByProject(Project project);
 
 	@Query("select t from Task t join t.column c join c.workspace w where w = ?1")
 	Collection<Task> findByWorkspace(Workspace workspace);
+	
+	@Query("select t from Task t where ?1 member of t.users")
+	List<Task> findAllByUser(User user);
 }

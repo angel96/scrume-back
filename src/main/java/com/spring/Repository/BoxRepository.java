@@ -6,12 +6,11 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import com.spring.Model.Box;
-import com.spring.Model.Team;
 
 @Repository
 public interface BoxRepository extends AbstractRepository<Box> {
 
-	@Query("select b from UserRol ur join ur.user u join u.box b where ur.team = ?1 order by b.price asc")
-	List<Box> getMinimumBoxOfATeam(Team team);
+	@Query("select p.box from Payment p, UserRol ur where ur.team.id = ?1 and p.userAccount = ur.user.userAccount and p.expiredDate >= CURRENT_DATE")
+	List<Box> getBoxMoreRecently(int team);
 
 }

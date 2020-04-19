@@ -1,10 +1,12 @@
 package com.spring.CustomObject;
 
-import com.spring.Model.Column;
-
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class TaskListDto {
 
 	private Integer id;
@@ -13,8 +15,10 @@ public class TaskListDto {
 
 	private String description;
 
-	private Integer points;
+	private Integer finalPoints;
+	
+	private Integer estimatedPoints;
 
-	private Column column;
+	private ColumnDto column;
 
 }
