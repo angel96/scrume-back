@@ -21,6 +21,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.ColumnDto;
+import com.spring.CustomObject.LastWorkspaceDto;
+import com.spring.CustomObject.SprintIdDto;
 import com.spring.CustomObject.SprintWithWorkspacesDto;
 import com.spring.CustomObject.TaskForWorkspaceDto;
 import com.spring.CustomObject.UserForWorkspaceDto;
@@ -124,23 +126,25 @@ public class WorkspaceService extends AbstractService {
 		if(boxOfTeam == null) {
 			workspaces = new ArrayList<>();
 		}else {
-			for (Workspace workspace : workspaces) {
-				this.removeNotValidWorkspace(boxOfTeam, workspaces, workspace);
-			}
+			this.removeNotValidWorkspace(boxOfTeam, workspaces);
 		}
 		return workspaces;
 	}
 
-	private void removeNotValidWorkspace(String boxOfTeam, Collection<Workspace> workspaces, Workspace workspace) {
-		if(boxOfTeam.equals("BASIC")) {
-			LocalDateTime validDate = workspace.getSprint().getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-			validDate = validDate.plusDays(30);
-			if(!(this.getFirstWorkspacesOfASprint(workspace.getSprint(), 1).contains(workspace) && validDate.isAfter(LocalDateTime.now(ZoneId.systemDefault())))){
-				workspaces.remove(workspace);
-			}
-		}else if(boxOfTeam.equals("STANDARD") && !(this.getFirstWorkspacesOfASprint(workspace.getSprint(), 2).contains(workspace))){
-				workspaces.remove(workspace);
-			}
+	private void removeNotValidWorkspace(String boxOfTeam, Collection<Workspace> workspaces) {
+		Collection<Workspace> workspacesToRemove = new ArrayList<>();
+		for (Workspace workspace : workspaces) {
+			if(boxOfTeam.equals("BASIC")) {
+				LocalDateTime validDate = workspace.getSprint().getStartDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+				validDate = validDate.plusDays(30);
+				if(!(this.getFirstWorkspacesOfASprint(workspace.getSprint(), 1).contains(workspace) && validDate.isAfter(LocalDateTime.now(ZoneId.systemDefault())))){
+					workspacesToRemove.add(workspace);
+				}
+			}else if(boxOfTeam.equals("STANDARD") && !(this.getFirstWorkspacesOfASprint(workspace.getSprint(), 2).contains(workspace))){
+				workspacesToRemove.add(workspace);
+				}
+		}
+		workspaces.removeAll(workspacesToRemove);
 	}
 	
 	public Workspace findOne(int id) {
@@ -285,7 +289,7 @@ public class WorkspaceService extends AbstractService {
 				.map(x -> new WorkspaceSprintListDto(x.getId(), x.getName())).collect(Collectors.toList());
 	}
 
-	public WorkspaceSprintListDto findWorkspaceLastModifiedByProject(int project) {
+	public LastWorkspaceDto findWorkspaceLastModifiedByProject(int project) {
 
 		Project proj = this.projectService.findOne(project);
 
@@ -293,14 +297,14 @@ public class WorkspaceService extends AbstractService {
 
 		Collection<HistoryTask> historyTasksByProject = this.repository.findAllHistoryTasksByProject(project);
 
-		WorkspaceSprintListDto result = null;
+		LastWorkspaceDto result = null;
 
 		if (historyTasksByProject.isEmpty()) {
-			result = new WorkspaceSprintListDto(0, "");
+			result = new LastWorkspaceDto(0, "", new SprintIdDto(0));
 		} else {
 			List<HistoryTask> historyTasks = new ArrayList<>(historyTasksByProject);
 			Workspace ht = historyTasks.get(0).getDestiny().getWorkspace();
-			result = new WorkspaceSprintListDto(ht.getId(), ht.getName());
+			result = new LastWorkspaceDto(ht.getId(), ht.getName(), new SprintIdDto(ht.getSprint().getId()));
 		}
 
 		return result;
@@ -316,6 +320,8 @@ public class WorkspaceService extends AbstractService {
 				res.add(workspaces.get(i));
 				i++;
 			}
+		}else {
+			res = workspaces;
 		}
 		return res;
 	}

@@ -27,20 +27,31 @@ jobs:
 
       script:
         - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=angel96_scrume-back
-  
-      before_deploy:
-        - cp application.properties_deployment src/main/resources/application.properties
-        - git add .
-        - git commit -m "Modificado el fichero properties"
+
       deploy:
           provider: heroku
           app: api-scrume-sp3
           strategy: git
+          script:
+            - cp application.properties_deployment src/main/resources/application.properties
+            - git add .
+            - git commit -m "Modificado el fichero properties"
           api_key:
             secure: fE9zY3U7DMC4YIjOFIyl8Mp45XIYhvikhugsAHC1Dm/cJKoh5PEbUGAf0/Vzcey9U2Ej06U15QxeI9qVyIaz3Ej0gbWmDAnA2JcLcACeyTmovONNAh+OIVXzfpVYiAhM9YwXnbs8INL4ew+Ah2naa36M1CZQTmw5/XI+0x+2lk3i91+0RwVFVAsf1dsKYgDhGjXdrz2q2qMHeoyXUH7ySzBEqE6WpOE491tHkGv/dPsmRgCs9+HLPBt06ISr1kEWtYVDpE6Uv2FI/vFRlpYGrrrnXyT5XIMU2ElA1MhRdHpvJKMUzyHBifja1u9NxgfgbM0/anTvJKzG0eifwUxBFfwUj9Iv3MBlW14w4lGotN6myDT6yx4COOUcmKLFMnkdSicVQHIO5P4L+P2aQXOmJkwRj/yIbS7BSQ1S2/5DBh58IwyaiGqvro3OlJaTUEFDMM9CPa3qsGPuVAgicFbLczu4LRnh/YuE9GaaR0ZrI46EZl1lLT1hzG0BHVQy9oRtY/bGU75Pr+QNZk+nFFCWk9d7id9ubdhRKkXEInPlh9TeWyrjDSp6gLsnLZ19fUf8BaM9aWXbDErlXPdCf2OY10YRvKyzw1ZQLgqxZSSXsjlpcJrE/Y4Xr20exXjwe5fKb+1WQec8UTWpokWLrR8j+p3Z42Lt/NugdvBCctr6BLs=
           on: 
             branch: develop
-
+      deploy:
+          provider: heroku
+          app: api-scrume-own-use
+          strategy: git
+          script:
+            - cp application.properties_own_deployment src/main/resources/application.properties
+            - git add .
+            - git commit -m "Modificado el fichero properties"
+          api_key:
+            secure: fE9zY3U7DMC4YIjOFIyl8Mp45XIYhvikhugsAHC1Dm/cJKoh5PEbUGAf0/Vzcey9U2Ej06U15QxeI9qVyIaz3Ej0gbWmDAnA2JcLcACeyTmovONNAh+OIVXzfpVYiAhM9YwXnbs8INL4ew+Ah2naa36M1CZQTmw5/XI+0x+2lk3i91+0RwVFVAsf1dsKYgDhGjXdrz2q2qMHeoyXUH7ySzBEqE6WpOE491tHkGv/dPsmRgCs9+HLPBt06ISr1kEWtYVDpE6Uv2FI/vFRlpYGrrrnXyT5XIMU2ElA1MhRdHpvJKMUzyHBifja1u9NxgfgbM0/anTvJKzG0eifwUxBFfwUj9Iv3MBlW14w4lGotN6myDT6yx4COOUcmKLFMnkdSicVQHIO5P4L+P2aQXOmJkwRj/yIbS7BSQ1S2/5DBh58IwyaiGqvro3OlJaTUEFDMM9CPa3qsGPuVAgicFbLczu4LRnh/YuE9GaaR0ZrI46EZl1lLT1hzG0BHVQy9oRtY/bGU75Pr+QNZk+nFFCWk9d7id9ubdhRKkXEInPlh9TeWyrjDSp6gLsnLZ19fUf8BaM9aWXbDErlXPdCf2OY10YRvKyzw1ZQLgqxZSSXsjlpcJrE/Y4Xr20exXjwe5fKb+1WQec8UTWpokWLrR8j+p3Z42Lt/NugdvBCctr6BLs=
+          on: 
+            branch: own-deployment
 notifications:
   email:
     - angeldelgadoluna@gmail.com
