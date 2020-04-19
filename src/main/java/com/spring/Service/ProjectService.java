@@ -155,11 +155,6 @@ public class ProjectService extends AbstractService {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The user must belong to the team to edit the project");
 		}
-		Collection<Integer> membersTeam = this.userRolService.findIdUsersByTeam(team);
-		if (!membersTeam.contains(principal.getId())) {
-			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
-					"The user must belong to the team to edit the project");
-		}
 		if (!this.userRolService.isAdminOnTeam(principal, team)) {
 			throw new ResponseStatusException(HttpStatus.UNAUTHORIZED,
 					"The user must be an admin of the team to edit the project");
@@ -175,6 +170,8 @@ public class ProjectService extends AbstractService {
 				res.add(projects.get(i));
 				i++;
 			}
+		}else {
+			res = projects;
 		}
 		return res;
 	}
