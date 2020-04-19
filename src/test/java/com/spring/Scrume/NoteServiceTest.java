@@ -38,6 +38,30 @@ public class NoteServiceTest extends AbstractTest {
 	}
 	
 	@Test
+	public void NoteServiceGetTest() throws Exception {
+		
+		Object[][] objects = {
+			{"testuser3@gmail.com", super.entities().get("note1"), ResponseStatusException.class},
+			{"testuser1@gmail.com", super.entities().get("note1"), null}};
+
+			Stream.of(objects).forEach(x -> driverNoteServiceGetTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
+		}
+
+	protected void driverNoteServiceGetTest(String user, Integer idNote, Class<?> expected) {
+		Class<?> caught = null;
+		try {
+			super.authenticateOrUnauthenticate(user);
+			this.noteService.getOne(idNote);
+			this.noteService.flush();
+			super.authenticateOrUnauthenticate(null);
+
+		} catch (Exception oops) {
+			caught = oops.getClass();
+		}
+		super.checkExceptions(expected, caught);
+	}
+	
+	@Test
 	public void NoteServiceSaveTest() throws Exception {
 		NoteDto NoteDto = new NoteDto("nuevo");
 		Object[][] objects = {
