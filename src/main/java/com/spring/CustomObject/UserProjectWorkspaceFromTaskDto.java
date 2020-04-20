@@ -17,5 +17,7 @@ public class UserProjectWorkspaceFromTaskDto {
 	
 	private WorkspaceSprintListDto workspace;
 	
+	private Integer sprint;
+	
 
 }
