@@ -176,6 +176,47 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("account3", account3.getId());
 		entities.put("account4", account4.getId());
 		
+		
+		UserAccount account100 = accountRepository
+				.save(new UserAccount("testuser100@gmail.com", Utiles.encryptedPassword("123456100"), LocalDateTime.now(),
+						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_USER))));
+
+		UserAccount account200 = accountRepository
+				.save(new UserAccount("testuser200@gmail.com", Utiles.encryptedPassword("123456200"), LocalDateTime.now(),
+						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_USER))));
+
+		UserAccount account300 = accountRepository
+				.save(new UserAccount("testuser300@gmail.com", Utiles.encryptedPassword("123456300"), LocalDateTime.now(),
+						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_USER))));
+
+		UserAccount account400 = accountRepository
+				.save(new UserAccount("testuser400@gmail.com", Utiles.encryptedPassword("123456400"), LocalDateTime.now(),
+						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_USER))));
+		UserAccount account500 = accountRepository
+				.save(new UserAccount("testuser500@gmail.com", Utiles.encryptedPassword("123456500"), LocalDateTime.now(),
+						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_USER))));
+
+		UserAccount account600 = accountRepository
+				.save(new UserAccount("testuser600@gmail.com", Utiles.encryptedPassword("123456600"), LocalDateTime.now(),
+						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_USER))));
+
+		UserAccount account700 = accountRepository
+				.save(new UserAccount("testuser700@gmail.com", Utiles.encryptedPassword("123456700"), LocalDateTime.now(),
+						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_USER))));
+
+		UserAccount account800 = accountRepository
+				.save(new UserAccount("testuser800@gmail.com", Utiles.encryptedPassword("123456800"), LocalDateTime.now(),
+						LocalDateTime.now(), new HashSet<Role>(Arrays.asList(Role.ROLE_USER))));
+		
+		entities.put("account100", account100.getId());
+		entities.put("account200", account200.getId());
+		entities.put("account300", account300.getId());
+		entities.put("account400", account400.getId());
+		entities.put("account500", account500.getId());
+		entities.put("account600", account600.getId());
+		entities.put("account700", account700.getId());
+		entities.put("account800", account800.getId());
+		
 		//USERACCOUNTS CON PAQUETE CADUCADO
 		
 		UserAccount account5 = accountRepository
@@ -234,18 +275,43 @@ public class PopulatorDatabase implements CommandLineRunner {
 		User user0 = new User("ADMINISTRATOR", "administrator", "ADMIN1", "ADMIN2", null);
 		user0.setUserAccount(account0);
 		user0 = userRepository.save(user0);
-		User user1 = new User("Juan María", "Lorenzo Pérez", "jualorper", "jualorper", null);
+		User user1 = new User("Jose", "Lorenzo Pérez", "joslorper", "joslorper", null);
 		user1.setUserAccount(account1);
 		user1 = userRepository.save(user1);
-		User user2 = new User("Ángel", "Delgado Luna", "angdellun", "angel96", null);
+		User user2 = new User("Ángela", "Pérez Luna", "perdellun", "perdellun", null);
 		user2.setUserAccount(account2);
 		user2 = userRepository.save(user2);
 		User user3 = new User("Ezequiel", "Portillo Jurado", "ezeporjur", "EzequielPJ", null);
 		user3.setUserAccount(account3);
 		user3 = userRepository.save(user3);
-		User user4 = new User("Manuel Cecilio", "Pérez Gutiérrez", "manpergut", "manelcecs", null);
+		User user4 = new User("Jaime", "Garrido López", "jaigarlop", "jaigarlop", null);
 		user4.setUserAccount(account4);
 		user4 = userRepository.save(user4);
+		
+		User user100 = new User("Juan María", "Lorenzo Pérez", "jualorper", "jualorper", null);
+		user100.setUserAccount(account100);
+		user100 = userRepository.save(user100);
+		User user200 = new User("Ángel", "Delgado Luna", "angdellun", "angel96", null);
+		user200.setUserAccount(account200);
+		user200 = userRepository.save(user200);
+		User user300 = new User("Ezequiel", "Portillo Jurado", "ezeporjur", "EzequielPJ", null);
+		user300.setUserAccount(account300);
+		user300 = userRepository.save(user300);
+		User user400 = new User("Belén", "Garrido López", "belgarlop", "belgarlop", null);
+		user400.setUserAccount(account400);
+		user400 = userRepository.save(user400);
+		User user500 = new User("David", "Campaña Álvarez", "davcamalv", "davcamalv", null);
+		user500.setUserAccount(account500);
+		user500 = userRepository.save(user500);
+		User user600 = new User("Manuel Cecilio", "Pérez Gutiérrez", "manpergut", "manelcecs", null);
+		user600.setUserAccount(account600);
+		user600 = userRepository.save(user600);
+		User user700 = new User("Alejandro", "Rodríguez Díaz", "aleroddiz", "aleroddiz", null);
+		user700.setUserAccount(account700);
+		user700 = userRepository.save(user700);
+		User user800 = new User("Antonio", "Cárdenas Luque", "antcarlluq", "antcarlluq", null);
+		user800.setUserAccount(account800);
+		user800 = userRepository.save(user800);
 
 		entities.put("user0", user0.getId());
 		entities.put("user1", user1.getId());
@@ -253,6 +319,14 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("user3", user3.getId());
 		entities.put("user4", user4.getId());
 
+		entities.put("user100", user100.getId());
+		entities.put("user200", user200.getId());
+		entities.put("user300", user300.getId());
+		entities.put("user400", user400.getId());
+		entities.put("user500", user500.getId());
+		entities.put("user600", user600.getId());
+		entities.put("user700", user700.getId());
+		entities.put("user800", user800.getId());
 		
 		//USERS CON PAQUETE CADUCADO 
 		
@@ -311,6 +385,9 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("user12", user12.getId());
 		entities.put("user13", user13.getId());
 		
+		Team scrume = teamRepository.save(new Team("Scrume"));
+		entities.put("teamScrume", scrume.getId());
+		
 		Team team1 = teamRepository.save(new Team("Olimpia"));
 		Team team2 = teamRepository.save(new Team("Innovae"));
 		Team team3 = teamRepository.save(new Team("DEL5"));
@@ -330,6 +407,24 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("team5", team5.getId());
 		entities.put("team6", team6.getId());
 		entities.put("team7", team7.getId());
+		
+		UserRol rol100 = this.userRolRepository.save(new UserRol(false, user100, scrume));
+		UserRol rol200 = this.userRolRepository.save(new UserRol(false, user200, scrume));
+		UserRol rol300 = this.userRolRepository.save(new UserRol(false, user300, scrume));
+		UserRol rol400 = this.userRolRepository.save(new UserRol(false, user400, scrume));
+		UserRol rol500 = this.userRolRepository.save(new UserRol(true, user500, scrume));
+		UserRol rol600 = this.userRolRepository.save(new UserRol(true, user600, scrume));
+		UserRol rol700 = this.userRolRepository.save(new UserRol(false, user700, scrume));
+		UserRol rol800 = this.userRolRepository.save(new UserRol(false, user800, scrume));
+		
+		entities.put("rol100", rol100.getId());
+		entities.put("rol200", rol200.getId());
+		entities.put("rol300", rol300.getId());
+		entities.put("rol400", rol400.getId());
+		entities.put("rol500", rol500.getId());
+		entities.put("rol600", rol600.getId());
+		entities.put("rol700", rol700.getId());
+		entities.put("rol800", rol800.getId());
 
 		UserRol rol1 = this.userRolRepository.save(new UserRol(true, user1, team1));
 		UserRol rol2 = this.userRolRepository.save(new UserRol(true, user2, team2));
@@ -408,7 +503,17 @@ public class PopulatorDatabase implements CommandLineRunner {
 		Project project7 = projectRepository.save(new Project("Acme-Standard",
 				"Proyecto de nuestro equipo standard",
 				team6));
-
+		
+		Project frontend = projectRepository.save(new Project("Front-end",
+				"Proyecto en Angular para desarrollo del front-end",
+				scrume));
+		Project backend = projectRepository.save(new Project("Back-end",
+				"Proyecto en spring boot para desarrollo del back-end",
+				scrume));
+		
+		entities.put("frontend", frontend.getId());
+		entities.put("backend", backend.getId());
+		
 		entities.put("project1", project1.getId());
 		entities.put("project2", project2.getId());
 		entities.put("project3", project3.getId());
@@ -441,6 +546,16 @@ public class PopulatorDatabase implements CommandLineRunner {
 		LocalDateTime localDateTime15 = LocalDateTime.of(2020, 8, 26, 10, 15);
 		Date localDate15 = Date.from(localDateTime15.atZone(ZoneId.systemDefault()).toInstant());
 		
+		LocalDateTime localDateTime100 = LocalDateTime.of(2020, 4, 1, 00, 00);
+		Date localDate100 = Date.from(localDateTime100.atZone(ZoneId.systemDefault()).toInstant());
+		LocalDateTime localDateTime200 = LocalDateTime.of(2020, 4, 21, 00, 00);
+		Date localDate200 = Date.from(localDateTime200.atZone(ZoneId.systemDefault()).toInstant());
+		
+		Sprint sprint3Front = this.sprintRepository.save(new Sprint(localDate100, localDate200, frontend));
+		Sprint sprint3Back = this.sprintRepository.save(new Sprint(localDate100, localDate200, backend));
+		
+		entities.put("sprint3Front", sprint3Front.getId());
+		entities.put("sprint3Back", sprint3Back.getId());
 		
 		Sprint sprint1 = this.sprintRepository.save(new Sprint(localDate5, localDate6, project1));
 		Sprint sprint2 = this.sprintRepository.save(new Sprint(localDate7, localDate8, project2));
@@ -458,7 +573,12 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("sprint6", sprint6.getId());
 		entities.put("sprint7", sprint7.getId());
 
+		Workspace workspaceFront = this.workspaceRepository.save(new Workspace("Default", sprint3Front));
+		Workspace workspaceBack = this.workspaceRepository.save(new Workspace("Default", sprint3Back));
 
+		entities.put("workspaceFront", workspaceFront.getId());
+		entities.put("workspaceBack", workspaceBack.getId());
+		
 		Workspace workspace1 = this.workspaceRepository.save(new Workspace("Fase de planificación", sprint1));
 		Workspace workspace2 = this.workspaceRepository.save(new Workspace("Tareas de formación", sprint2));
 		Workspace workspace3 = this.workspaceRepository
@@ -484,6 +604,23 @@ public class PopulatorDatabase implements CommandLineRunner {
 		String inProgressName = "In progress";
 		String doneName = "Done";
 
+		Column toDo100 = this.columnRepository.save(new Column(toDoName, workspaceFront));
+		Column inProgress100 = this.columnRepository.save(new Column(inProgressName, workspaceFront));
+		Column done100 = this.columnRepository.save(new Column(doneName, workspaceFront));
+
+		Column toDo200 = this.columnRepository.save(new Column(toDoName, workspaceBack));
+		Column inProgress200 = this.columnRepository.save(new Column(inProgressName, workspaceBack));
+		Column done200 = this.columnRepository.save(new Column(doneName, workspaceBack));
+		
+		entities.put("toDo100", toDo100.getId());
+		entities.put("inProgress100", inProgress100.getId());
+		entities.put("done100", done100.getId());
+
+		entities.put("toDo200", toDo200.getId());
+		entities.put("inProgress200", inProgress200.getId());
+		entities.put("done200", done200.getId());
+		
+		
 		Column toDo1 = this.columnRepository.save(new Column(toDoName, workspace1));
 		Column inProgress1 = this.columnRepository.save(new Column(inProgressName, workspace1));
 		Column done1 = this.columnRepository.save(new Column(doneName, workspace1));
@@ -583,6 +720,229 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("task5", task5.getId());
 		entities.put("task6", task6.getId());
 
+		Set<User> todoFront = new HashSet<>();
+		todoFront.add(user100);
+		todoFront.add(user300);
+		todoFront.add(user400);
+		todoFront.add(user600);
+		todoFront.add(user800);
+
+		Set<User> manu = new HashSet<>();
+		manu.add(user600);
+		Set<User> belen = new HashSet<>();
+		belen.add(user400);
+		Set<User> ezequiel = new HashSet<>();
+		ezequiel.add(user300);
+		Set<User> antonio = new HashSet<>();
+		antonio.add(user800);
+		Set<User> juanma = new HashSet<>();
+		juanma.add(user100);
+
+		Set<User> antonioJuanma = new HashSet<>();
+		antonioJuanma.add(user100);
+		antonioJuanma.add(user800);
+		Set<User> belenZeki = new HashSet<>();
+		belenZeki.add(user300);
+		belenZeki.add(user400);
+		Set<User> antonioManu = new HashSet<>();
+		antonioManu.add(user600);
+		antonioManu.add(user800);
+		Set<User> zekiManu = new HashSet<>();
+		antonioManu.add(user300);
+		antonioManu.add(user800);
+
+		//Tareas
+		Task task0101 = this.taskRepository.save(new Task("Landing Page",
+		                "Modifiacar la vista para adecuar los feedbacks recibidos.", 4,
+		                frontend, belen, done100));
+		Task task0102 = this.taskRepository.save(new Task("DEUDA TÉCNICA - Adaptar los Resolvers",
+		                "Adaptar la carga de entidades en la navegación usando resolvers.", 5,
+		                frontend, manu, done100));
+		Task task0103 = this.taskRepository.save(new Task("JWT Token",
+		                "Adaptar la autenticación para usar un JWToken.", 3,
+		                frontend, manu, done100));
+		Task task0104 = this.taskRepository.save(new Task("Descarga PDF",
+		                "Preparar la petición de descarga del PDF que proporciona back.", 10,
+		                frontend, antonioManu, done100));
+		Task task0105 = this.taskRepository.save(new Task("Gráficos del Sprint",
+		                "Generar los graficos BurnDown y BurnUp de un sprint.", 9,
+		                frontend, belen, done100));
+		Task task0106 = this.taskRepository.save(new Task("Roles y Paquetes",
+		                "Gestionar la logica de negocio y las restrucciones de los roles y paquetes de un usaurio.", 16,
+		                frontend, juanma, done100));
+		Task task0107 = this.taskRepository.save(new Task("GDPR",
+		                "Adaptar la aplicación para cumplir con la normativa GDPR.", 9,
+		                frontend, ezequiel, done100));
+		Task task0108 = this.taskRepository.save(new Task("Vista de Administración",
+		                "Generar una vista para que el administrador del sistema pueda lanzar alertas de seguridad.", 5,
+		                frontend, belenZeki, done100));
+		Task task0109 = this.taskRepository.save(new Task("Alertas Sprint",
+		                "poder añadir alertas de Scrum a un sprint es algo necesario para poder aplicar de forma guiada la metodología.", 21,
+		                frontend, manu, done100));
+		Task task0110 = this.taskRepository.save(new Task("Notificaciones",
+		                "Gestionar las notificaciones que tiene un usuario dentro de la app.", 10,
+		                frontend, juanma, done100));
+		Task task0111 = this.taskRepository.save(new Task("Notas",
+		                "Poder escribir notas personales para apuntes o información relevante del proyecto.", 7,
+		                frontend, belen, done100));
+		Task task0112 = this.taskRepository.save(new Task("Mejoras Gráficas",
+		                "Mejorar los grafismos, estilos y recusros de la aplicación.", 15,
+		                frontend, antonio, inProgress100));
+		Task task0113 = this.taskRepository.save(new Task("Mejoras Invitación",
+		                "Mejorar el funcionamiento de las invitaciones de usuarios a un equipo.", 4,
+		                frontend, juanma, done100));
+		Task task0114 = this.taskRepository.save(new Task("Menús Laterales",
+		                "Mejorar el funcionamiento y refinar el comportamiento de los menus laterales de navegación y notificaciones.", 13,
+		                frontend, juanma, done100));
+		Task task0115 = this.taskRepository.save(new Task("Homogeneizar Graficos",
+		                "Asegurar que toda la aplicación usa los mismos estilos.", 16,
+		                frontend, antonioJuanma, done100));
+		Task task0116 = this.taskRepository.save(new Task("Mejoras Técnicas",
+		                "Mejorar el código para aumentar la legibilidad y el mantenimiento así como aspectos técnicos referentes a buenas prácticas y rendimiento.", 14,
+		                frontend, zekiManu, inProgress100));
+		Task task0117 = this.taskRepository.save(new Task("Arreglos QA/Pilotaje",
+		                "Arrelar los errores detectados tras la revisión de QA y pilotaje.", 6,
+		                frontend, juanma, done100));
+		Task task0118 = this.taskRepository.save(new Task("Revisión QA",
+		                "Arreglo de los errores detectados en la revisión final de QA.", 20,
+		                frontend, todoFront, done100));
+		Task task0119 = this.taskRepository.save(new Task("Gestion Service Worker",
+		                "Perfecionar y mejorar el funcionamiento del Service Worker para hacer la app PWA.", 5,
+		                frontend, manu, done100));
+
+		 //asignacion tareas
+		entities.put("task0101", task0101.getId());
+		entities.put("task0102", task0102.getId());
+		entities.put("task0103", task0103.getId());
+		entities.put("task0104", task0104.getId());
+		entities.put("task0105", task0105.getId());
+		entities.put("task0106", task0106.getId());
+		entities.put("task0107", task0107.getId());
+		entities.put("task0108", task0108.getId());
+		entities.put("task0109", task0109.getId());
+		entities.put("task0110", task0110.getId());
+		entities.put("task0111", task0111.getId());
+		entities.put("task0112", task0112.getId());
+		entities.put("task0113", task0113.getId());
+		entities.put("task0114", task0114.getId());
+		entities.put("task0115", task0115.getId());
+		entities.put("task0116", task0116.getId());
+		entities.put("task0117", task0117.getId());
+		entities.put("task0118", task0118.getId());
+		entities.put("task0119", task0119.getId());
+		
+		Set<User> todoBack = new HashSet<>();
+		todoFront.add(user500);
+		todoFront.add(user200);
+		todoFront.add(user700);
+
+		Set<User> david = new HashSet<>();
+		david.add(user500);
+		Set<User> angel = new HashSet<>();
+		angel.add(user200);
+		Set<User> ale = new HashSet<>();
+		ale.add(user700);
+
+
+		//Tareas
+		Task task0201 = this.taskRepository.save(new Task("Revision casos de uso de Aleks",
+		                "Revisión casos de uso implentados por Aleks.", 1,
+		                backend, angel, done100));
+		Task task0202 = this.taskRepository.save(new Task("Revision casos de uso de David",
+		                "Revisión casos de uso implentados por David.", 1,
+		                backend, ale, done100));
+		Task task0203 = this.taskRepository.save(new Task("Revision casos de uso de Angel",
+		                "Revisión casos de uso implentados por Angel.", 1,
+		                backend, david, done100));
+		Task task0204 = this.taskRepository.save(new Task("Añadir validación de paquetes",
+		                "Añadir validación de paquetes.", 5,
+		                backend, david, done100));
+		Task task0205 = this.taskRepository.save(new Task("Añadir notificación de brecha de seguridad",
+		                "Añadir notificación de brecha de seguridad.", 3,
+		                backend, david, done100));
+		Task task0206 = this.taskRepository.save(new Task("Mejoras en el caso de uso de gestión de GDPR",
+		                "Mejoras en el caso de uso de gestión de GDPR.", 5,
+		                backend, david, done100));
+		Task task0207 = this.taskRepository.save(new Task("Mejoras en tableros",
+		                "Mejoras en tableros.", 5,
+		                backend, angel, done100));
+		Task task0208 = this.taskRepository.save(new Task("Mejoras en el caso de uso de pagos",
+		                "Mejoras en el caso de uso de pagos.", 5,
+		                backend, angel, done100));
+		Task task0209 = this.taskRepository.save(new Task("Mejoras en equipo",
+		                "Mejoras en equipo.", 5,
+		                backend, david, done100));
+		Task task0210 = this.taskRepository.save(new Task("Mejoras en tareas",
+		                "Mejoras en tareas.", 5,
+		                backend, ale, done100));
+		Task task0211 = this.taskRepository.save(new Task("Mejoras en usuarios",
+		                "Mejoras en usuarios.", 5,
+		                backend, david, done100));
+		Task task0212 = this.taskRepository.save(new Task("Mejoras en la implementacion del JWT",
+		                "Mejoras en la implementacion del JWT.", 5,
+		                backend, angel, inProgress100));
+		Task task0213 = this.taskRepository.save(new Task("Mejoras en el caso de uso de estimacion de tareas",
+		                "Mejoras en el caso de uso de estimacion de tareas.", 5,
+		                backend, david, done100));
+		Task task0214 = this.taskRepository.save(new Task("Mejoras en sprint",
+		                "Mejoras en sprint.", 5,
+		                backend, david, done100));
+		Task task0215 = this.taskRepository.save(new Task("Mejoras en projectos",
+		                "Mejoras en projectos.", 5,
+		                backend, angel, done100));
+		Task task0216 = this.taskRepository.save(new Task("Mejoras en el caso de uso de documentos",
+		                "Mejoras en el caso de uso de documentos.", 5,
+		                backend, ale, inProgress100));
+		Task task0217 = this.taskRepository.save(new Task("Mejoras en el caso de uso de lista de tareas personal",
+		                "Mejoras en el caso de uso de lista de tareas personal.", 5,
+		                backend, ale, done100));
+		Task task0218 = this.taskRepository.save(new Task("Mejoras en el populate",
+		                "Mejoras en el populate.", 5,
+		                backend, david, done100));
+		Task task0219 = this.taskRepository.save(new Task("Aumento de cobertura de tests",
+		                "Aumento de cobertura de tests.", 4,
+		                backend, david, done100));
+		Task task0220 = this.taskRepository.save(new Task("build(deps): bump pdfbox from 2.0.4 to 2.0.15",
+		                "build(deps): bump pdfbox from 2.0.4 to 2.0.15.", 5,
+		                backend, todoBack, done100));
+		Task task0221 = this.taskRepository.save(new Task("Creación de Pdfs",
+		                "Creación de Pdfs.", 8,
+		                backend, angel, done100));
+		Task task0222 = this.taskRepository.save(new Task("Despliegue de la app para nuestro propio uso",
+		                "Despliegue de la app para nuestro propio uso.", 1,
+		                backend, angel, done100));
+		Task task0223 = this.taskRepository.save(new Task("Caso de uso de graficos burndown/up ",
+		                "Caso de uso de graficos burndown/up .", 3,
+		                backend, ale, done100));
+		Task task0224 = this.taskRepository.save(new Task("CU- 12 Notificaciones ",
+		                "CU- 12 Notificaciones .", 13,
+		                backend, david, done100));
+
+		 //asignacion tareas
+		entities.put("task0201", task0201.getId());
+		entities.put("task0202", task0202.getId());
+		entities.put("task0203", task0203.getId());
+		entities.put("task0204", task0204.getId());
+		entities.put("task0205", task0205.getId());
+		entities.put("task0206", task0206.getId());
+		entities.put("task0207", task0207.getId());
+		entities.put("task0208", task0208.getId());
+		entities.put("task0209", task0209.getId());
+		entities.put("task0210", task0210.getId());
+		entities.put("task0211", task0211.getId());
+		entities.put("task0212", task0212.getId());
+		entities.put("task0213", task0213.getId());
+		entities.put("task0214", task0214.getId());
+		entities.put("task0215", task0215.getId());
+		entities.put("task0216", task0216.getId());
+		entities.put("task0217", task0217.getId());
+		entities.put("task0218", task0218.getId());
+		entities.put("task0219", task0219.getId());
+		entities.put("task0220", task0220.getId());
+		entities.put("task0221", task0221.getId());
+		entities.put("task0222", task0222.getId());
+		entities.put("task0223", task0223.getId());
+		entities.put("task0224", task0224.getId());
 		
 		Document doc1 = this.documentRepository.save(new Document(DocumentType.DAILY, "Daily 17/04/2020",
 				"[{\"name\": \"testUser4\", \"done\": \"Terminar populate\", \"doing\": \"Empezar mi primer caso de uso\", \"problems\": \"No se usar spring boot\"}]",
@@ -611,6 +971,98 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("historyTask2", historyTask2.getId());
 		entities.put("historyTask3", historyTask3.getId());
 
+		
+		HistoryTask historyTask100 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 15, 00, 00), toDo100, done100, task0101));
+		HistoryTask historyTask200 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 20, 00, 00), toDo100, done100, task0102));
+		HistoryTask historyTask300 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 4, 00, 00), toDo100, done100, task0103));
+		HistoryTask historyTask400 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 3, 00, 00), toDo100, done100, task0104));
+		HistoryTask historyTask500 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 20, 00, 00), toDo100, done100, task0105));
+		HistoryTask historyTask600 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 20, 00, 00), toDo100, done100, task0106));
+		HistoryTask historyTask700 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 10, 00, 00), toDo100, done100, task0107));
+		HistoryTask historyTask800 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 14, 00, 00), toDo100, done100, task0108));
+		HistoryTask historyTask900 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 10, 00, 00), toDo100, done100, task0109));
+		HistoryTask historyTask1000 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 20, 00, 00), toDo100, done100, task0110));
+		HistoryTask historyTask1100 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 20, 00, 00), toDo100, done100, task0111));
+		HistoryTask historyTask1200 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 21, 00, 00), toDo100, done100, task0112));
+		HistoryTask historyTask1300 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 20, 00, 00), toDo100, done100, task0113));
+		HistoryTask historyTask1400 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 20, 00, 00), toDo100, done100, task0114));
+		HistoryTask historyTask1500 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 20, 00, 00), toDo100, done100, task0115));
+		HistoryTask historyTask1600 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 21, 00, 00), toDo100, done100, task0116));
+		HistoryTask historyTask1700 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 20, 00, 00), toDo100, done100, task0117));
+		HistoryTask historyTask1800 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 20, 00, 00), toDo100, done100, task0118));
+		HistoryTask historyTask1900 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 21, 00, 00), toDo100, done100, task0119));
+
+		entities.put("historyTask100", historyTask100.getId());
+		entities.put("historyTask200", historyTask200.getId());
+		entities.put("historyTask300", historyTask300.getId());
+		entities.put("historyTask400", historyTask400.getId());
+		entities.put("historyTask500", historyTask500.getId());
+		entities.put("historyTask600", historyTask600.getId());
+		entities.put("historyTask700", historyTask700.getId());
+		entities.put("historyTask800", historyTask800.getId());
+		entities.put("historyTask900", historyTask900.getId());
+		entities.put("historyTask1000", historyTask1000.getId());
+		entities.put("historyTask1100", historyTask1100.getId());
+		entities.put("historyTask1200", historyTask1200.getId());
+		entities.put("historyTask1300", historyTask1300.getId());
+		entities.put("historyTask1400", historyTask1400.getId());
+		entities.put("historyTask1500", historyTask1500.getId());
+		entities.put("historyTask1600", historyTask1600.getId());
+		entities.put("historyTask1700", historyTask1700.getId());
+		entities.put("historyTask1800", historyTask1800.getId());
+		entities.put("historyTask1900", historyTask1900.getId());
+
+
+		HistoryTask historyTask2100 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 1, 00, 00), toDo100, done100, task0201));
+		HistoryTask historyTask2200 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 1, 00, 00), toDo100, done100, task0202));
+		HistoryTask historyTask2300 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 3, 00, 00), toDo100, done100, task0203));
+		HistoryTask historyTask2400 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 2, 00, 00), toDo100, done100, task0204));
+		HistoryTask historyTask2500 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 6, 00, 00), toDo100, done100, task0205));
+		HistoryTask historyTask2600 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 8, 00, 00), toDo100, done100, task0206));
+		HistoryTask historyTask2700 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 2, 00, 00), toDo100, done100, task0207));
+		HistoryTask historyTask2800 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 2, 00, 00), toDo100, done100, task0208));
+		HistoryTask historyTask2900 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 3, 00, 00), toDo100, done100, task0209));
+		HistoryTask historyTask21000 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 3, 00, 00), toDo100, done100, task0210));
+		HistoryTask historyTask21100 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 6, 00, 00), toDo100, done100, task0211));
+		HistoryTask historyTask21200 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 6, 00, 00), toDo100, done100, task0212));
+		HistoryTask historyTask21300 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 7, 00, 00), toDo100, done100, task0213));
+		HistoryTask historyTask21400 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 7, 00, 00), toDo100, done100, task0214));
+		HistoryTask historyTask21500 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 8, 00, 00), toDo100, done100, task0215));
+		HistoryTask historyTask21600 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 8, 00, 00), toDo100, done100, task0216));
+		HistoryTask historyTask21700 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 10, 00, 00), toDo100, done100, task0217));
+		HistoryTask historyTask21800 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 10, 00, 00), toDo100, done100, task0218));
+		HistoryTask historyTask21900 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 13, 00, 00), toDo100, done100, task0219));
+		HistoryTask historyTask22000 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 14, 00, 00), toDo100, done100, task0220));
+		HistoryTask historyTask22100 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 15, 00, 00), toDo100, done100, task0221));
+		HistoryTask historyTask22200 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 15, 00, 00), toDo100, done100, task0222));
+		HistoryTask historyTask22300 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 17, 00, 00), toDo100, done100, task0223));
+		HistoryTask historyTask22400 = this.historyTaskRepository.save(new HistoryTask(LocalDateTime.of(2020, 4, 20, 00, 00), toDo100, done100, task0224));
+
+		entities.put("historyTask2100", historyTask2100.getId());
+		entities.put("historyTask2200", historyTask2200.getId());
+		entities.put("historyTask2300", historyTask2300.getId());
+		entities.put("historyTask2400", historyTask2400.getId());
+		entities.put("historyTask2500", historyTask2500.getId());
+		entities.put("historyTask2600", historyTask2600.getId());
+		entities.put("historyTask2700", historyTask2700.getId());
+		entities.put("historyTask2800", historyTask2800.getId());
+		entities.put("historyTask2900", historyTask2900.getId());
+		entities.put("historyTask21000", historyTask21000.getId());
+		entities.put("historyTask21100", historyTask21100.getId());
+		entities.put("historyTask21200", historyTask21200.getId());
+		entities.put("historyTask21300", historyTask21300.getId());
+		entities.put("historyTask21400", historyTask21400.getId());
+		entities.put("historyTask21500", historyTask21500.getId());
+		entities.put("historyTask21600", historyTask21600.getId());
+		entities.put("historyTask21700", historyTask21700.getId());
+		entities.put("historyTask21800", historyTask21800.getId());
+		entities.put("historyTask21900", historyTask21900.getId());
+		entities.put("historyTask21500", historyTask22000.getId());
+		entities.put("historyTask21600", historyTask22100.getId());
+		entities.put("historyTask21700", historyTask22200.getId());
+		entities.put("historyTask21800", historyTask22300.getId());
+		entities.put("historyTask21900", historyTask22400.getId());
+		
 		Estimation estimation1 = this.estimationRepository.save(new Estimation(5, user1, task1));
 		Estimation estimation2 = this.estimationRepository.save(new Estimation(15, user4, task1));
 		Estimation estimation3 = this.estimationRepository.save(new Estimation(4, user1, task2));
@@ -630,6 +1082,358 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("estimation7", estimation7.getId());
 		entities.put("estimation8", estimation8.getId());
 		entities.put("estimation9", estimation9.getId());
+		
+		Estimation estimation100 = this.estimationRepository.save(new Estimation(4, user100, task0101));
+		Estimation estimation200 = this.estimationRepository.save(new Estimation(5, user100, task0102));
+		Estimation estimation300 = this.estimationRepository.save(new Estimation(3, user100, task0103));
+		Estimation estimation400 = this.estimationRepository.save(new Estimation(10, user100, task0104));
+		Estimation estimation500 = this.estimationRepository.save(new Estimation(9, user100, task0105));
+		Estimation estimation600 = this.estimationRepository.save(new Estimation(16, user100, task0106));
+		Estimation estimation700 = this.estimationRepository.save(new Estimation(9, user100, task0107));
+		Estimation estimation800 = this.estimationRepository.save(new Estimation(5, user100, task0108));
+		Estimation estimation900 = this.estimationRepository.save(new Estimation(21, user100, task0109));
+		Estimation estimation1000 = this.estimationRepository.save(new Estimation(10, user100, task0110));
+		Estimation estimation1100 = this.estimationRepository.save(new Estimation(7, user100, task0111));
+		Estimation estimation1200 = this.estimationRepository.save(new Estimation(15, user100, task0112));
+		Estimation estimation1300 = this.estimationRepository.save(new Estimation(4, user100, task0113));
+		Estimation estimation1400 = this.estimationRepository.save(new Estimation(13, user100, task0114));
+		Estimation estimation1500 = this.estimationRepository.save(new Estimation(16, user100, task0115));
+		Estimation estimation1600 = this.estimationRepository.save(new Estimation(14, user100, task0116));
+		Estimation estimation1700 = this.estimationRepository.save(new Estimation(6, user100, task0117));
+		Estimation estimation1800 = this.estimationRepository.save(new Estimation(20, user100, task0118));
+		Estimation estimation1900= this.estimationRepository.save(new Estimation(5, user100, task0119));
+		
+		Estimation estimation101 = this.estimationRepository.save(new Estimation(4, user300, task0101));
+		Estimation estimation201 = this.estimationRepository.save(new Estimation(5, user300, task0102));
+		Estimation estimation301 = this.estimationRepository.save(new Estimation(3, user300, task0103));
+		Estimation estimation401 = this.estimationRepository.save(new Estimation(10, user300, task0104));
+		Estimation estimation501 = this.estimationRepository.save(new Estimation(9, user300, task0105));
+		Estimation estimation601 = this.estimationRepository.save(new Estimation(16, user300, task0106));
+		Estimation estimation701 = this.estimationRepository.save(new Estimation(9, user300, task0107));
+		Estimation estimation801 = this.estimationRepository.save(new Estimation(5, user300, task0108));
+		Estimation estimation901 = this.estimationRepository.save(new Estimation(21, user300, task0109));
+		Estimation estimation1001 = this.estimationRepository.save(new Estimation(10, user300, task0110));
+		Estimation estimation1101 = this.estimationRepository.save(new Estimation(7, user300, task0111));
+		Estimation estimation1201 = this.estimationRepository.save(new Estimation(15, user300, task0112));
+		Estimation estimation1301 = this.estimationRepository.save(new Estimation(4, user300, task0113));
+		Estimation estimation1401 = this.estimationRepository.save(new Estimation(13, user300, task0114));
+		Estimation estimation1501 = this.estimationRepository.save(new Estimation(16, user300, task0115));
+		Estimation estimation1601 = this.estimationRepository.save(new Estimation(14, user300, task0116));
+		Estimation estimation1701 = this.estimationRepository.save(new Estimation(6, user300, task0117));
+		Estimation estimation1801 = this.estimationRepository.save(new Estimation(20, user300, task0118));
+		Estimation estimation1901 = this.estimationRepository.save(new Estimation(5, user300, task0119));
+		
+		Estimation estimation102 = this.estimationRepository.save(new Estimation(4, user400, task0101));
+		Estimation estimation202 = this.estimationRepository.save(new Estimation(5, user400, task0102));
+		Estimation estimation302 = this.estimationRepository.save(new Estimation(3, user400, task0103));
+		Estimation estimation402 = this.estimationRepository.save(new Estimation(10, user400, task0104));
+		Estimation estimation502 = this.estimationRepository.save(new Estimation(9, user400, task0105));
+		Estimation estimation602 = this.estimationRepository.save(new Estimation(16, user400, task0106));
+		Estimation estimation702 = this.estimationRepository.save(new Estimation(9, user400, task0107));
+		Estimation estimation802 = this.estimationRepository.save(new Estimation(5, user400, task0108));
+		Estimation estimation902 = this.estimationRepository.save(new Estimation(21, user400, task0109));
+		Estimation estimation1002 = this.estimationRepository.save(new Estimation(10, user400, task0110));
+		Estimation estimation1102 = this.estimationRepository.save(new Estimation(7, user400, task0111));
+		Estimation estimation1202 = this.estimationRepository.save(new Estimation(15, user400, task0112));
+		Estimation estimation1302 = this.estimationRepository.save(new Estimation(4, user400, task0113));
+		Estimation estimation1402 = this.estimationRepository.save(new Estimation(13, user400, task0114));
+		Estimation estimation1502 = this.estimationRepository.save(new Estimation(16, user400, task0115));
+		Estimation estimation1602 = this.estimationRepository.save(new Estimation(14, user400, task0116));
+		Estimation estimation1702 = this.estimationRepository.save(new Estimation(6, user400, task0117));
+		Estimation estimation1802 = this.estimationRepository.save(new Estimation(20, user400, task0118));
+		Estimation estimation1902 = this.estimationRepository.save(new Estimation(5, user400, task0119));
+		
+		Estimation estimation103 = this.estimationRepository.save(new Estimation(4, user600, task0101));
+		Estimation estimation203 = this.estimationRepository.save(new Estimation(5, user600, task0102));
+		Estimation estimation303 = this.estimationRepository.save(new Estimation(3, user600, task0103));
+		Estimation estimation403 = this.estimationRepository.save(new Estimation(10, user600, task0104));
+		Estimation estimation503 = this.estimationRepository.save(new Estimation(9, user600, task0105));
+		Estimation estimation603 = this.estimationRepository.save(new Estimation(16, user600, task0106));
+		Estimation estimation703 = this.estimationRepository.save(new Estimation(9, user600, task0107));
+		Estimation estimation803 = this.estimationRepository.save(new Estimation(5, user600, task0108));
+		Estimation estimation903 = this.estimationRepository.save(new Estimation(21, user600, task0109));
+		Estimation estimation1003 = this.estimationRepository.save(new Estimation(10, user600, task0110));
+		Estimation estimation1103 = this.estimationRepository.save(new Estimation(7, user600, task0111));
+		Estimation estimation1203 = this.estimationRepository.save(new Estimation(15, user600, task0112));
+		Estimation estimation1303 = this.estimationRepository.save(new Estimation(4, user600, task0113));
+		Estimation estimation1403 = this.estimationRepository.save(new Estimation(13, user600, task0114));
+		Estimation estimation1503 = this.estimationRepository.save(new Estimation(16, user600, task0115));
+		Estimation estimation1603 = this.estimationRepository.save(new Estimation(14, user600, task0116));
+		Estimation estimation1703 = this.estimationRepository.save(new Estimation(6, user600, task0117));
+		Estimation estimation1803 = this.estimationRepository.save(new Estimation(20, user600, task0118));
+		Estimation estimation1903 = this.estimationRepository.save(new Estimation(5, user600, task0119));
+		
+		Estimation estimation104 = this.estimationRepository.save(new Estimation(4, user800, task0101));
+		Estimation estimation204 = this.estimationRepository.save(new Estimation(5, user800, task0102));
+		Estimation estimation304 = this.estimationRepository.save(new Estimation(3, user800, task0103));
+		Estimation estimation404 = this.estimationRepository.save(new Estimation(10, user800, task0104));
+		Estimation estimation504 = this.estimationRepository.save(new Estimation(9, user800, task0105));
+		Estimation estimation604= this.estimationRepository.save(new Estimation(16, user800, task0106));
+		Estimation estimation704 = this.estimationRepository.save(new Estimation(9, user800, task0107));
+		Estimation estimation804 = this.estimationRepository.save(new Estimation(5, user800, task0108));
+		Estimation estimation904 = this.estimationRepository.save(new Estimation(21, user800, task0109));
+		Estimation estimation1004 = this.estimationRepository.save(new Estimation(10, user800, task0110));
+		Estimation estimation1104 = this.estimationRepository.save(new Estimation(7, user800, task0111));
+		Estimation estimation1204 = this.estimationRepository.save(new Estimation(15, user800, task0112));
+		Estimation estimation1304 = this.estimationRepository.save(new Estimation(4, user800, task0113));
+		Estimation estimation1404 = this.estimationRepository.save(new Estimation(13, user800, task0114));
+		Estimation estimation1504 = this.estimationRepository.save(new Estimation(16, user800, task0115));
+		Estimation estimation1604 = this.estimationRepository.save(new Estimation(14, user800, task0116));
+		Estimation estimation1704 = this.estimationRepository.save(new Estimation(6, user800, task0117));
+		Estimation estimation1804 = this.estimationRepository.save(new Estimation(20, user800, task0118));
+		Estimation estimation1904 = this.estimationRepository.save(new Estimation(5, user800, task0119));
+
+		entities.put("estimation100", estimation100.getId());
+		entities.put("estimation200", estimation200.getId());
+		entities.put("estimation300", estimation300.getId());
+		entities.put("estimation400", estimation400.getId());
+		entities.put("estimation500", estimation500.getId());
+		entities.put("estimation600", estimation600.getId());
+		entities.put("estimation700", estimation700.getId());
+		entities.put("estimation800", estimation800.getId());
+		entities.put("estimation900", estimation900.getId());
+		entities.put("estimation1000", estimation1000.getId());
+		entities.put("estimation1100", estimation1100.getId());
+		entities.put("estimation1200", estimation1200.getId());
+		entities.put("estimation1300", estimation1300.getId());
+		entities.put("estimatio1400", estimation1400.getId());
+		entities.put("estimation1500", estimation1500.getId());
+		entities.put("estimation1600", estimation1600.getId());
+		entities.put("estimation1700", estimation1700.getId());
+		entities.put("estimation1800", estimation1800.getId());
+		entities.put("estimation1900", estimation1900.getId());
+		
+		entities.put("estimation101", estimation101.getId());
+		entities.put("estimation201", estimation201.getId());
+		entities.put("estimation301", estimation301.getId());
+		entities.put("estimation401", estimation401.getId());
+		entities.put("estimation501", estimation501.getId());
+		entities.put("estimation601", estimation601.getId());
+		entities.put("estimation701", estimation701.getId());
+		entities.put("estimation801", estimation801.getId());
+		entities.put("estimation901", estimation901.getId());
+		entities.put("estimation1001", estimation1001.getId());
+		entities.put("estimation1101", estimation1101.getId());
+		entities.put("estimation1201", estimation1201.getId());
+		entities.put("estimation1301", estimation1301.getId());
+		entities.put("estimatio1401", estimation1401.getId());
+		entities.put("estimation1501", estimation1501.getId());
+		entities.put("estimation1601", estimation1601.getId());
+		entities.put("estimation1701", estimation1701.getId());
+		entities.put("estimation1801", estimation1801.getId());
+		entities.put("estimation1901", estimation1901.getId());
+		
+		entities.put("estimation102", estimation102.getId());
+		entities.put("estimation202", estimation202.getId());
+		entities.put("estimation302", estimation302.getId());
+		entities.put("estimation402", estimation402.getId());
+		entities.put("estimation502", estimation502.getId());
+		entities.put("estimation602", estimation602.getId());
+		entities.put("estimation702", estimation702.getId());
+		entities.put("estimation802", estimation802.getId());
+		entities.put("estimation902", estimation902.getId());
+		entities.put("estimation1002", estimation1002.getId());
+		entities.put("estimation1102", estimation1102.getId());
+		entities.put("estimation1202", estimation1202.getId());
+		entities.put("estimation1302", estimation1302.getId());
+		entities.put("estimatio1402", estimation1402.getId());
+		entities.put("estimation1502", estimation1502.getId());
+		entities.put("estimation1602", estimation1602.getId());
+		entities.put("estimation1702", estimation1702.getId());
+		entities.put("estimation1802", estimation1802.getId());
+		entities.put("estimation1902", estimation1902.getId());
+		
+		entities.put("estimation103", estimation103.getId());
+		entities.put("estimation203", estimation203.getId());
+		entities.put("estimation303", estimation303.getId());
+		entities.put("estimation403", estimation403.getId());
+		entities.put("estimation503", estimation503.getId());
+		entities.put("estimation603", estimation603.getId());
+		entities.put("estimation703", estimation703.getId());
+		entities.put("estimation803", estimation803.getId());
+		entities.put("estimation903", estimation903.getId());
+		entities.put("estimation1003", estimation1003.getId());
+		entities.put("estimation1103", estimation1103.getId());
+		entities.put("estimation1203", estimation1203.getId());
+		entities.put("estimation1303", estimation1303.getId());
+		entities.put("estimatio1403", estimation1403.getId());
+		entities.put("estimation1503", estimation1503.getId());
+		entities.put("estimation1603", estimation1603.getId());
+		entities.put("estimation1703", estimation1703.getId());
+		entities.put("estimation1803", estimation1803.getId());
+		entities.put("estimation1903", estimation1903.getId());
+		
+		entities.put("estimation104", estimation104.getId());
+		entities.put("estimation204", estimation204.getId());
+		entities.put("estimation304", estimation304.getId());
+		entities.put("estimation404", estimation404.getId());
+		entities.put("estimation504", estimation504.getId());
+		entities.put("estimation604", estimation604.getId());
+		entities.put("estimation704", estimation704.getId());
+		entities.put("estimation804", estimation804.getId());
+		entities.put("estimation904", estimation904.getId());
+		entities.put("estimation1004", estimation1004.getId());
+		entities.put("estimation1104", estimation1104.getId());
+		entities.put("estimation1204", estimation1204.getId());
+		entities.put("estimation1304", estimation1304.getId());
+		entities.put("estimatio1404", estimation1404.getId());
+		entities.put("estimation1504", estimation1504.getId());
+		entities.put("estimation1604", estimation1604.getId());
+		entities.put("estimation1704", estimation1704.getId());
+		entities.put("estimation1804", estimation1804.getId());
+		entities.put("estimation1904", estimation1904.getId());
+
+		
+		Estimation estimation2100 = this.estimationRepository.save(new Estimation(1, user200, task0201));
+		Estimation estimation2200 = this.estimationRepository.save(new Estimation(1, user200, task0202));
+		Estimation estimation2300 = this.estimationRepository.save(new Estimation(1, user200, task0203));
+		Estimation estimation2400 = this.estimationRepository.save(new Estimation(5, user200, task0204));
+		Estimation estimation2500 = this.estimationRepository.save(new Estimation(3, user200, task0205));
+		Estimation estimation2600 = this.estimationRepository.save(new Estimation(5, user200, task0206));
+		Estimation estimation2700 = this.estimationRepository.save(new Estimation(5, user200, task0207));
+		Estimation estimation2800 = this.estimationRepository.save(new Estimation(5, user200, task0208));
+		Estimation estimation2900 = this.estimationRepository.save(new Estimation(5, user200, task0209));
+		Estimation estimation21000 = this.estimationRepository.save(new Estimation(5, user200, task0210));
+		Estimation estimation21100 = this.estimationRepository.save(new Estimation(5, user200, task0211));
+		Estimation estimation21200 = this.estimationRepository.save(new Estimation(5, user200, task0212));
+		Estimation estimation21300 = this.estimationRepository.save(new Estimation(5, user200, task0213));
+		Estimation estimation21400 = this.estimationRepository.save(new Estimation(5, user200, task0214));
+		Estimation estimation21500 = this.estimationRepository.save(new Estimation(5, user200, task0215));
+		Estimation estimation21600 = this.estimationRepository.save(new Estimation(5, user200, task0216));
+		Estimation estimation21700 = this.estimationRepository.save(new Estimation(5, user200, task0217));
+		Estimation estimation21800 = this.estimationRepository.save(new Estimation(5, user200, task0218));
+		Estimation estimation21900= this.estimationRepository.save(new Estimation(5, user200, task0219));
+		Estimation estimation22000 = this.estimationRepository.save(new Estimation(4, user200, task0220));
+		Estimation estimation22100 = this.estimationRepository.save(new Estimation(5, user200, task0221));
+		Estimation estimation22200 = this.estimationRepository.save(new Estimation(8, user200, task0222));
+		Estimation estimation22300 = this.estimationRepository.save(new Estimation(3, user200, task0223));
+		Estimation estimation22400 = this.estimationRepository.save(new Estimation(13, user200, task0224));
+		
+		Estimation estimation2101 = this.estimationRepository.save(new Estimation(1, user500, task0201));
+		Estimation estimation2201 = this.estimationRepository.save(new Estimation(1, user500, task0202));
+		Estimation estimation2301 = this.estimationRepository.save(new Estimation(1, user500, task0203));
+		Estimation estimation2401 = this.estimationRepository.save(new Estimation(5, user500, task0204));
+		Estimation estimation2501 = this.estimationRepository.save(new Estimation(3, user500, task0205));
+		Estimation estimation2601 = this.estimationRepository.save(new Estimation(5, user500, task0206));
+		Estimation estimation2701 = this.estimationRepository.save(new Estimation(5, user500, task0207));
+		Estimation estimation2801 = this.estimationRepository.save(new Estimation(5, user500, task0208));
+		Estimation estimation2901 = this.estimationRepository.save(new Estimation(5, user500, task0209));
+		Estimation estimation21001 = this.estimationRepository.save(new Estimation(5, user500, task0210));
+		Estimation estimation21101 = this.estimationRepository.save(new Estimation(5, user500, task0211));
+		Estimation estimation21201 = this.estimationRepository.save(new Estimation(5, user500, task0212));
+		Estimation estimation21301 = this.estimationRepository.save(new Estimation(5, user500, task0213));
+		Estimation estimation21401 = this.estimationRepository.save(new Estimation(5, user500, task0214));
+		Estimation estimation21501 = this.estimationRepository.save(new Estimation(5, user500, task0215));
+		Estimation estimation21601 = this.estimationRepository.save(new Estimation(5, user500, task0216));
+		Estimation estimation21701 = this.estimationRepository.save(new Estimation(5, user500, task0217));
+		Estimation estimation21801 = this.estimationRepository.save(new Estimation(5, user500, task0218));
+		Estimation estimation21901 = this.estimationRepository.save(new Estimation(5, user500, task0219));
+		Estimation estimation22001 = this.estimationRepository.save(new Estimation(4, user500, task0220));
+		Estimation estimation22101 = this.estimationRepository.save(new Estimation(5, user500, task0221));
+		Estimation estimation22201 = this.estimationRepository.save(new Estimation(8, user500, task0222));
+		Estimation estimation22301 = this.estimationRepository.save(new Estimation(3, user500, task0223));
+		Estimation estimation22401 = this.estimationRepository.save(new Estimation(13, user500, task0224));
+		
+		Estimation estimation2102 = this.estimationRepository.save(new Estimation(1, user700, task0201));
+		Estimation estimation2202 = this.estimationRepository.save(new Estimation(1, user700, task0202));
+		Estimation estimation2302 = this.estimationRepository.save(new Estimation(1, user700, task0203));
+		Estimation estimation2402 = this.estimationRepository.save(new Estimation(5, user700, task0204));
+		Estimation estimation2502 = this.estimationRepository.save(new Estimation(3, user700, task0205));
+		Estimation estimation2602 = this.estimationRepository.save(new Estimation(5, user700, task0206));
+		Estimation estimation2702 = this.estimationRepository.save(new Estimation(5, user700, task0207));
+		Estimation estimation2802 = this.estimationRepository.save(new Estimation(5, user700, task0208));
+		Estimation estimation2902 = this.estimationRepository.save(new Estimation(5, user700, task0209));
+		Estimation estimation21002 = this.estimationRepository.save(new Estimation(5, user700, task0210));
+		Estimation estimation21102 = this.estimationRepository.save(new Estimation(5, user700, task0211));
+		Estimation estimation21202 = this.estimationRepository.save(new Estimation(5, user700, task0212));
+		Estimation estimation21302 = this.estimationRepository.save(new Estimation(5, user700, task0213));
+		Estimation estimation21402 = this.estimationRepository.save(new Estimation(5, user700, task0214));
+		Estimation estimation21502 = this.estimationRepository.save(new Estimation(5, user700, task0215));
+		Estimation estimation21602 = this.estimationRepository.save(new Estimation(5, user700, task0216));
+		Estimation estimation21702 = this.estimationRepository.save(new Estimation(5, user700, task0217));
+		Estimation estimation21802 = this.estimationRepository.save(new Estimation(5, user700, task0218));
+		Estimation estimation21902 = this.estimationRepository.save(new Estimation(5, user700, task0219));
+		Estimation estimation22002 = this.estimationRepository.save(new Estimation(4, user700, task0220));
+		Estimation estimation22102 = this.estimationRepository.save(new Estimation(5, user700, task0221));
+		Estimation estimation22202 = this.estimationRepository.save(new Estimation(8, user700, task0222));
+		Estimation estimation22302 = this.estimationRepository.save(new Estimation(3, user700, task0223));
+		Estimation estimation22402 = this.estimationRepository.save(new Estimation(13, user700, task0224));
+		
+		entities.put("estimation2100", estimation2100.getId());
+		entities.put("estimation2200", estimation2200.getId());
+		entities.put("estimation2300", estimation2300.getId());
+		entities.put("estimation2400", estimation2400.getId());
+		entities.put("estimation2500", estimation2500.getId());
+		entities.put("estimation2600", estimation2600.getId());
+		entities.put("estimation2700", estimation2700.getId());
+		entities.put("estimation2800", estimation2800.getId());
+		entities.put("estimation2900", estimation2900.getId());
+		entities.put("estimation21000", estimation21000.getId());
+		entities.put("estimation21100", estimation21100.getId());
+		entities.put("estimation21200", estimation21200.getId());
+		entities.put("estimation21300", estimation21300.getId());
+		entities.put("estimation21400", estimation21400.getId());
+		entities.put("estimation21500", estimation21500.getId());
+		entities.put("estimation21600", estimation21600.getId());
+		entities.put("estimation21700", estimation21700.getId());
+		entities.put("estimation21800", estimation21800.getId());
+		entities.put("estimation21900", estimation21900.getId());
+		entities.put("estimation22000", estimation22000.getId());
+		entities.put("estimation22100", estimation22100.getId());
+		entities.put("estimation22200", estimation22200.getId());
+		entities.put("estimation22300", estimation22300.getId());
+		entities.put("estimation22400", estimation22400.getId());
+		
+		entities.put("estimation2101", estimation2101.getId());
+		entities.put("estimation2201", estimation2201.getId());
+		entities.put("estimation2301", estimation2301.getId());
+		entities.put("estimation2401", estimation2401.getId());
+		entities.put("estimation2501", estimation2501.getId());
+		entities.put("estimation2601", estimation2601.getId());
+		entities.put("estimation2701", estimation2701.getId());
+		entities.put("estimation2801", estimation2801.getId());
+		entities.put("estimation2901", estimation2901.getId());
+		entities.put("estimation21001", estimation21001.getId());
+		entities.put("estimation21101", estimation21101.getId());
+		entities.put("estimation21201", estimation21201.getId());
+		entities.put("estimation21301", estimation21301.getId());
+		entities.put("estimation21401", estimation21401.getId());
+		entities.put("estimation21501", estimation21501.getId());
+		entities.put("estimation21601", estimation21601.getId());
+		entities.put("estimation21701", estimation21701.getId());
+		entities.put("estimation21801", estimation21801.getId());
+		entities.put("estimation21901", estimation21901.getId());
+		entities.put("estimation22001", estimation22001.getId());
+		entities.put("estimation22101", estimation22101.getId());
+		entities.put("estimation22201", estimation22201.getId());
+		entities.put("estimation22301", estimation22301.getId());
+		entities.put("estimation22401", estimation22401.getId());
+		
+		entities.put("estimation2102", estimation2102.getId());
+		entities.put("estimation2202", estimation2202.getId());
+		entities.put("estimation2302", estimation2302.getId());
+		entities.put("estimation2402", estimation2402.getId());
+		entities.put("estimation2502", estimation2502.getId());
+		entities.put("estimation2602", estimation2602.getId());
+		entities.put("estimation2702", estimation2702.getId());
+		entities.put("estimation2802", estimation2802.getId());
+		entities.put("estimation2902", estimation2902.getId());
+		entities.put("estimation21002", estimation21002.getId());
+		entities.put("estimation21102", estimation21102.getId());
+		entities.put("estimation21202", estimation21202.getId());
+		entities.put("estimation21302", estimation21302.getId());
+		entities.put("estimation21402", estimation21402.getId());
+		entities.put("estimation21502", estimation21502.getId());
+		entities.put("estimation21602", estimation21602.getId());
+		entities.put("estimation21702", estimation21702.getId());
+		entities.put("estimation21802", estimation21802.getId());
+		entities.put("estimation21902", estimation21902.getId());
+		entities.put("estimation22002", estimation22002.getId());
+		entities.put("estimation22102", estimation22102.getId());
+		entities.put("estimation22202", estimation22202.getId());
+		entities.put("estimation22302", estimation22302.getId());
+		entities.put("estimation22402", estimation22402.getId());
+		
 		Payment payment0 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
 				user0.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234516", "ABC123456781A"));
 		Payment payment1 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
@@ -652,6 +1456,35 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("payment4", payment4.getId());
 		entities.put("payment5", payment5.getId());
 		entities.put("payment6", payment6.getId());
+		
+		
+		Payment payment100 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
+				user100.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234516", "ABC123456781A"));
+		Payment payment200 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
+				user200.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234516", "ABC123456781A"));
+		Payment payment300 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
+				user300.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234516", "ABC123456781A"));
+		Payment payment400 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
+				user400.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234516", "ABC123456781A"));
+		Payment payment500 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
+				user500.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234516", "ABC123456781A"));
+		Payment payment600 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
+				user600.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234516", "ABC123456781A"));
+		Payment payment700 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
+				user700.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234516", "ABC123456781A"));
+		Payment payment800 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
+				user800.getUserAccount(), LocalDate.from(localDateTime00), "ABC1234516", "ABC123456781A"));
+		
+		entities.put("payment100", payment100.getId());
+		entities.put("payment200", payment200.getId());
+		entities.put("payment300", payment300.getId());
+		entities.put("payment400", payment400.getId());
+		entities.put("payment500", payment500.getId());
+		entities.put("payment600", payment600.getId());
+		entities.put("payment500", payment500.getId());
+		entities.put("payment600", payment600.getId());
+		entities.put("payment700", payment700.getId());
+		entities.put("payment800", payment800.getId());
 		
 		//PAYMENTS CADUCADOS
 		Payment payment7 = this.paymentRepository.save(new Payment(LocalDate.from(localDateTime0), proBox,
