@@ -50,7 +50,7 @@ public class UserServiceTest extends AbstractTest {
 	@Test
 	public void userTestSave() throws Exception {
 		UserAccount account500 = this.userAccountRepository
-				.save(new UserAccount("testuser50000@gmail.com", Utiles.encryptedPassword("1234565"), LocalDateTime.now(),
+				.save(new UserAccount("testuser500@gmail.com", Utiles.encryptedPassword("1234565"), LocalDateTime.now(),
 						LocalDateTime.now(), new HashSet<Role>()));
 		Object[][] objects = {
 				{ "prueba", "Prueba", "pruebatestuser", "fotografía", "Prueba Surname",
