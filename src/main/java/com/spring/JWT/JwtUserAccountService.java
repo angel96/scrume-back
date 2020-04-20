@@ -11,7 +11,6 @@ import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -40,12 +39,12 @@ public class JwtUserAccountService implements UserDetailsService {
 
 	public UserAccount loadUserByUsername(String username) {
 		return repository.findByEmail(username)
-				.orElseThrow(() -> new UsernameNotFoundException(username + " no encontrado"));
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, username + " not found"));
 	}
 
 	public User findUserByUsername(String username) {
 		return repository.findUserByUserName(username)
-				.orElseThrow(() -> new UsernameNotFoundException(username + " no encontrado"));
+				.orElseThrow(() ->new ResponseStatusException(HttpStatus.BAD_REQUEST, username + " not found"));
 	}
 
 	public JwtResponse generateToken(JwtRequest authenticationRequest) {

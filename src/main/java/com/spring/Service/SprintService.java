@@ -282,6 +282,8 @@ public class SprintService extends AbstractService {
 				res.add(sprints.get(i));
 				i++;
 			}
+		}else {
+			res = sprints;
 		}
 		return res;
 	}
