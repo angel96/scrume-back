@@ -13,7 +13,6 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -44,12 +43,12 @@ public class UserAccountService implements UserDetailsService {
 	@Override
 	public UserDetails loadUserByUsername(String username) {
 		return repository.findByEmail(username)
-				.orElseThrow(() -> new UsernameNotFoundException(username + " no encontrado"));
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, username + " not found"));
 	}
 
 	public UsernameDto findUserByUsername(String username) {
 		UserAccount user = repository.findByEmail(username)
-				.orElseThrow(() -> new UsernameNotFoundException(username + " no encontrado"));
+				.orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, username + " not found"));
 		UsernameDto usernameDto = new UsernameDto();
 		usernameDto.setUsername(user.getUsername());
 		return usernameDto;
