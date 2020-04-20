@@ -5,9 +5,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class PersonalTaskListDto {
+@NoArgsConstructor
+public class LastWorkspaceDto {
+
+	private Integer id;
+
+	private String name;
 	
-	private String content;
+	private SprintIdDto sprint;
+
 }

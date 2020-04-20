@@ -1,3 +1,4 @@
+
 package com.spring.Configuration;
 
 import java.time.LocalDate;
@@ -25,7 +26,7 @@ import com.spring.Model.HistoryTask;
 import com.spring.Model.Invitation;
 import com.spring.Model.Notification;
 import com.spring.Model.Payment;
-import com.spring.Model.PersonalTaskList;
+import com.spring.Model.Note;
 import com.spring.Model.Project;
 import com.spring.Model.SecurityBreach;
 import com.spring.Model.Sprint;
@@ -43,7 +44,7 @@ import com.spring.Repository.HistoryTaskRepository;
 import com.spring.Repository.InvitationRepository;
 import com.spring.Repository.NotificationRepository;
 import com.spring.Repository.PaymentRepository;
-import com.spring.Repository.PersonalTaskListRepository;
+import com.spring.Repository.NoteRepository;
 import com.spring.Repository.ProjectRepository;
 import com.spring.Repository.SecurityBreachRepository;
 import com.spring.Repository.SprintRepository;
@@ -117,7 +118,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 	private NotificationRepository notificationRepository;
 
 	@Autowired
-	private PersonalTaskListRepository taskListRepository;
+	private NoteRepository noteRepository;
 	
 	@Autowired
 	private SecurityBreachRepository securityBreachRepository;
@@ -147,7 +148,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		boxRepository.deleteAll();
 		accountRepository.deleteAll();
 		documentRepository.deleteAll();
-		taskListRepository.deleteAll();
+		noteRepository.deleteAll();
 
 		UserAccount account0 = accountRepository
 				.save(new UserAccount("administrator@gmail.com", Utiles.encryptedPassword("1234560"), LocalDateTime.now(),
@@ -361,8 +362,10 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("rol11", rol11.getId());
 		
 		LocalDateTime localDateTime0 = LocalDateTime.of(0, 2, 03, 10, 15);
+		Date localDate0 = Date.from(localDateTime0.atZone(ZoneId.systemDefault()).toInstant());
 		LocalDateTime localDateTime00 = LocalDateTime.of(9999, 2, 03, 10, 15);
-		
+		Date localDate00 = Date.from(localDateTime00.atZone(ZoneId.systemDefault()).toInstant());
+
 		LocalDateTime localDateTime1 = LocalDateTime.of(2020, 2, 03, 10, 15);
 		Date localDate1 = Date.from(localDateTime1.atZone(ZoneId.systemDefault()).toInstant());
 		LocalDateTime localDateTime2 = LocalDateTime.of(2020, 2, 13, 10, 15);
@@ -399,16 +402,25 @@ public class PopulatorDatabase implements CommandLineRunner {
 		Project project5 = projectRepository.save(new Project("Acme-Writers",
 				"Proyecto dedicado a la creación de una plataforma para la publicación de libros de autores poco conocidos gracias a editoriales",
 				team1));
+		Project project6 = projectRepository.save(new Project("Acme-Basic",
+				"Proyecto de nuestro equipo basico",
+				team5));
+		Project project7 = projectRepository.save(new Project("Acme-Standard",
+				"Proyecto de nuestro equipo standard",
+				team6));
 
 		entities.put("project1", project1.getId());
 		entities.put("project2", project2.getId());
 		entities.put("project3", project3.getId());
 		entities.put("project4", project4.getId());
 		entities.put("project5", project5.getId());
+		entities.put("project6", project6.getId());
+		entities.put("project7", project7.getId());
+
 
 		LocalDateTime localDateTime5 = LocalDateTime.of(2020, 3, 25, 10, 15);
 		Date localDate5 = Date.from(localDateTime5.atZone(ZoneId.systemDefault()).toInstant());
-		LocalDateTime localDateTime6 = LocalDateTime.of(2020, 4, 15, 10, 15);
+		LocalDateTime localDateTime6 = LocalDateTime.of(2020, 8, 24, 23, 59);
 		Date localDate6 = Date.from(localDateTime6.atZone(ZoneId.systemDefault()).toInstant());
 		LocalDateTime localDateTime7 = LocalDateTime.of(2020, 10, 25, 10, 15);
 		Date localDate7 = Date.from(localDateTime7.atZone(ZoneId.systemDefault()).toInstant());
@@ -428,33 +440,45 @@ public class PopulatorDatabase implements CommandLineRunner {
 		Date localDate14 = Date.from(localDateTime14.atZone(ZoneId.systemDefault()).toInstant());
 		LocalDateTime localDateTime15 = LocalDateTime.of(2020, 8, 26, 10, 15);
 		Date localDate15 = Date.from(localDateTime15.atZone(ZoneId.systemDefault()).toInstant());
-		LocalDateTime localDateTime16 = LocalDateTime.of(2020, 3, 26, 10, 15);
-		Date localDate16 = Date.from(localDateTime16.atZone(ZoneId.systemDefault()).toInstant());
+		
 		
 		Sprint sprint1 = this.sprintRepository.save(new Sprint(localDate5, localDate6, project1));
 		Sprint sprint2 = this.sprintRepository.save(new Sprint(localDate7, localDate8, project2));
 		Sprint sprint3 = this.sprintRepository.save(new Sprint(localDate9, localDate10, project3));
 		Sprint sprint4 = this.sprintRepository.save(new Sprint(localDate11, localDate12, project4));
 		Sprint sprint5 = this.sprintRepository.save(new Sprint(localDate13, localDate14, project1));
+		Sprint sprint6 = this.sprintRepository.save(new Sprint(localDate0, localDate00, project6));
+		Sprint sprint7 = this.sprintRepository.save(new Sprint(localDate0, localDate00, project7));
 
 		entities.put("sprint1", sprint1.getId());
 		entities.put("sprint2", sprint2.getId());
 		entities.put("sprint3", sprint3.getId());
 		entities.put("sprint4", sprint4.getId());
 		entities.put("sprint5", sprint5.getId());
+		entities.put("sprint6", sprint6.getId());
+		entities.put("sprint7", sprint7.getId());
+
 
 		Workspace workspace1 = this.workspaceRepository.save(new Workspace("Fase de planificación", sprint1));
 		Workspace workspace2 = this.workspaceRepository.save(new Workspace("Tareas de formación", sprint2));
 		Workspace workspace3 = this.workspaceRepository
 				.save(new Workspace("Tareas de análisis de requisitos", sprint3));
 		Workspace workspace4 = this.workspaceRepository.save(new Workspace("Fase de cierre", sprint4));
-		Workspace workspace5 = this.workspaceRepository.save(new Workspace("Fase de desarrollo", sprint5));
+		Workspace workspace5 = this.workspaceRepository.save(new Workspace("Default", sprint5));
 
+		Workspace workspace6 = this.workspaceRepository.save(new Workspace("Default", sprint6));
+		Workspace workspace7 = this.workspaceRepository.save(new Workspace("Default", sprint7));
+		Workspace workspace8 = this.workspaceRepository.save(new Workspace("Fase de desarrollo", sprint1));
+		
 		entities.put("workspace1", workspace1.getId());
 		entities.put("workspace2", workspace2.getId());
 		entities.put("workspace3", workspace3.getId());
 		entities.put("workspace4", workspace4.getId());
 		entities.put("workspace5", workspace5.getId());
+		entities.put("workspace6", workspace6.getId());
+		entities.put("workspace7", workspace7.getId());
+		entities.put("workspace8", workspace8.getId());
+
 
 		String toDoName = "To do";
 		String inProgressName = "In progress";
@@ -479,6 +503,18 @@ public class PopulatorDatabase implements CommandLineRunner {
 		Column toDo5 = this.columnRepository.save(new Column(toDoName, workspace5));
 		Column inProgress5 = this.columnRepository.save(new Column(inProgressName, workspace5));
 		Column done5 = this.columnRepository.save(new Column(doneName, workspace5));
+		
+		Column toDo6 = this.columnRepository.save(new Column(toDoName, workspace6));
+		Column inProgress6 = this.columnRepository.save(new Column(inProgressName, workspace6));
+		Column done6 = this.columnRepository.save(new Column(doneName, workspace6));
+		
+		Column toDo7 = this.columnRepository.save(new Column(toDoName, workspace7));
+		Column inProgress7 = this.columnRepository.save(new Column(inProgressName, workspace7));
+		Column done7 = this.columnRepository.save(new Column(doneName, workspace7));
+		
+		Column toDo8 = this.columnRepository.save(new Column(toDoName, workspace8));
+		Column inProgress8 = this.columnRepository.save(new Column(inProgressName, workspace8));
+		Column done8 = this.columnRepository.save(new Column(doneName, workspace8));
 
 		entities.put("toDo", toDo1.getId());
 		entities.put("inProgress", inProgress1.getId());
@@ -499,6 +535,18 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("toDo5", toDo5.getId());
 		entities.put("inProgress5", inProgress5.getId());
 		entities.put("done5", done5.getId());
+		
+		entities.put("toDo6", toDo6.getId());
+		entities.put("inProgress6", inProgress6.getId());
+		entities.put("done6", done6.getId());
+		
+		entities.put("toDo7", toDo7.getId());
+		entities.put("inProgress7", inProgress7.getId());
+		entities.put("done7", done7.getId());
+		
+		entities.put("toDo8", toDo8.getId());
+		entities.put("inProgress8", inProgress8.getId());
+		entities.put("done8", done8.getId());
 
 		Set<User> list1 = new HashSet<>();
 		list1.add(user1);
@@ -536,19 +584,23 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("task6", task6.getId());
 
 		
-		Document doc1 = this.documentRepository.save(new Document(DocumentType.DAILY, "Daily 12/04/2020",
+		Document doc1 = this.documentRepository.save(new Document(DocumentType.DAILY, "Daily 17/04/2020",
 				"[{\"name\": \"testUser4\", \"done\": \"Terminar populate\", \"doing\": \"Empezar mi primer caso de uso\", \"problems\": \"No se usar spring boot\"}]",
 				sprint1, false));
-		Document doc2 = this.documentRepository.save(new Document(DocumentType.REVIEW, "Review",
-				"{\"done\": \"PDF\", \"noDone\": \"Modificar populate\", \"rePlanning\": \"Graficas\"}", sprint1,
-				false));
-		Document doc3 = this.documentRepository.save(new Document(DocumentType.RETROSPECTIVE, "Retrospective",
-				"{\"good\": \"Sincronización entre entornos\", \"bad\": \"No ha habido comunicacion entre documentacion y presentacion\", \"improvement\": \"Mas reuniones para motivar y sincronizar cambios entre documentacion y presentacion\"}",
+		Document doc2 = this.documentRepository.save(new Document(DocumentType.DAILY, "Daily 18/04/2020",
+				"[]",
 				sprint1, false));
+		Document doc3 = this.documentRepository.save(new Document(DocumentType.REVIEW, "Review",
+				"{\"done\": \"PDF\", \"noDone\": \"Modificar populate\", \"rePlanning\": \"Graficas\"}", sprint1,
+				true));
+		Document doc4 = this.documentRepository.save(new Document(DocumentType.RETROSPECTIVE, "Retrospective",
+				"{\"good\": \"Sincronización entre entornos\", \"bad\": \"No ha habido comunicacion entre documentacion y presentacion\", \"improvement\": \"Mas reuniones para motivar y sincronizar cambios entre documentacion y presentacion\"}",
+				sprint1, true));
 
 		entities.put("doc1", doc1.getId());
 		entities.put("doc2", doc2.getId());
 		entities.put("doc3", doc3.getId());
+		entities.put("doc4", doc4.getId());
 
 		HistoryTask historyTask1 = this.historyTaskRepository
 				.save(new HistoryTask(localDateTime5, toDo1, inProgress1, task2));
@@ -635,20 +687,28 @@ public class PopulatorDatabase implements CommandLineRunner {
 		entities.put("payment14", payment14.getId());
 		entities.put("payment15", payment15.getId());
 
-		PersonalTaskList personalList1 = this.taskListRepository.save(new PersonalTaskList(user1, "Test List 1"));
-		PersonalTaskList personalList2 = this.taskListRepository.save(new PersonalTaskList(user1, "Test List 2"));
-		PersonalTaskList personalList3 = this.taskListRepository.save(new PersonalTaskList(user1, "Test List 3"));
-		PersonalTaskList personalList4 = this.taskListRepository.save(new PersonalTaskList(user1, "Test List 4"));
+		Note note1 = this.noteRepository.save(new Note(user1, "Revisar mis tareas"));
+		Note note2 = this.noteRepository.save(new Note(user1, "Hablar con el coordinador"));
+		Note note3 = this.noteRepository.save(new Note(user1, "Mirar documentación del error en mi tarea"));
+		Note note4 = this.noteRepository.save(new Note(user1, "Avisar al equipo de mi problema"));
 
-		entities.put("personalList1", personalList1.getId());
-		entities.put("personalList2", personalList2.getId());
-		entities.put("personalList3", personalList3.getId());
-		entities.put("personalList4", personalList4.getId());
+		entities.put("note1", note1.getId());
+		entities.put("note2", note2.getId());
+		entities.put("note3", note3.getId());
+		entities.put("note4", note4.getId());
+		
+		LocalDateTime localDateTime17 = LocalDateTime.of(2020, 4, 18, 00, 00);
+		Date localDate17 = Date.from(localDateTime17.atZone(ZoneId.systemDefault()).toInstant());
+		
 		
 		Notification notification1 = this.notificationRepository.save(new Notification("Realizar sprint planning meeting", localDate15, sprint5, null));
-		Notification notification2 = this.notificationRepository.save(new Notification("Debes rellenar la daily de hoy (26/03/2020)", localDate16, sprint1, user1));
+		Notification notification2 = this.notificationRepository.save(new Notification("Debes rellenar la daily de hoy (18/04/2020)", localDate17, sprint1, user1));
+		Notification notification3 = this.notificationRepository.save(new Notification("Debes rellenar la daily de hoy (18/04/2020)", localDate17, sprint1, user4));
+
+		
 		entities.put("notification1", notification1.getId());
 		entities.put("notification2", notification2.getId());
+		entities.put("notification3", notification3.getId());
 
 		SecurityBreach securityBreach = this.securityBreachRepository.save(new SecurityBreach("Hemos encontrado una brecha de seguridad en el sistema, disculpe las molestias.", false));
 		entities.put("securityBreach", securityBreach.getId());
@@ -677,7 +737,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		historyTaskRepository.flush();
 		estimationRepository.flush();
 		documentRepository.flush();
-		taskListRepository.flush();
+		noteRepository.flush();
 		notificationRepository.flush();
 	}
 
