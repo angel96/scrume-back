@@ -847,76 +847,76 @@ public class PopulatorDatabase implements CommandLineRunner {
 		//Tareas
 		Task task0201 = this.taskRepository.save(new Task("Revision casos de uso de Aleks",
 		                "Revisión casos de uso implentados por Aleks.", 1,
-		                backend, angel, done100));
+		                backend, angel, done200));
 		Task task0202 = this.taskRepository.save(new Task("Revision casos de uso de David",
 		                "Revisión casos de uso implentados por David.", 1,
-		                backend, ale, done100));
+		                backend, ale, done200));
 		Task task0203 = this.taskRepository.save(new Task("Revision casos de uso de Angel",
 		                "Revisión casos de uso implentados por Angel.", 1,
-		                backend, david, done100));
+		                backend, david, done200));
 		Task task0204 = this.taskRepository.save(new Task("Añadir validación de paquetes",
 		                "Añadir validación de paquetes.", 5,
-		                backend, david, done100));
+		                backend, david, done200));
 		Task task0205 = this.taskRepository.save(new Task("Añadir notificación de brecha de seguridad",
 		                "Añadir notificación de brecha de seguridad.", 3,
-		                backend, david, done100));
+		                backend, david, done200));
 		Task task0206 = this.taskRepository.save(new Task("Mejoras en el caso de uso de gestión de GDPR",
 		                "Mejoras en el caso de uso de gestión de GDPR.", 5,
-		                backend, david, done100));
+		                backend, david, done200));
 		Task task0207 = this.taskRepository.save(new Task("Mejoras en tableros",
 		                "Mejoras en tableros.", 5,
-		                backend, angel, done100));
+		                backend, angel, done200));
 		Task task0208 = this.taskRepository.save(new Task("Mejoras en el caso de uso de pagos",
 		                "Mejoras en el caso de uso de pagos.", 5,
-		                backend, angel, done100));
+		                backend, angel, done200));
 		Task task0209 = this.taskRepository.save(new Task("Mejoras en equipo",
 		                "Mejoras en equipo.", 5,
-		                backend, david, done100));
+		                backend, david, done200));
 		Task task0210 = this.taskRepository.save(new Task("Mejoras en tareas",
 		                "Mejoras en tareas.", 5,
-		                backend, ale, done100));
+		                backend, ale, done200));
 		Task task0211 = this.taskRepository.save(new Task("Mejoras en usuarios",
 		                "Mejoras en usuarios.", 5,
-		                backend, david, done100));
+		                backend, david, done200));
 		Task task0212 = this.taskRepository.save(new Task("Mejoras en la implementacion del JWT",
 		                "Mejoras en la implementacion del JWT.", 5,
-		                backend, angel, inProgress100));
+		                backend, angel, done200));
 		Task task0213 = this.taskRepository.save(new Task("Mejoras en el caso de uso de estimacion de tareas",
 		                "Mejoras en el caso de uso de estimacion de tareas.", 5,
-		                backend, david, done100));
+		                backend, david, done200));
 		Task task0214 = this.taskRepository.save(new Task("Mejoras en sprint",
 		                "Mejoras en sprint.", 5,
-		                backend, david, done100));
+		                backend, david, done200));
 		Task task0215 = this.taskRepository.save(new Task("Mejoras en projectos",
 		                "Mejoras en projectos.", 5,
-		                backend, angel, done100));
+		                backend, angel, done200));
 		Task task0216 = this.taskRepository.save(new Task("Mejoras en el caso de uso de documentos",
 		                "Mejoras en el caso de uso de documentos.", 5,
-		                backend, ale, inProgress100));
+		                backend, ale, done200));
 		Task task0217 = this.taskRepository.save(new Task("Mejoras en el caso de uso de lista de tareas personal",
 		                "Mejoras en el caso de uso de lista de tareas personal.", 5,
-		                backend, ale, done100));
+		                backend, ale, done200));
 		Task task0218 = this.taskRepository.save(new Task("Mejoras en el populate",
 		                "Mejoras en el populate.", 5,
-		                backend, david, done100));
+		                backend, david, done200));
 		Task task0219 = this.taskRepository.save(new Task("Aumento de cobertura de tests",
 		                "Aumento de cobertura de tests.", 4,
-		                backend, david, done100));
+		                backend, david, done200));
 		Task task0220 = this.taskRepository.save(new Task("build(deps): bump pdfbox from 2.0.4 to 2.0.15",
 		                "build(deps): bump pdfbox from 2.0.4 to 2.0.15.", 5,
-		                backend, todoBack, done100));
+		                backend, todoBack, done200));
 		Task task0221 = this.taskRepository.save(new Task("Creación de Pdfs",
 		                "Creación de Pdfs.", 8,
-		                backend, angel, done100));
+		                backend, angel, done200));
 		Task task0222 = this.taskRepository.save(new Task("Despliegue de la app para nuestro propio uso",
 		                "Despliegue de la app para nuestro propio uso.", 1,
-		                backend, angel, done100));
+		                backend, angel, done200));
 		Task task0223 = this.taskRepository.save(new Task("Caso de uso de graficos burndown/up ",
 		                "Caso de uso de graficos burndown/up .", 3,
-		                backend, ale, done100));
+		                backend, ale, done200));
 		Task task0224 = this.taskRepository.save(new Task("CU- 12 Notificaciones ",
 		                "CU- 12 Notificaciones .", 13,
-		                backend, david, done100));
+		                backend, david, done200));
 
 		 //asignacion tareas
 		entities.put("task0201", task0201.getId());
