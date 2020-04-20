@@ -60,7 +60,7 @@ public class TaskService extends AbstractService {
 		checkUserLogged(UserAccountService.getPrincipal());
 		checkUserOnTeam(UserAccountService.getPrincipal(), task.getProject().getTeam());
 		Set<UserForWorkspaceDto> users = task.getUsers().stream()
-				.map(x -> new UserForWorkspaceDto(x.getId(), x.getNick())).collect(Collectors.toSet());
+				.map(x -> new UserForWorkspaceDto(x.getId(), x.getNick(), x.getPhoto())).collect(Collectors.toSet());
 //		Set<Integer> users = task.getUsers().stream().map(User::getId).collect(Collectors.toSet());
 		return new TaskDto(task.getTitle(), task.getDescription(), task.getPoints(), task.getProject().getId(), users,
 				task.getColumn() == null ? null : task.getColumn().getId());
@@ -141,13 +141,9 @@ public class TaskService extends AbstractService {
 		checkUserOnTeam(UserAccountService.getPrincipal(), project.getTeam());
 		ModelMapper mapper = new ModelMapper();
 		Task taskEntity = mapper.map(task, Task.class);
-		Task taskDB = new Task();
-		taskDB.setTitle(taskEntity.getTitle());
-		taskDB.setDescription(taskEntity.getDescription());
-		taskDB.setProject(project);
+		Task taskDB = new Task(taskEntity.getTitle(), taskEntity.getDescription(), 0, project, new HashSet<>(), null);
 		taskDB = taskRepository.saveAndFlush(taskDB);
-		return new TaskDto(taskDB.getTitle(), taskDB.getDescription(), taskDB.getPoints(), projectId, new HashSet<>(),
-				null);
+		return new TaskDto(taskDB.getTitle(), taskDB.getDescription(), taskDB.getPoints(), projectId, new HashSet<>(),null);
 	}
 
 	public TaskEditDto update(TaskEditDto taskDto, int taskId) {
@@ -189,6 +185,9 @@ public class TaskService extends AbstractService {
 
 	}
 
+	public Collection<Task> findAllTaskByUser(User user) {
+		return this.taskRepository.findAllByUser(user);
+	}
 
 
 	private void validateProject(Project project) {
@@ -212,4 +211,27 @@ public class TaskService extends AbstractService {
 	public void flush() {
 		taskRepository.flush();
 	}
+
+	public void getOutAllTasks(User user) {
+		Collection<Task> tasks = this.taskRepository.findAllByUser(user);
+		for (Task task : tasks) {
+			Set<User> users = task.getUsers();
+			users.remove(user);
+			task.setUsers(users);
+			this.taskRepository.saveAndFlush(task);
+		}
+	}
+
+	public void removeFromWorkspace(Workspace workspace) {
+		Collection<Task> tasks = this.taskRepository.findByWorkspace(workspace);
+		for (Task task : tasks) {
+			task.setColumn(null);
+			this.taskRepository.saveAndFlush(task);
+		}
+	}
+
+	
+	
+	
+	
 }

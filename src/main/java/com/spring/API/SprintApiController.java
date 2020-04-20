@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.spring.CustomObject.BurnUpDto;
+import com.spring.CustomObject.BurndownDto;
 import com.spring.CustomObject.SprintDto;
 import com.spring.CustomObject.SprintEditDto;
 import com.spring.CustomObject.SprintStatisticsDto;
@@ -36,9 +38,9 @@ public class SprintApiController extends AbstractApiController{
 		return this.sprintService.getStatistics(idSprint);
 	}
 	
-	@GetMapping("/check-dates/{idProject}")
+	@PostMapping("/check-dates/{idProject}")
 	public boolean areValidDates(@PathVariable Integer idProject, @RequestBody SprintDto sprintDto) {
-		super.logger.info("GET /api/sprint/check-dates/" + idProject);
+		super.logger.info("POST /api/sprint/check-dates/" + idProject);
 		Project project = new Project();
 		project.setId(idProject);
 		sprintDto.setProject(project);
@@ -56,6 +58,18 @@ public class SprintApiController extends AbstractApiController{
 		sprintDto.setId(idSprint);
 		super.logger.info("PUT /api/sprint/" + idSprint);
 		return this.sprintService.update(sprintDto);
+	}
+	
+	@GetMapping("burndown/{idSprint}")
+	public List<BurndownDto> burndown(@PathVariable Integer idSprint) {
+		super.logger.info("GET /api/burndown/sprint/" + idSprint);
+		return this.sprintService.getBurnDown(idSprint);
+	}
+	
+	@GetMapping("burnup/{idSprint}")
+	public List<BurnUpDto> burnup(@PathVariable Integer idSprint) {
+		super.logger.info("GET /api/burnup/sprint/" + idSprint);
+		return this.sprintService.getBurnUp(idSprint);
 	}
 	
 }
