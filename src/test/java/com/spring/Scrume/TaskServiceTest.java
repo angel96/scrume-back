@@ -7,7 +7,6 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.modelmapper.internal.util.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.TaskDto;
@@ -48,7 +47,7 @@ public class TaskServiceTest extends AbstractTest {
 				// Caso positivo
 				{ "testuser1@gmail.com", super.entities().get("task1"), null },
 				// Caso negativo(usuario no autentificado)
-				{ "", super.entities().get("task1"), UsernameNotFoundException.class },
+				{ "", super.entities().get("task1"), ResponseStatusException.class },
 				// Caso negativo(no existe Task con dicho id)
 				{ "testuser1@gmail.com", Integer.MAX_VALUE, ResponseStatusException.class }, };
 		Stream.of(objectsFindOne).forEach(x -> driverFindOneTest((String) x[0], (Integer) x[1], (Class<?>) x[2]));
@@ -73,7 +72,7 @@ public class TaskServiceTest extends AbstractTest {
 				// Caso positivo
 				{ "testuser1@gmail.com", super.entities().get("project1"), null },
 				// Caso negativo(usuario no logueado)
-				{ "", super.entities().get("project1"), UsernameNotFoundException.class },
+				{ "", super.entities().get("project1"), ResponseStatusException.class },
 				// Caso negativo(el proyecto no existe)
 				{ "testuser1@gmail.com", Integer.MAX_VALUE, ResponseStatusException.class },
 				// Caso negativo(el usuario no pertenece al equipo)
@@ -87,7 +86,7 @@ public class TaskServiceTest extends AbstractTest {
 				// Caso positivo
 				{ "testuser1@gmail.com", super.entities().get("task1"), null },
 				// Caso negativo(usuario no logueado)
-				{ "", super.entities().get("task1"), UsernameNotFoundException.class },
+				{ "", super.entities().get("task1"), ResponseStatusException.class },
 				// Caso negativo(el proyecto no existe)
 				{ "testuser1@gmail.com", Integer.MAX_VALUE, ResponseStatusException.class },
 				// Caso negativo(el usuario no pertenece al equipo)
@@ -101,7 +100,7 @@ public class TaskServiceTest extends AbstractTest {
 				// Caso positivo
 				{ "testuser1@gmail.com", super.entities().get("task1"), null },
 				// Caso negativo(usuario no logueado)
-				{ "", super.entities().get("task1"), UsernameNotFoundException.class },
+				{ "", super.entities().get("task1"), ResponseStatusException.class },
 				// Caso negativo(la tarea no existe)
 				{ "testuser1@gmail.com", Integer.MAX_VALUE, ResponseStatusException.class },
 				// Caso negativo(el usuario no pertenece al equipo)

@@ -4,7 +4,6 @@ import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.ProjectDto;
@@ -31,7 +30,7 @@ public class ProjectServiceTest extends AbstractTest {
 				{ "testuser10@gmail.com", super.entities().get("team5"), null }, 
 				{ "testuser12@gmail.com", super.entities().get("team6"), null }, 
 				{ "testuser1@gmail.com", super.entities().get("team1"), null }, //Caso positivo
-				{ "hola", super.entities().get("team1"), UsernameNotFoundException.class }}; //Caso negativo
+				{ "hola", super.entities().get("team1"), ResponseStatusException.class }}; //Caso negativo
 		
 		Stream.of(objects).forEach(x -> driverFindProjects((String) x[0], (Integer) x[1], (Class<?>) x[2]));
 		}
@@ -65,7 +64,7 @@ public class ProjectServiceTest extends AbstractTest {
 				{ "testuser1@gmail.com", projectDto, super.entities().get("team1"), null }, 
 				{ "testuser10@gmail.com", projectDto, super.entities().get("team5"), ResponseStatusException.class }, 
 				{ "testuser12@gmail.com", projectDto, super.entities().get("team6"), ResponseStatusException.class }, 
-				{ "hola", projectDto, super.entities().get("team1"), UsernameNotFoundException.class }}; //Caso negativo
+				{ "hola", projectDto, super.entities().get("team1"), ResponseStatusException.class }}; //Caso negativo
 		
 		Stream.of(objects).forEach(x -> driverTestSave((String) x[0], (ProjectDto) x[1], (Integer) x[2], (Class<?>) x[3]));
 		}
@@ -93,7 +92,7 @@ public class ProjectServiceTest extends AbstractTest {
 		projectDto.setDescription("Description 1");
 		Object[][] objects = {
 				{ "testuser1@gmail.com", projectDto, super.entities().get("team1"), super.entities().get("project1"), "NombreActualizado", null }, //Caso positivo
-				{ "hola", projectDto, super.entities().get("team65"), super.entities().get("project1"), "NombreActualizado", UsernameNotFoundException.class }}; //Caso negativo
+				{ "hola", projectDto, super.entities().get("team65"), super.entities().get("project1"), "NombreActualizado", ResponseStatusException.class }}; //Caso negativo
 		
 		Stream.of(objects).forEach(x -> driverTestUpdate((String) x[0], (ProjectDto) x[1], (Integer) x[2], (Integer) x[3], (String) x[4], (Class<?>) x[5]));
 		}
@@ -121,7 +120,7 @@ public class ProjectServiceTest extends AbstractTest {
 		Object[][] objects = {
 				{ "testuser4@gmail.com", super.entities().get("project1") , ResponseStatusException.class}, 
 				{ "testuser3@gmail.com", super.entities().get("project1") , ResponseStatusException.class}, 
-				{ "hola", super.entities().get("project1"), UsernameNotFoundException.class }, //Caso negativo
+				{ "hola", super.entities().get("project1"), ResponseStatusException.class }, //Caso negativo
 				{ "testuser1@gmail.com", super.entities().get("project1") , null}, //Caso positivo
 				{ "testuser3@gmail.com", super.entities().get("project2"), ResponseStatusException.class }}; //Caso negativo
 			
