@@ -28,6 +28,6 @@ public interface ColumnRepository extends AbstractRepository<Column> {
 	@Query("select c from Column c where c.workspace = ?1 and c.name = 'Done'")
 	Column findColumnDoneByWorkspace(Workspace workspace);
 
-	@Query("select c from Column c where c.workspace.sprint.project = ?1 and c.name = 'To do' order by c.workspace.sprint.startDate asc")
+	@Query("select c from Column c where c.workspace.sprint.project = ?1 and c.name = 'To do' order by c.workspace.sprint.startDate ASC")
 	Collection<Column> findColumnToDoByProject(Project project);
 }
