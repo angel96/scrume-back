@@ -281,7 +281,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		User user2 = new User("Ángela", "Pérez Luna", "perdellun", "perdellun", null);
 		user2.setUserAccount(account2);
 		user2 = userRepository.save(user2);
-		User user3 = new User("Ezequiel", "Portillo Jurado", "ezeporjur", "EzequielPJ", null);
+		User user3 = new User("Eustaquio", "Portillo Jurado", "eusporjur", "EzequielPJ", null);
 		user3.setUserAccount(account3);
 		user3 = userRepository.save(user3);
 		User user4 = new User("Jaime", "Garrido López", "jaigarlop", "jaigarlop", null);
