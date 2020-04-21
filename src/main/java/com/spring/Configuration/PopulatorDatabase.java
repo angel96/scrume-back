@@ -546,9 +546,9 @@ public class PopulatorDatabase implements CommandLineRunner {
 		LocalDateTime localDateTime15 = LocalDateTime.of(2020, 8, 26, 10, 15);
 		Date localDate15 = Date.from(localDateTime15.atZone(ZoneId.systemDefault()).toInstant());
 		
-		LocalDateTime localDateTime100 = LocalDateTime.of(2020, 4, 1, 00, 00);
+		LocalDateTime localDateTime100 = LocalDateTime.of(2020, 4, 1, 02, 00);
 		Date localDate100 = Date.from(localDateTime100.atZone(ZoneId.systemDefault()).toInstant());
-		LocalDateTime localDateTime200 = LocalDateTime.of(2020, 4, 21, 23, 59);
+		LocalDateTime localDateTime200 = LocalDateTime.of(2020, 4, 22, 1, 59);
 		Date localDate200 = Date.from(localDateTime200.atZone(ZoneId.systemDefault()).toInstant());
 		
 		Sprint sprint3Front = this.sprintRepository.save(new Sprint(localDate100, localDate200, frontend));
