@@ -548,7 +548,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		
 		LocalDateTime localDateTime100 = LocalDateTime.of(2020, 4, 1, 00, 00);
 		Date localDate100 = Date.from(localDateTime100.atZone(ZoneId.systemDefault()).toInstant());
-		LocalDateTime localDateTime200 = LocalDateTime.of(2020, 4, 21, 00, 00);
+		LocalDateTime localDateTime200 = LocalDateTime.of(2020, 4, 21, 23, 59);
 		Date localDate200 = Date.from(localDateTime200.atZone(ZoneId.systemDefault()).toInstant());
 		
 		Sprint sprint3Front = this.sprintRepository.save(new Sprint(localDate100, localDate200, frontend));
@@ -787,7 +787,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		                frontend, belen, done100));
 		Task task0112 = this.taskRepository.save(new Task("Mejoras Gráficas",
 		                "Mejorar los grafismos, estilos y recusros de la aplicación.", 15,
-		                frontend, antonio, inProgress100));
+		                frontend, antonio, done100));
 		Task task0113 = this.taskRepository.save(new Task("Mejoras Invitación",
 		                "Mejorar el funcionamiento de las invitaciones de usuarios a un equipo.", 4,
 		                frontend, juanma, done100));
@@ -799,7 +799,7 @@ public class PopulatorDatabase implements CommandLineRunner {
 		                frontend, antonioJuanma, done100));
 		Task task0116 = this.taskRepository.save(new Task("Mejoras Técnicas",
 		                "Mejorar el código para aumentar la legibilidad y el mantenimiento así como aspectos técnicos referentes a buenas prácticas y rendimiento.", 14,
-		                frontend, zekiManu, inProgress100));
+		                frontend, zekiManu, done100));
 		Task task0117 = this.taskRepository.save(new Task("Arreglos QA/Pilotaje",
 		                "Arrelar los errores detectados tras la revisión de QA y pilotaje.", 6,
 		                frontend, juanma, done100));
