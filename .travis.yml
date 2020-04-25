@@ -30,7 +30,7 @@ jobs:
 
       deploy:
           provider: heroku
-          app: api-scrume-sp3
+          app: api-scrume-sp4
           strategy: git
           script:
             - cp application.properties_deployment src/main/resources/application.properties
@@ -43,5 +43,4 @@ jobs:
 
 notifications:
   email:
-    - angeldelgadoluna@gmail.com
     - dcamalv@gmail.com
