@@ -218,7 +218,7 @@ public class DocumentService extends AbstractService {
 			
 			PdfPCell left = getCell(
 					"Sprint: " + format.format(start) + " - " + format.format(end) + "\n" + "Proyecto: "
-							+ project.getName() + "\n Equipo: " + team.getName() + "\n Fecha de descarga: "
+							+ project.getName() + "\nEquipo: " + team.getName() + "\nFecha de descarga: "
 							+ LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT)),
 							Element.ALIGN_LEFT, fontCursiva);
 			table.addCell(left);
