@@ -228,6 +228,7 @@ public class TaskService extends AbstractService {
 		Collection<Task> tasks = this.taskRepository.findByWorkspace(workspace);
 		for (Task task : tasks) {
 			task.setColumn(null);
+			task.setUsers(new HashSet<>());
 			this.taskRepository.saveAndFlush(task);
 		}
 	}

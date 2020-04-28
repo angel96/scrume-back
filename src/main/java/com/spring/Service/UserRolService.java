@@ -35,7 +35,7 @@ public class UserRolService extends AbstractService {
 		try {
 			return this.userRolRepository.saveAndFlush(userRol);
 		} catch (Exception e) {
-			throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Error when saving the user rol");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Error when saving the user rol");
 		}
 	}
 
