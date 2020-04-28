@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -261,7 +262,7 @@ public class DocumentService extends AbstractService {
 		JSONObject object = null;
 		JSONArray array = null;
 
-		Map<String, String> values = new HashMap<>();
+		Map<String, String> values = new LinkedHashMap<>();
 
 		try {
 			if (type.equals(DocumentType.DAILY)) {
