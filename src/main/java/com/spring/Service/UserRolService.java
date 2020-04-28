@@ -47,6 +47,12 @@ public class UserRolService extends AbstractService {
 		return this.userRolRepository.existsByUserAndAdminAndTeam(principal, true, team);
 	}
 
+	public boolean isAdminOnTeam(Integer idTeam) {
+		User principal = this.userService.getUserByPrincipal();
+		Team team = this.teamService.findOne(idTeam);
+		return this.userRolRepository.existsByUserAndAdminAndTeam(principal, true, team);
+	}
+	
 	public void teamOut(Integer idTeam) {
 		User principal = this.userService.getUserByPrincipal();
 		this.validateTeam(idTeam);
