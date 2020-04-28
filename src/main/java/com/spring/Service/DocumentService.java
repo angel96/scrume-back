@@ -10,7 +10,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -197,8 +197,12 @@ public class DocumentService extends AbstractService {
 
 			BaseFont helvetica = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.EMBEDDED);
 
-			Font fontTitle = new Font(helvetica, 16, Font.BOLD);
+			Font fontTitle = new Font(helvetica, 30, Font.BOLD);
+			Font fontTitle2 = new Font(helvetica, 14, Font.BOLD);
+
 			Font fontNormal = new Font(helvetica, 14, Font.NORMAL);
+			Font fontCursiva = new Font(helvetica, 14, Font.ITALIC);
+			Font fontSubtitle = new Font(helvetica, 14, Font.BOLDITALIC);
 
 			Image img = Image.getInstance("files/logo.png");
 			img.scalePercent(10);
@@ -206,26 +210,22 @@ public class DocumentService extends AbstractService {
 
 			// Cabecera
 
-			PdfPTable table = new PdfPTable(3);
+			PdfPTable table = new PdfPTable(2);
 
 			table.setWidthPercentage(100);
 
 			SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
-
-			PdfPCell left = getCell(type, Element.ALIGN_LEFT, fontNormal);
-			PdfPCell center = getCell(
-					"Sprint " + format.format(start) + " - " + format.format(end) + "\n" + "Proyecto "
-							+ project.getName() + "\n Equipo " + team.getName() + "\n Fecha de descarga "
+			
+			PdfPCell left = getCell(
+					"Sprint: " + format.format(start) + " - " + format.format(end) + "\n" + "Proyecto: "
+							+ project.getName() + "\n Equipo: " + team.getName() + "\n Fecha de descarga: "
 							+ LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT)),
-					Element.ALIGN_CENTER, fontNormal);
+							Element.ALIGN_LEFT, fontCursiva);
+			table.addCell(left);
 			PdfPCell right = getCell("Text on the right", Element.ALIGN_RIGHT, fontNormal);
-
 			right.addElement(img);
 
-			table.addCell(left);
-			table.addCell(center);
 			table.addCell(right);
-
 			document.add(table);
 
 			// Contenido
@@ -234,12 +234,15 @@ public class DocumentService extends AbstractService {
 
 			Paragraph p = new Paragraph(title, fontTitle);
 			document.add(p);
+			Paragraph p2 = new Paragraph(type.replace("_", " "), fontSubtitle);
+			document.add(p2);
 
 			document.add(Chunk.NEWLINE);
 
 			// Contenido para cada campo
 
-			generateFieldsByType(document, DocumentType.valueOf(type), content, fontTitle, fontNormal);
+			generateFieldsByType(document, DocumentType.valueOf(type), content, fontTitle2, fontNormal);
+			
 
 		} catch (DocumentException e) {
 			log.error("DocumentException", e);
@@ -261,50 +264,62 @@ public class DocumentService extends AbstractService {
 		JSONObject object = null;
 		JSONArray array = null;
 
-		Map<String, String> values = new HashMap<>();
+		Map<String, String> values = new LinkedHashMap<>();
 
 		try {
 			if (type.equals(DocumentType.DAILY)) {
 				array = (JSONArray) parser.parse(content);
+				String todo = "";
+				String done = "";
+				String problems = "";
 				for (int i = 0; i < array.size(); i++) {
 					JSONObject o = (JSONObject) array.get(i);
-					String name = (String) o.get("name");
-					String done = (String) o.get("done");
-					String problems = (String) o.get("problems");
-					values.put("Nombre", name);
-					values.put("Realizado", done);
-					values.put("Problemas", problems);
-					crearBody(document, values, fontTitle, fontNormal);
+					
+					StringBuilder doneBl = new StringBuilder();
+					doneBl.append(done + (String) o.get("name") + ":\n" + (String) o.get("done") + "\n\n");
+					done = doneBl.toString();
+					
+					StringBuilder todoBl = new StringBuilder();
+					todoBl.append(todo + (String) o.get("name") + ":\n" + (String) o.get("doing") + "\n\n");
+					todo = todoBl.toString();
+					
+					StringBuilder problemsBl = new StringBuilder();
+					problemsBl.append(problems + (String) o.get("name") + ":\n" + (String) o.get("problems") + "\n\n");
+					problems = problemsBl.toString();
 				}
+				values.put("¿Qué he hecho hoy?", done);
+				values.put("¿Qué voy a hacer hoy?", todo);
+				values.put("¿Qué problemas he tenido?", problems);
+				crearBody(document, values, fontTitle, fontNormal);
 			} else if (type.equals(DocumentType.PLANNING_MEETING)) {
 				object = (JSONObject) parser.parse(content);
 				String entrega = (String) object.get("entrega");
 				String conseguir = (String) object.get("conseguir");
-				values.put("Entregado", entrega);
-				values.put("Conseguir", conseguir);
+				values.put("¿Qué puede entregarse en el Incremento resultante del Sprint que comienza?", entrega);
+				values.put("¿Cómo se conseguirá hacer el trabajo necesario para entregar el Incremento?", conseguir);
 				crearBody(document, values, fontTitle, fontNormal);
 			} else if (type.equals(DocumentType.MIDDLE_REVIEW) || type.equals(DocumentType.REVIEW)) {
 				object = (JSONObject) parser.parse(content);
 				String done = (String) object.get("done");
 				String noDone = (String) object.get("noDone");
 				String rePlanning = (String) object.get("rePlanning");
-				values.put("Realizado", done);
-				values.put("No realizado", noDone);
-				values.put("Re-Planificación", rePlanning);
+				values.put("Qué elementos del product backlog se han \"Terminado\"", done);
+				values.put("Cuáles no se han \"Terminado\"", noDone);
+				values.put("Planificación futura", rePlanning);
 				crearBody(document, values, fontTitle, fontNormal);
 			} else if (type.equals(DocumentType.MIDDLE_RETROSPECTIVE) || type.equals(DocumentType.RETROSPECTIVE)) {
 				object = (JSONObject) parser.parse(content);
 				String good = (String) object.get("good");
 				String bad = (String) object.get("bad");
 				String improvement = (String) object.get("improvement");
-				values.put("Bien", good);
-				values.put("Mal", bad);
-				values.put("Mejora", improvement);
+				values.put("¿Qué se ha hecho bien?", good);
+				values.put("¿Qué se ha hecho mal?", bad);
+				values.put("¿Como podemos mejorar?", improvement);
 				crearBody(document, values, fontTitle, fontNormal);
 			}
 
 		} catch (ParseException e) {
-			throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Parsing content action has not been possible");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Parsing content action has not been possible");
 		} catch (NullPointerException e) {
 			log.error("NullPointerException", e);
 		}

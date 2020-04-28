@@ -6,6 +6,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -168,7 +169,7 @@ public class WorkspaceService extends AbstractService {
 		checkMembers(project.getTeam().getId());
 		Collection<Column> columns = this.serviceColumns.findColumnTodoByProject(project);
 		Collection<SprintWithWorkspacesDto> res = new ArrayList<>();
-		Map<Integer, Collection<WorkspaceAndColumnTodoDto>> sprints = new HashMap<>();
+		Map<Integer, Collection<WorkspaceAndColumnTodoDto>> sprints = new LinkedHashMap<>();
 		String boxOfTeam = this.boxService.getMinimumBoxOfATeam(project.getTeam().getId()).getName();
 		if(boxOfTeam != null) {
 			for (Column column : columns) {

@@ -9,7 +9,6 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.spring.CustomObject.FindByNickDto;
@@ -51,7 +50,7 @@ public class UserServiceTest extends AbstractTest {
 	@Test
 	public void userTestSave() throws Exception {
 		UserAccount account500 = this.userAccountRepository
-				.save(new UserAccount("testuser500@gmail.com", Utiles.encryptedPassword("1234565"), LocalDateTime.now(),
+				.save(new UserAccount("testuser50000@gmail.com", Utiles.encryptedPassword("1234565"), LocalDateTime.now(),
 						LocalDateTime.now(), new HashSet<Role>()));
 		Object[][] objects = {
 				{ "prueba", "Prueba", "pruebatestuser", "fotografía", "Prueba Surname",
@@ -120,7 +119,7 @@ public class UserServiceTest extends AbstractTest {
 
 	@Test
 	public void testAnonymize() {
-		Object[][] objects = { { "testuser1@gmail.com", null }, { "", UsernameNotFoundException.class } };
+		Object[][] objects = { { "testuser1@gmail.com", null }, { "", ResponseStatusException.class } };
 
 		Stream.of(objects).forEach(x -> driverAnonymize((String) x[0], (Class<?>) x[1]));
 	}
@@ -163,7 +162,7 @@ public class UserServiceTest extends AbstractTest {
 
 	@Test
 	public void testAllMyData() {
-		Object[][] objects = { { "testuser1@gmail.com", null }, { "", UsernameNotFoundException.class } };
+		Object[][] objects = { { "testuser1@gmail.com", null }, { "", ResponseStatusException.class } };
 
 		Stream.of(objects).forEach(x -> driverAllMyData((String) x[0], (Class<?>) x[1]));
 	}

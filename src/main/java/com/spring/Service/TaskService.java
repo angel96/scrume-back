@@ -83,13 +83,15 @@ public class TaskService extends AbstractService {
 		List<UserProjectWorkspaceFromTaskDto> res = new ArrayList<>();
 		for (Task task : userTask) {
 			WorkspaceSprintListDto workspace = null;
+			Integer idSprint = null;
 			if (task.getColumn() != null) {
+				idSprint = task.getColumn().getWorkspace().getSprint().getId();
 				workspace = mapper.map(task.getColumn().getWorkspace(), WorkspaceSprintListDto.class);
 			}
 			UserProjectWorkspaceFromTaskDto userProjectWorkspaceFromTaskDto = 
 			new UserProjectWorkspaceFromTaskDto(task.getId(), task.getTitle(),
 			new ProjectIdNameDto(task.getProject().getId(),
-			task.getProject().getName()), workspace);	
+			task.getProject().getName()), workspace, idSprint);	
 			res.add(userProjectWorkspaceFromTaskDto);
 		}
 		return res;
@@ -226,6 +228,7 @@ public class TaskService extends AbstractService {
 		Collection<Task> tasks = this.taskRepository.findByWorkspace(workspace);
 		for (Task task : tasks) {
 			task.setColumn(null);
+			task.setUsers(new HashSet<>());
 			this.taskRepository.saveAndFlush(task);
 		}
 	}

@@ -11,6 +11,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class NotificationListDto {
 	
+	private boolean isAdmin;
+	
 	private Integer idSprint;
 	
 	private Integer id;
