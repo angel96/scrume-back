@@ -118,6 +118,12 @@ public class TeamApiController extends AbstractApiController {
 		return this.userRolService.listMembersOfATeam(idTeam);
 	}
 	
+	@GetMapping("/isAdmin/{idTeam}")
+	public boolean isAdmin(@PathVariable Integer idTeam) {
+		super.logger.info("GET /api/team/isAdmin/" + idTeam);
+		return this.userRolService.isAdminOnTeam(idTeam);
+	}
+	
 	@PostMapping("/findByNick")
 	public Collection<UserWithNickDto> findByNickStartsWith(@RequestBody FindByNickDto findByNickDto) {
 		super.logger.info("POST /api/team/findByNick");
