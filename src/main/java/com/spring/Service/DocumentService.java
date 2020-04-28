@@ -210,7 +210,7 @@ public class DocumentService extends AbstractService {
 
 			// Cabecera
 
-			PdfPTable table = new PdfPTable(1);
+			PdfPTable table = new PdfPTable(2);
 
 			table.setWidthPercentage(100);
 
