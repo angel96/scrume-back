@@ -217,11 +217,15 @@ public class DocumentService extends AbstractService {
 			SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
 			
 			PdfPCell right = getCell("Text on the right", Element.ALIGN_RIGHT, fontNormal);
-
+			PdfPCell left = getCell(
+					"Sprint: " + format.format(start) + " - " + format.format(end) + "\n" + "Proyecto: "
+							+ project.getName() + "\n Equipo: " + team.getName() + "\n Fecha de descarga: "
+							+ LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT)),
+					Element.ALIGN_RIGHT, fontCursiva);
 			right.addElement(img);
 
 			table.addCell(right);
-
+			table.addCell(left);
 			document.add(table);
 
 			// Contenido
@@ -238,17 +242,7 @@ public class DocumentService extends AbstractService {
 			// Contenido para cada campo
 
 			generateFieldsByType(document, DocumentType.valueOf(type), content, fontTitle2, fontNormal);
-
-			PdfPTable table2 = new PdfPTable(1); 
-
-			table2.setWidthPercentage(100);
-			PdfPCell right2 = getCell(
-					"Sprint: " + format.format(start) + " - " + format.format(end) + "\n" + "Proyecto: "
-							+ project.getName() + "\n Equipo " + team.getName() + "\n Fecha de descarga: "
-							+ LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT)),
-					Element.ALIGN_RIGHT, fontCursiva);
-			table2.addCell(right2);
-			document.add(table2);
+			
 
 		} catch (DocumentException e) {
 			log.error("DocumentException", e);
