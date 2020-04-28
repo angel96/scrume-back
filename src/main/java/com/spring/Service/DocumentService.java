@@ -197,7 +197,7 @@ public class DocumentService extends AbstractService {
 
 			BaseFont helvetica = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.EMBEDDED);
 
-			Font fontTitle = new Font(helvetica, 20, Font.BOLD);
+			Font fontTitle = new Font(helvetica, 40, Font.BOLD);
 			Font fontNormal = new Font(helvetica, 14, Font.NORMAL);
 			Font fontCursiva = new Font(helvetica, 14, Font.ITALIC);
 			Font fontSubtitle = new Font(helvetica, 14, Font.BOLDITALIC);
@@ -210,7 +210,7 @@ public class DocumentService extends AbstractService {
 
 			PdfPTable table = new PdfPTable(1);
 
-			table.setWidthPercentage(20);
+			table.setWidthPercentage(100);
 
 			SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
 			
@@ -284,7 +284,7 @@ public class DocumentService extends AbstractService {
 					done = doneBl.toString();
 					
 					StringBuilder todoBl = new StringBuilder();
-					todoBl.append(todo + (String) o.get("name") + ":\n" + (String) o.get("todo") + "\n\n");
+					todoBl.append(todo + (String) o.get("name") + ":\n" + (String) o.get("doing") + "\n\n");
 					todo = todoBl.toString();
 					
 					StringBuilder problemsBl = new StringBuilder();
