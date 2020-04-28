@@ -216,16 +216,16 @@ public class DocumentService extends AbstractService {
 
 			SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
 			
-			PdfPCell right = getCell("Text on the right", Element.ALIGN_RIGHT, fontNormal);
 			PdfPCell left = getCell(
 					"Sprint: " + format.format(start) + " - " + format.format(end) + "\n" + "Proyecto: "
 							+ project.getName() + "\n Equipo: " + team.getName() + "\n Fecha de descarga: "
 							+ LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT)),
-					Element.ALIGN_LEFT, fontCursiva);
+							Element.ALIGN_LEFT, fontCursiva);
+			table.addCell(left);
+			PdfPCell right = getCell("Text on the right", Element.ALIGN_RIGHT, fontNormal);
 			right.addElement(img);
 
 			table.addCell(right);
-			table.addCell(left);
 			document.add(table);
 
 			// Contenido
