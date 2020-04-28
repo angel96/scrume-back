@@ -10,7 +10,6 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -198,8 +197,10 @@ public class DocumentService extends AbstractService {
 
 			BaseFont helvetica = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.EMBEDDED);
 
-			Font fontTitle = new Font(helvetica, 16, Font.BOLD);
+			Font fontTitle = new Font(helvetica, 20, Font.BOLD);
 			Font fontNormal = new Font(helvetica, 14, Font.NORMAL);
+			Font fontCursiva = new Font(helvetica, 14, Font.ITALIC);
+			Font fontSubtitle = new Font(helvetica, 14, Font.BOLDITALIC);
 
 			Image img = Image.getInstance("files/logo.png");
 			img.scalePercent(10);
@@ -207,24 +208,16 @@ public class DocumentService extends AbstractService {
 
 			// Cabecera
 
-			PdfPTable table = new PdfPTable(3);
+			PdfPTable table = new PdfPTable(1);
 
-			table.setWidthPercentage(100);
+			table.setWidthPercentage(20);
 
 			SimpleDateFormat format = new SimpleDateFormat(DATE_FORMAT);
-
-			PdfPCell left = getCell(type, Element.ALIGN_LEFT, fontNormal);
-			PdfPCell center = getCell(
-					"Sprint " + format.format(start) + " - " + format.format(end) + "\n" + "Proyecto "
-							+ project.getName() + "\n Equipo " + team.getName() + "\n Fecha de descarga "
-							+ LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT)),
-					Element.ALIGN_CENTER, fontNormal);
+			
 			PdfPCell right = getCell("Text on the right", Element.ALIGN_RIGHT, fontNormal);
 
 			right.addElement(img);
 
-			table.addCell(left);
-			table.addCell(center);
 			table.addCell(right);
 
 			document.add(table);
@@ -235,12 +228,25 @@ public class DocumentService extends AbstractService {
 
 			Paragraph p = new Paragraph(title, fontTitle);
 			document.add(p);
+			Paragraph p2 = new Paragraph(type.replace("_", " "), fontSubtitle);
+			document.add(p2);
 
 			document.add(Chunk.NEWLINE);
 
 			// Contenido para cada campo
 
 			generateFieldsByType(document, DocumentType.valueOf(type), content, fontTitle, fontNormal);
+
+			PdfPTable table2 = new PdfPTable(1); 
+
+			table2.setWidthPercentage(100);
+			PdfPCell right2 = getCell(
+					"Sprint: " + format.format(start) + " - " + format.format(end) + "\n" + "Proyecto: "
+							+ project.getName() + "\n Equipo " + team.getName() + "\n Fecha de descarga: "
+							+ LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT)),
+					Element.ALIGN_RIGHT, fontCursiva);
+			table2.addCell(right2);
+			document.add(table2);
 
 		} catch (DocumentException e) {
 			log.error("DocumentException", e);
@@ -272,16 +278,17 @@ public class DocumentService extends AbstractService {
 				String problems = "";
 				for (int i = 0; i < array.size(); i++) {
 					JSONObject o = (JSONObject) array.get(i);
-					StringBuilder todoBl = new StringBuilder();
-					todoBl.append(todo + (String) o.get("name") + ":\n" + (String) o.get("todo") + "\n");
-					todo = todoBl.toString();
 					
 					StringBuilder doneBl = new StringBuilder();
-					doneBl.append(done + (String) o.get("name") + ":\n" + (String) o.get("done") + "\n");
+					doneBl.append(done + (String) o.get("name") + ":\n" + (String) o.get("done") + "\n\n");
 					done = doneBl.toString();
 					
+					StringBuilder todoBl = new StringBuilder();
+					todoBl.append(todo + (String) o.get("name") + ":\n" + (String) o.get("todo") + "\n\n");
+					todo = todoBl.toString();
+					
 					StringBuilder problemsBl = new StringBuilder();
-					problemsBl.append(problems + (String) o.get("name") + ":\n" + (String) o.get("problems") + "\n");
+					problemsBl.append(problems + (String) o.get("name") + ":\n" + (String) o.get("problems") + "\n\n");
 					problems = problemsBl.toString();
 				}
 				values.put("¿Qué he hecho hoy?", done);
