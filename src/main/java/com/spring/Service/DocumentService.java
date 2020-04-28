@@ -197,7 +197,9 @@ public class DocumentService extends AbstractService {
 
 			BaseFont helvetica = BaseFont.createFont(BaseFont.HELVETICA, BaseFont.CP1252, BaseFont.EMBEDDED);
 
-			Font fontTitle = new Font(helvetica, 40, Font.BOLD);
+			Font fontTitle = new Font(helvetica, 30, Font.BOLD);
+			Font fontTitle2 = new Font(helvetica, 14, Font.BOLD);
+
 			Font fontNormal = new Font(helvetica, 14, Font.NORMAL);
 			Font fontCursiva = new Font(helvetica, 14, Font.ITALIC);
 			Font fontSubtitle = new Font(helvetica, 14, Font.BOLDITALIC);
@@ -235,7 +237,7 @@ public class DocumentService extends AbstractService {
 
 			// Contenido para cada campo
 
-			generateFieldsByType(document, DocumentType.valueOf(type), content, fontTitle, fontNormal);
+			generateFieldsByType(document, DocumentType.valueOf(type), content, fontTitle2, fontNormal);
 
 			PdfPTable table2 = new PdfPTable(1); 
 
