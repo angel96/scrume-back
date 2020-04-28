@@ -266,45 +266,56 @@ public class DocumentService extends AbstractService {
 		try {
 			if (type.equals(DocumentType.DAILY)) {
 				array = (JSONArray) parser.parse(content);
+				String todo = "";
+				String done = "";
+				String problems = "";
 				for (int i = 0; i < array.size(); i++) {
 					JSONObject o = (JSONObject) array.get(i);
-					String name = (String) o.get("name");
-					String done = (String) o.get("done");
-					String problems = (String) o.get("problems");
-					values.put("Nombre", name);
-					values.put("Realizado", done);
-					values.put("Problemas", problems);
-					crearBody(document, values, fontTitle, fontNormal);
+					StringBuilder todoBl = new StringBuilder();
+					todoBl.append(todo + (String) o.get("name") + ":\n" + (String) o.get("todo") + "\n");
+					todo = todoBl.toString();
+					
+					StringBuilder doneBl = new StringBuilder();
+					doneBl.append(done + (String) o.get("name") + ":\n" + (String) o.get("done") + "\n");
+					done = doneBl.toString();
+					
+					StringBuilder problemsBl = new StringBuilder();
+					problemsBl.append(problems + (String) o.get("name") + ":\n" + (String) o.get("problems") + "\n");
+					problems = problemsBl.toString();
 				}
+				values.put("¿Qué he hecho hoy?", done);
+				values.put("¿Qué voy a hacer hoy?", todo);
+				values.put("¿Qué problemas he tenido?", problems);
+				crearBody(document, values, fontTitle, fontNormal);
 			} else if (type.equals(DocumentType.PLANNING_MEETING)) {
 				object = (JSONObject) parser.parse(content);
 				String entrega = (String) object.get("entrega");
 				String conseguir = (String) object.get("conseguir");
-				values.put("Entregado", entrega);
-				values.put("Conseguir", conseguir);
+				values.put("¿Qué puede entregarse en el Incremento resultante del Sprint que comienza?", entrega);
+				values.put("¿Cómo se conseguirá hacer el trabajo necesario para entregar el Incremento?", conseguir);
 				crearBody(document, values, fontTitle, fontNormal);
 			} else if (type.equals(DocumentType.MIDDLE_REVIEW) || type.equals(DocumentType.REVIEW)) {
 				object = (JSONObject) parser.parse(content);
 				String done = (String) object.get("done");
 				String noDone = (String) object.get("noDone");
 				String rePlanning = (String) object.get("rePlanning");
-				values.put("Realizado", done);
-				values.put("No realizado", noDone);
-				values.put("Re-Planificación", rePlanning);
+				values.put("Qué elementos del product backlog se han \"Terminado\"", done);
+				values.put("Cuáles no se han \"Terminado\"", noDone);
+				values.put("Planificación futura", rePlanning);
 				crearBody(document, values, fontTitle, fontNormal);
 			} else if (type.equals(DocumentType.MIDDLE_RETROSPECTIVE) || type.equals(DocumentType.RETROSPECTIVE)) {
 				object = (JSONObject) parser.parse(content);
 				String good = (String) object.get("good");
 				String bad = (String) object.get("bad");
 				String improvement = (String) object.get("improvement");
-				values.put("Bien", good);
-				values.put("Mal", bad);
-				values.put("Mejora", improvement);
+				values.put("¿Qué se ha hecho bien?", good);
+				values.put("¿Qué se ha hecho mal?", bad);
+				values.put("¿Como podemos mejorar?", improvement);
 				crearBody(document, values, fontTitle, fontNormal);
 			}
 
 		} catch (ParseException e) {
-			throw new ResponseStatusException(HttpStatus.BAD_GATEWAY, "Parsing content action has not been possible");
+			throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Parsing content action has not been possible");
 		} catch (NullPointerException e) {
 			log.error("NullPointerException", e);
 		}
