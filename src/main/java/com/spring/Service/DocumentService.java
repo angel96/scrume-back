@@ -221,7 +221,7 @@ public class DocumentService extends AbstractService {
 					"Sprint: " + format.format(start) + " - " + format.format(end) + "\n" + "Proyecto: "
 							+ project.getName() + "\n Equipo: " + team.getName() + "\n Fecha de descarga: "
 							+ LocalDate.now().format(DateTimeFormatter.ofPattern(DATE_FORMAT)),
-					Element.ALIGN_RIGHT, fontCursiva);
+					Element.ALIGN_LEFT, fontCursiva);
 			right.addElement(img);
 
 			table.addCell(right);
