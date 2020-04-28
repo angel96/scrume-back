@@ -39,9 +39,11 @@ public class PaymentServiceTest extends AbstractTest {
 
 	@Test
 	public void testPago() {
-		Object[][] objects = { { "testuser1@gmail.com", LocalDate.of(2020, 04, 24), null },
+		Object[][] objects = { 
+				{ "testuser1@gmail.com", LocalDate.of(9999, 04, 24), null },
 				{ null, LocalDate.of(2020, 04, 24), AssertionError.class },
-				{ "testuser1@gmail.com", LocalDate.of(2020, 01, 24), ResponseStatusException.class } };
+				{ "testuser1@gmail.com", LocalDate.of(2020, 01, 24), ResponseStatusException.class } 
+				};
 		Stream.of(objects).forEach(x -> driverPago((String) x[0], (LocalDate) x[1], (Class<?>) x[2]));
 	}
 

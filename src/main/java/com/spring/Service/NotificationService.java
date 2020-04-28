@@ -120,7 +120,7 @@ public class NotificationService extends AbstractService {
 					if(this.checkDocumentIsCreated(notification)) {
 						this.notificationRepository.delete(notification);
 					}else {
-						res.add(new NotificationListDto(notification.getSprint().getId(), notification.getId(), notification.getTitle(), new TeamDto(team.getId(), team.getName()), new ProjectIdNameDto
+						res.add(new NotificationListDto(this.userRolService.isAdminOnTeam(principal, notification.getSprint().getProject().getTeam()), notification.getSprint().getId(), notification.getId(), notification.getTitle(), new TeamDto(team.getId(), team.getName()), new ProjectIdNameDto
 								(notification.getSprint().getProject().getId(), notification.getSprint().getProject().getName()),
 								notification.getDate()));
 					}
